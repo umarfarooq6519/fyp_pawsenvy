@@ -1,0 +1,127 @@
+import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
+
+class UserProfile extends StatelessWidget {
+  final String name;
+  final String email;
+  final String avatar;
+  final bool notificationsEnabled;
+  final ValueChanged<bool> onNotificationsChanged;
+  final VoidCallback onLogout;
+
+  const UserProfile({
+    super.key,
+    required this.name,
+    required this.email,
+    required this.avatar,
+    required this.notificationsEnabled,
+    required this.onNotificationsChanged,
+    required this.onLogout,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: kToolbarHeight - 20,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(LineIcons.arrowLeft, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 40),
+            child: Column(
+              children: [
+                CircleAvatar(radius: 46, backgroundImage: AssetImage(avatar)),
+                Center(
+                  child: Text(
+                    name,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Center(
+                  child: Text(
+                    email,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                  ),
+                ),
+              ],
+              // Settings section
+            ),
+          ),
+          SizedBox(height: 18),
+          SettingsSection(
+            notificationsEnabled: notificationsEnabled,
+            onNotificationsChanged: onNotificationsChanged,
+            onLogout: onLogout,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SettingsSection extends StatelessWidget {
+  final bool notificationsEnabled;
+  final ValueChanged<bool> onNotificationsChanged;
+  final VoidCallback onLogout;
+
+  const SettingsSection({
+    super.key,
+    required this.notificationsEnabled,
+    required this.onNotificationsChanged,
+    required this.onLogout,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                const Icon(LineIcons.bell, color: Colors.black54),
+                const SizedBox(width: 12),
+                Text(
+                  'Notifications',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+            Switch(
+              value: notificationsEnabled,
+              onChanged: onNotificationsChanged,
+            ),
+          ],
+        ),
+        const Divider(height: 32),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(
+            LineIcons.alternateSignOut,
+            color: Colors.redAccent,
+          ),
+          title: const Text(
+            'Logout',
+            style: TextStyle(color: Colors.redAccent),
+          ),
+          onTap: onLogout,
+        ),
+      ],
+    );
+  }
+}
