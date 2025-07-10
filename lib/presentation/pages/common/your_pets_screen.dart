@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:line_icons/line_icons.dart';
 import '../../../data/pets.dart';
-import '../../widgets/profile_medium.dart';
+import '../../widgets/profiles/profile_medium.dart';
 
 class YourPetsScreen extends StatefulWidget {
   const YourPetsScreen({super.key});
@@ -150,10 +151,8 @@ class _YourPetsScreenState extends State<YourPetsScreen> {
               const SizedBox(width: 8),
               Text(
                 label,
-                style: TextStyle(
+                style: AppTextStyles.bodyBase.copyWith(
                   color: selected ? Colors.deepPurple : Colors.black54,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
                 ),
               ),
             ],

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/pet_profile_screen.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/search_bar.dart';
+import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/common/search_bar.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet_profile_large.dart';
 import 'package:line_icons/line_icons.dart';
 
-import '../../widgets/profile_small.dart';
+import '../../widgets/profiles/profile_small.dart';
 
 class SearchList extends StatelessWidget {
   final TextEditingController searchController;
@@ -26,12 +27,7 @@ class SearchList extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(
-          title,
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
-        ),
+        title: Text(title, style: AppTextStyles.headingMedium),
       ),
       body: Column(
         children: [
@@ -85,7 +81,7 @@ class SearchList extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PetProfileScreen(profile: item),
+                          builder: (context) => PetProfileLarge(profile: item),
                         ),
                       );
                     },

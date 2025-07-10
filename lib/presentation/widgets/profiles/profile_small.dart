@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:fyp_pawsenvy/core/utils/colors.dart';
+import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
 
 class ProfileSmall extends StatelessWidget {
   final String name;
@@ -24,21 +26,17 @@ class ProfileSmall extends StatelessWidget {
     return Container(
       width: 200,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.deepPurple.withOpacity(0.1)),
-        gradient: const LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [Color(0xFFF6D6E6), Color(0xFFE6FBFA)],
-        ),
+        border: Border.all(color: AppColors.deepPurpleBorder),
+        gradient: AppColors.profileGradient,
         borderRadius: BorderRadius.circular(28),
-        boxShadow: [BoxShadow(color: Color(0xFFF6D6E6), blurRadius: 7)],
+        boxShadow: [BoxShadow(color: AppColors.shadowColor, blurRadius: 7)],
       ),
       margin: const EdgeInsets.symmetric(horizontal: 8),
       child: Stack(
         children: [
           // Card body with tap using InkWell for full coverage
           Material(
-            color: Colors.transparent,
+            color: AppColors.transparent,
             borderRadius: BorderRadius.circular(28),
             child: InkWell(
               borderRadius: BorderRadius.circular(28),
@@ -60,7 +58,6 @@ class ProfileSmall extends StatelessWidget {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 16),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -68,17 +65,14 @@ class ProfileSmall extends StatelessWidget {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.white,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: const Color(0xFFE0E0E0)),
                       ),
                       child: Text(
                         name,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.titleMedium?.copyWith(
+                        style: AppTextStyles.bodyBase.copyWith(
                           fontWeight: FontWeight.w500,
-                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -87,9 +81,8 @@ class ProfileSmall extends StatelessWidget {
                       tag1 != null && tag2 != null && tag2!.isNotEmpty
                           ? '$tag1 - $tag2'
                           : tag1 ?? '',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.w400,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.lightGrey,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -98,22 +91,23 @@ class ProfileSmall extends StatelessWidget {
               ),
             ),
           ),
-          // Favorite icon inside the card, top right, always on top
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Padding(
-              padding: const EdgeInsets.all(5),
+          if (onFavorite != null)
+            Positioned(
+              top: 10,
+              right: 10,
               child: Material(
-                color: Colors.transparent,
+                color: AppColors.transparent,
                 child: IconButton(
                   onPressed: onFavorite,
-                  icon: Icon(LineIcons.heart, color: Colors.red),
-                  splashRadius: 22,
+                  icon: Icon(
+                    LineIcons.heart,
+                    color: AppColors.actionRed,
+                    size: 22,
+                  ),
+                  splashRadius: 20,
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
 import 'package:fyp_pawsenvy/data/pets.dart';
 import 'package:fyp_pawsenvy/data/users.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/pet_profile_screen.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/search_bar.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/user_profile_screen.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/profile_small.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/common/search_bar.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet_profile_large.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/profiles/user_profile_large.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/profiles/profile_small.dart';
 
-class PetOwnerDashboard extends StatelessWidget {
-  const PetOwnerDashboard({super.key});
+class OwnerDashboard extends StatelessWidget {
+  const OwnerDashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,18 +22,11 @@ class PetOwnerDashboard extends StatelessWidget {
             children: [
               Text(
                 'Good Evening,',
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.w400,
-                  height: 0,
+                style: AppTextStyles.headingLarge.copyWith(
+                  fontWeight: FontWeight.w300,
                 ),
               ),
-              Text(
-                'Umar',
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  height: 0,
-                ),
-              ),
+              Text('Umar', style: AppTextStyles.headingLarge),
             ],
           ),
         ),
@@ -45,12 +39,7 @@ class PetOwnerDashboard extends StatelessWidget {
         SizedBox(height: 40),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            'Your Pets',
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
+          child: Text('Your Pets', style: AppTextStyles.headingMedium),
         ),
         SizedBox(
           height: 240,
@@ -83,7 +72,7 @@ class PetOwnerDashboard extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => PetProfileScreen(profile: pet),
+                      builder: (context) => PetProfileLarge(profile: pet),
                     ),
                   );
                 },
@@ -98,12 +87,7 @@ class PetOwnerDashboard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Users',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
+              Text('Users', style: AppTextStyles.headingMedium),
               TextButton(onPressed: () {}, child: const Text('View All')),
             ],
           ),
@@ -125,7 +109,7 @@ class PetOwnerDashboard extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => UserProfileScreen(user: user),
+                      builder: (context) => UserProfileLarge(user: user),
                     ),
                   );
                 },

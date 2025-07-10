@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/search_list.dart';
 import '../../../data/users.dart';
 import '../../../data/pets.dart';
 import '../../../data/pet_cares.dart';
-import '../../widgets/extended_card.dart';
+import '../../widgets/profiles/profile_extended.dart';
 
 class Community extends StatelessWidget {
   Community({super.key});
@@ -12,10 +13,8 @@ class Community extends StatelessWidget {
       users
           .where((i) => (i['role'] ?? '').toLowerCase().contains('vet'))
           .toList();
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     // Removed unused veterinarians variable
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -24,20 +23,14 @@ class Community extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 40),
           child: Column(
             children: [
-              Text(
-                'Community',
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  height: 0,
-                ),
-              ),
-              const SizedBox(height: 6),
+              Text('Community', style: AppTextStyles.headingLarge),
+              const SizedBox(height: 3),
               Text(
                 'Care, Love, and Tail-Wagging Happiness!',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                style: AppTextStyles.headingSmall.copyWith(
                   fontWeight: FontWeight.w300,
-                  height: 0,
                 ),
+                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -91,21 +84,12 @@ class Community extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Nearby Pet Care',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
+            Text('Nearby Pet Care', style: AppTextStyles.headingMedium),
             TextButton(
               onPressed: () {},
               child: Text(
                 'View All',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppTextStyles.bodyBase.copyWith(color: Colors.black54),
               ),
             ),
           ],
@@ -167,13 +151,7 @@ class _ServiceCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Colors.black87,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            Text(label, style: AppTextStyles.bodyBase),
           ],
         ),
       ),

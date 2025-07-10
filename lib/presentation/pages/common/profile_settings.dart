@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
 import 'package:line_icons/line_icons.dart';
 
-class UserProfile extends StatelessWidget {
+class ProfileSettings extends StatelessWidget {
   final String name;
   final String email;
   final String avatar;
@@ -9,7 +10,7 @@ class UserProfile extends StatelessWidget {
   final ValueChanged<bool> onNotificationsChanged;
   final VoidCallback onLogout;
 
-  const UserProfile({
+  const ProfileSettings({
     super.key,
     required this.name,
     required this.email,
@@ -39,21 +40,14 @@ class UserProfile extends StatelessWidget {
             child: Column(
               children: [
                 CircleAvatar(radius: 46, backgroundImage: AssetImage(avatar)),
-                Center(
-                  child: Text(
-                    name,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+                Center(child: Text(name, style: AppTextStyles.headingMedium)),
                 const SizedBox(height: 4),
                 Center(
                   child: Text(
                     email,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: Colors.grey[600],
+                    ),
                   ),
                 ),
               ],
@@ -115,9 +109,9 @@ class SettingsSection extends StatelessWidget {
             LineIcons.alternateSignOut,
             color: Colors.redAccent,
           ),
-          title: const Text(
+          title: Text(
             'Logout',
-            style: TextStyle(color: Colors.redAccent),
+            style: AppTextStyles.bodyBase.copyWith(color: Colors.redAccent),
           ),
           onTap: onLogout,
         ),

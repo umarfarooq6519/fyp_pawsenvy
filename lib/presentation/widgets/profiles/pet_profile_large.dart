@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
+import 'package:fyp_pawsenvy/core/utils/colors.dart';
+import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
 
-class PetProfileScreen extends StatelessWidget {
-  const PetProfileScreen({super.key, required this.profile});
+class PetProfileLarge extends StatelessWidget {
+  const PetProfileLarge({super.key, required this.profile});
 
   final Map<String, dynamic> profile;
 
@@ -18,7 +21,7 @@ class PetProfileScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 340,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF9E9E0),
+                  gradient: AppColors.profileGradient,
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(32),
                     bottomRight: Radius.circular(32),
@@ -42,11 +45,17 @@ class PetProfileScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.arrow_back),
+                              icon: Icon(
+                                LineIcons.arrowLeft,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                               onPressed: () => Navigator.of(context).pop(),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.more_vert),
+                              icon: Icon(
+                                LineIcons.verticalEllipsis,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                               onPressed: () {},
                             ),
                           ],
@@ -74,24 +83,23 @@ class PetProfileScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   profile['name'] as String,
-                                  style: Theme.of(context).textTheme.titleLarge
-                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                  style: AppTextStyles.headingMedium,
                                 ),
                                 const SizedBox(height: 4),
                                 Row(
                                   children: [
-                                    const Icon(
-                                      Icons.location_on,
+                                    Icon(
+                                      LineIcons.mapMarker,
                                       size: 16,
-                                      color: Colors.grey,
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
                                       profile['location'] as String,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(color: Colors.grey),
+                                      style: AppTextStyles.bodySmall,
                                     ),
                                   ],
                                 ),
@@ -101,8 +109,8 @@ class PetProfileScreen extends StatelessWidget {
                           IconButton(
                             onPressed: () {},
                             icon: Icon(
-                              Icons.favorite_border,
-                              color: Colors.orange,
+                              LineIcons.heart,
+                              color: Colors.red,
                               size: 28,
                             ),
                           ),
@@ -114,7 +122,7 @@ class PetProfileScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.grey[200],
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
@@ -128,17 +136,20 @@ class PetProfileScreen extends StatelessWidget {
                               return Column(
                                 children: [
                                   CircleAvatar(
-                                    backgroundColor: Colors.white,
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.surface,
                                     child: Icon(
                                       attr['icon'] as IconData,
-                                      color: Colors.orange,
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.secondary,
                                     ),
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
                                     attr['label'] as String,
-                                    style:
-                                        Theme.of(context).textTheme.bodySmall,
+                                    style: AppTextStyles.bodySmall,
                                   ),
                                 ],
                               );
@@ -147,57 +158,54 @@ class PetProfileScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      Text(
-                        'About this pet',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
+                      Text('About this pet', style: AppTextStyles.headingSmall),
                       const SizedBox(height: 8),
                       Text(
                         profile['about'] as String,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        style: AppTextStyles.bodyBase,
                       ),
-                      const SizedBox(height: 8),
-                      // GestureDetector(
-                      //   onTap: () {},
-                      //   child: Text(
-                      //     'Read More',
-                      //     style: TextStyle(
-                      //       color: Colors.orange[700],
-                      //       fontWeight: FontWeight.bold,
-                      //     ),
-                      //   ),
-                      // ),
-                      // const SizedBox(height: 30),
+                      const SizedBox(height: 100), // Space for button
                     ],
                   ),
                 ),
               ),
             ],
-          ),
-          // Sticky Adopt button
+          ), // Sticky Adopt button
           Positioned(
             left: 20,
             right: 20,
             bottom: 24,
-            child: SizedBox(
+            child: Container(
               width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: AppColors.profileGradient,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.deepPurpleBorder),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.secondary.withOpacity(0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
+                  backgroundColor: Colors.transparent,
+                  foregroundColor: Colors.black,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 16),
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
                 ),
                 onPressed: () {},
-                child: const Text(
+                child: Text(
                   'Adopt this pet',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
+                  style: AppTextStyles.buttonText.copyWith(color: Colors.black),
                 ),
               ),
             ),
@@ -216,7 +224,6 @@ class PetProfileScreen extends StatelessWidget {
           : type == 'Cat'
           ? 'assets/images/cat.png'
           : 'assets/images/placeholder.png',
-      // height: 250,
       fit: BoxFit.cover,
     );
   }

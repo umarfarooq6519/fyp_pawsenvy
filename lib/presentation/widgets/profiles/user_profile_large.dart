@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
+import 'package:fyp_pawsenvy/core/utils/colors.dart';
+import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
 
-class UserProfileScreen extends StatelessWidget {
-  const UserProfileScreen({super.key, required this.user});
+class UserProfileLarge extends StatelessWidget {
+  const UserProfileLarge({super.key, required this.user});
   final Map<String, dynamic> user;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Stack(
         children: [
           Column(
@@ -16,9 +19,9 @@ class UserProfileScreen extends StatelessWidget {
               Container(
                 width: double.infinity,
                 height: 320,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFEAF6F6),
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  gradient: AppColors.profileGradient,
+                  borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(32),
                     bottomRight: Radius.circular(32),
                   ),
@@ -32,7 +35,7 @@ class UserProfileScreen extends StatelessWidget {
                         backgroundImage: AssetImage(
                           user['avatar'] ?? 'assets/images/placeholder.png',
                         ),
-                        backgroundColor: Colors.white,
+                        backgroundColor: Theme.of(context).colorScheme.surface,
                       ),
                     ),
                     SafeArea(
@@ -45,11 +48,17 @@ class UserProfileScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.arrow_back),
+                              icon: Icon(
+                                LineIcons.arrowLeft,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                               onPressed: () => Navigator.of(context).pop(),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.more_vert),
+                              icon: Icon(
+                                LineIcons.verticalEllipsis,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                               onPressed: () {},
                             ),
                           ],
@@ -77,48 +86,49 @@ class UserProfileScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   user['name'] ?? '',
-                                  style: Theme.of(context).textTheme.titleLarge
-                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                  style: AppTextStyles.headingMedium,
                                 ),
                                 const SizedBox(height: 4),
                                 Row(
                                   children: [
                                     Icon(
                                       user['role'] == 'veterinary'
-                                          ? Icons.medical_services
-                                          : Icons.pets,
+                                          ? LineIcons.stethoscope
+                                          : LineIcons.paw,
                                       size: 18,
-                                      color: Colors.teal,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
                                       user['role'] == 'veterinary'
                                           ? 'Veterinary'
                                           : 'Pet Owner',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodyMedium?.copyWith(
-                                        color: Colors.teal,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                      style: AppTextStyles.headingSmall
+                                          .copyWith(
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.primary,
+                                          ),
                                     ),
                                   ],
                                 ),
                                 const SizedBox(height: 4),
                                 Row(
                                   children: [
-                                    const Icon(
-                                      Icons.location_on,
+                                    Icon(
+                                      LineIcons.mapMarker,
                                       size: 16,
-                                      color: Colors.grey,
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
                                       user['location'] ?? '',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(color: Colors.grey),
+                                      style: AppTextStyles.bodySmall,
                                     ),
                                   ],
                                 ),
@@ -132,7 +142,7 @@ class UserProfileScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.grey[200],
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
@@ -145,12 +155,11 @@ class UserProfileScreen extends StatelessWidget {
                                       as Map<String, dynamic>;
                               return Column(
                                 children: [
-                                  _buildAttributeIcon(attr['icon']),
+                                  _buildAttributeIcon(attr['icon'], context),
                                   const SizedBox(height: 6),
                                   Text(
                                     attr['label'] as String,
-                                    style:
-                                        Theme.of(context).textTheme.bodySmall,
+                                    style: AppTextStyles.bodySmall,
                                   ),
                                 ],
                               );
@@ -159,50 +168,58 @@ class UserProfileScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      Text(
-                        'About',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
+                      Text('About', style: AppTextStyles.headingSmall),
                       const SizedBox(height: 8),
-                      Text(
-                        user['about'] ?? '',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
+                      Text(user['about'] ?? '', style: AppTextStyles.bodyBase),
+                      const SizedBox(height: 100),
                     ],
                   ),
                 ),
               ),
             ],
-          ),
-          // Sticky contact button
+          ), // Sticky contact button
           Positioned(
             left: 0,
             right: 0,
             bottom: 24,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: Implement contact action
-                },
-                icon: const Icon(
-                  Icons.chat_bubble_outline,
-                  color: Colors.white,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: AppColors.profileGradient,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.deepPurpleBorder),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.3),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-                label: const Text(
-                  'Contact',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(54),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    // TODO: Implement contact action
+                  },
+                  icon: Icon(LineIcons.commentDots, color: Colors.black),
+                  label: Text(
+                    'Contact',
+                    style: AppTextStyles.buttonText.copyWith(
+                      color: Colors.black,
+                    ),
                   ),
-                  elevation: 6,
-                  shadowColor: Colors.teal.withOpacity(0.18),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    foregroundColor: Colors.black,
+                    minimumSize: const Size.fromHeight(54),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                    shadowColor: Colors.transparent,
+                  ),
                 ),
               ),
             ),
@@ -212,19 +229,23 @@ class UserProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAttributeIcon(dynamic icon) {
+  Widget _buildAttributeIcon(dynamic icon, BuildContext context) {
     if (icon == null) {
       return const SizedBox(height: 36, width: 36);
     }
     if (icon is String) {
       return CircleAvatar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         child: Image.asset(icon, width: 28, height: 28),
       );
     }
     return CircleAvatar(
-      backgroundColor: Colors.white,
-      child: Icon(icon as IconData, color: Colors.teal, size: 24),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      child: Icon(
+        icon as IconData,
+        color: Theme.of(context).colorScheme.primary,
+        size: 24,
+      ),
     );
   }
 }

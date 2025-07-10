@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/utils/colors.dart';
+import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
 
 class ExtendedCard extends StatelessWidget {
   final String title;
@@ -21,12 +23,12 @@ class ExtendedCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Colors.deepPurple.shade100, width: 1),
+        border: Border.all(color: AppColors.deepPurpleBorder, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: AppColors.black.withOpacity(0.03),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -37,7 +39,7 @@ class ExtendedCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 26,
-            backgroundColor: Colors.transparent,
+            backgroundColor: AppColors.transparent,
             backgroundImage: avatar != null ? AssetImage(avatar!) : null,
             child:
                 avatar == null
@@ -49,33 +51,19 @@ class ExtendedCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                    height: 0,
-                  ),
-                ),
+                Text(title, style: AppTextStyles.headingSmall),
                 if (subtitle != null) ...[
                   const SizedBox(height: 0),
                   Text(
                     subtitle!,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w400,
-                      height: 0,
+                    style: AppTextStyles.bodyBase.copyWith(
+                      color: AppColors.black.withOpacity(0.6),
                     ),
                   ),
                 ],
                 if (tags != null && tags!.isNotEmpty) ...[
                   const SizedBox(height: 4),
-                  Text(
-                    tags!.join(' | '),
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: Colors.black87),
-                  ),
+                  Text(tags!.join(' | '), style: AppTextStyles.bodySmall),
                 ],
               ],
             ),
@@ -84,13 +72,7 @@ class ExtendedCard extends StatelessWidget {
           if (trailing != null)
             Align(
               alignment: Alignment.bottomRight,
-              child: Text(
-                trailing!,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              child: Text(trailing!, style: AppTextStyles.bodySmall),
             ),
         ],
       ),
