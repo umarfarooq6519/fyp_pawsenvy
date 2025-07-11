@@ -1,0 +1,10 @@
+class Routes {
+  static const String welcome = '/';
+  static const String petOwner = '/pet-owner';
+  static const String veterinary = '/veterinary';
+  static const String searchList = '/search';
+  static const String petProfile = '/pet-profile';
+  static const String userProfile = '/user-profile';
+  static const String settings = '/settings';
+  static const String profile = '/profile';
+}

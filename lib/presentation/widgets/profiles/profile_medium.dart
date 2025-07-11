@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:fyp_pawsenvy/core/utils/colors.dart';
 import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
 
 class ProfileMedium extends StatelessWidget {
   final String name;
@@ -34,16 +35,24 @@ class ProfileMedium extends StatelessWidget {
     return Container(
       width: 260,
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.deepPurpleBorder),
-        gradient: AppColors.profileGradient,
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: [BoxShadow(color: AppColors.shadowColor, blurRadius: 10)],
-      ),
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    border: Border.all(color: AppColors.lightPurple),
+    gradient: AppColors.profileGradient,
+    borderRadius: BorderRadius.circular(AppBorderRadius.xLarge),
+    boxShadow: [BoxShadow(color: AppColors.lightPurple, blurRadius: 7)],
+  ),
+      margin: EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ), // was profileMediumMargin
       child: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.xl,
+              AppSpacing.xl,
+              AppSpacing.xl,
+              AppSpacing.xl,
+            ), // was xxl for top
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -56,7 +65,7 @@ class ProfileMedium extends StatelessWidget {
                     backgroundColor: AppColors.transparent,
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: AppSpacing.xl), // was xxl
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -67,7 +76,7 @@ class ProfileMedium extends StatelessWidget {
                         Text(name, style: AppTextStyles.headingMedium),
                         if (type != null && type!.isNotEmpty)
                           Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
+                            padding: EdgeInsets.only(top: AppSpacing.xs),
                             child: Text(
                               type!,
                               style: AppTextStyles.headingSmall.copyWith(
@@ -79,7 +88,7 @@ class ProfileMedium extends StatelessWidget {
                     ),
                     if (verified)
                       Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
+                        padding: EdgeInsets.only(left: AppSpacing.sm),
                         child: Icon(
                           LineIcons.checkCircle,
                           color: AppColors.deepPurple,
@@ -91,7 +100,10 @@ class ProfileMedium extends StatelessWidget {
                 if ((tag1 != null && tag1!.isNotEmpty) ||
                     (tag2 != null && tag2!.isNotEmpty))
                   Padding(
-                    padding: const EdgeInsets.only(top: 10.0, bottom: 2.0),
+                    padding: EdgeInsets.only(
+                      top: AppSpacing.sm + AppSpacing.xs,
+                      bottom: AppSpacing.xs,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -104,34 +116,34 @@ class ProfileMedium extends StatelessWidget {
                                 : LineIcons.tag,
                             color:
                                 tag1!.toLowerCase() == 'male'
-                                    ? AppColors.male
+                                    ? Colors.blue
                                     : tag1!.toLowerCase() == 'female'
-                                    ? AppColors.female
+                                    ? Colors.pink
                                     : AppColors.deepPurple,
                             size: 20,
                           ),
-                          const SizedBox(width: 6),
+                          SizedBox(width: AppSpacing.xs + AppSpacing.xs),
                           Text(tag1!, style: AppTextStyles.bodySmall),
                         ],
                         if (tag1 != null &&
                             tag1!.isNotEmpty &&
                             tag2 != null &&
                             tag2!.isNotEmpty)
-                          const SizedBox(width: 18),
+                          SizedBox(width: AppSpacing.lg + AppSpacing.xs),
                         if (tag2 != null && tag2!.isNotEmpty) ...[
                           Icon(
                             Icons.location_on,
                             color: AppColors.deepPurple,
                             size: 20,
                           ),
-                          const SizedBox(width: 2),
+                          SizedBox(width: AppSpacing.xs),
                           Text(tag2!, style: AppTextStyles.bodySmall),
                         ],
                       ],
                     ),
                   ),
                 if (about != null && about!.isNotEmpty) ...[
-                  const SizedBox(height: 18),
+                  SizedBox(height: AppSpacing.lg + AppSpacing.xs),
                   Text(
                     about!,
                     style: AppTextStyles.bodyBase,
@@ -143,15 +155,15 @@ class ProfileMedium extends StatelessWidget {
             ),
           ),
           Positioned(
-            top: 10,
-            right: 10,
+            top: AppSpacing.sm + AppSpacing.xs,
+            right: AppSpacing.sm + AppSpacing.xs,
             child: Material(
               color: AppColors.transparent,
               child: IconButton(
                 onPressed: onFavorite,
                 icon: Icon(
                   isFavorite ? LineIcons.heartAlt : LineIcons.heart,
-                  color: AppColors.actionRed,
+                  color: AppColors.red,
                   size: 28,
                 ),
                 splashRadius: 22,

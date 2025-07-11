@@ -4,6 +4,9 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:line_icons/line_icons.dart';
 import '../../../../core/utils/colors.dart';
 import '../../../../core/utils/text_styles.dart';
+import '../../../../core/utils/date_time_utils.dart';
+import '../../../../data/models/reminder_item.dart';
+import '../../../../data/models/booking_item.dart';
 import '../../../widgets/booking_card.dart';
 
 class OwnerReminders extends StatefulWidget {
@@ -90,29 +93,6 @@ class _OwnerRemindersState extends State<OwnerReminders> {
     ),
   ];
 
-  String _getWeekdayName(DateTime date) {
-    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return weekdays[date.weekday - 1];
-  }
-
-  String _getMonthName(DateTime date) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    return months[date.month - 1];
-  }
-
   void _completeItem(int index) {
     setState(() {
       final item = _reminders[index];
@@ -150,7 +130,7 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                   Row(
                     children: [
                       Text(
-                        _getWeekdayName(_selectedDay),
+                        DateTimeUtils.getWeekdayName(_selectedDay),
                         style: AppTextStyles.headingLarge.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -167,7 +147,7 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                     ],
                   ),
                   Text(
-                    '${_getMonthName(_selectedDay)} ${_selectedDay.day}',
+                    '${DateTimeUtils.getMonthName(_selectedDay)} ${_selectedDay.day}',
                     style: AppTextStyles.bodyBase.copyWith(
                       color: AppColors.lightGrey,
                       fontSize: 14,
@@ -245,7 +225,7 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                         ),
                       ),
                       Text(
-                        _getWeekdayName(date).substring(0, 3),
+                        DateTimeUtils.getAbbreviatedWeekdayName(date),
                         style: AppTextStyles.bodySmall.copyWith(
                           color:
                               isSelected ? Colors.white : AppColors.lightGrey,
@@ -274,14 +254,13 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                   endActionPane: ActionPane(
                     motion: const ScrollMotion(),
                     children: [
-                      SizedBox(width: 6),
-                      // Complete action (only for reminders)
+                      SizedBox(
+                        width: 6,
+                      ), // Complete action (only for reminders)
                       if (item is ReminderItem && !item.isCompleted)
                         SlidableAction(
                           onPressed: (context) => _completeItem(index),
-                          backgroundColor: const Color(
-                            0xFF90EE90,
-                          ), // Light green pastel
+                          backgroundColor: AppColors.pastelGreen,
                           foregroundColor: Colors.black,
                           icon: LineIcons.check,
                           borderRadius: BorderRadius.circular(14),
@@ -290,9 +269,7 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                       // Delete action
                       SlidableAction(
                         onPressed: (context) => _deleteItem(index),
-                        backgroundColor: const Color(
-                          0xFFFFB6C1,
-                        ), // Light red pastel
+                        backgroundColor: AppColors.pastelRed,
                         foregroundColor: Colors.black,
                         icon: LineIcons.trash,
                         borderRadius: BorderRadius.circular(14),
@@ -330,38 +307,6 @@ class _OwnerRemindersState extends State<OwnerReminders> {
       ],
     );
   }
-}
-
-class ReminderItem {
-  final String title;
-  final String? time;
-  final IconData icon;
-  final Color iconColor;
-  final bool isCompleted;
-
-  ReminderItem({
-    required this.title,
-    this.time,
-    required this.icon,
-    required this.iconColor,
-    required this.isCompleted,
-  });
-}
-
-class BookingItem {
-  final String petName;
-  final String petImage;
-  final String vetName;
-  final String vetImage;
-  final String time;
-
-  BookingItem({
-    required this.petName,
-    required this.petImage,
-    required this.vetName,
-    required this.vetImage,
-    required this.time,
-  });
 }
 
 class ReminderTile extends StatelessWidget {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import '../../../core/theme/app_theme.dart';
 
 class CustomSearchBar extends StatelessWidget {
   final TextEditingController? controller;
@@ -20,14 +21,8 @@ class CustomSearchBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.deepPurple.withOpacity(0.15),
-            blurRadius: 10,
-            spreadRadius: 0,
-          ),
-        ],
+        borderRadius: BorderRadius.circular(AppBorderRadius.large),
+        boxShadow: AppShadows.purpleShadow,
       ),
       child: TextField(
         controller: controller,
@@ -37,7 +32,7 @@ class CustomSearchBar extends StatelessWidget {
           prefixIcon: Icon(LineIcons.search, color: Colors.black),
           hintText: hintText,
           border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: 16),
+          contentPadding: EdgeInsets.symmetric(vertical: AppSpacing.lg),
         ),
       ),
     );

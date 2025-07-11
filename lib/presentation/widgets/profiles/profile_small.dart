@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:fyp_pawsenvy/core/utils/colors.dart';
 import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
 
 class ProfileSmall extends StatelessWidget {
   final String name;
@@ -26,12 +27,15 @@ class ProfileSmall extends StatelessWidget {
     return Container(
       width: 200,
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.deepPurpleBorder),
+        border: Border.all(color: AppColors.lightPurple),
         gradient: AppColors.profileGradient,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [BoxShadow(color: AppColors.shadowColor, blurRadius: 7)],
+        borderRadius: BorderRadius.circular(AppBorderRadius.xLarge),
+        boxShadow: [BoxShadow(color: AppColors.lightPurple, blurRadius: 7)],
       ),
-      margin: const EdgeInsets.symmetric(horizontal: 8),
+      margin: EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ), // was profileSmallMargin
       child: Stack(
         children: [
           // Card body with tap using InkWell for full coverage
@@ -46,7 +50,7 @@ class ProfileSmall extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 0),
                     SizedBox(
                       height: 90,
                       child: Center(
@@ -67,7 +71,7 @@ class ProfileSmall extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: AppColors.white,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFFE0E0E0)),
+                        border: Border.all(color: AppColors.lightPurple),
                       ),
                       child: Text(
                         name,
@@ -99,11 +103,7 @@ class ProfileSmall extends StatelessWidget {
                 color: AppColors.transparent,
                 child: IconButton(
                   onPressed: onFavorite,
-                  icon: Icon(
-                    LineIcons.heart,
-                    color: AppColors.actionRed,
-                    size: 22,
-                  ),
+                  icon: Icon(LineIcons.heart, color: AppColors.red, size: 22),
                   splashRadius: 20,
                 ),
               ),

@@ -180,7 +180,7 @@ class PetProfileLarge extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: AppColors.profileGradient,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.deepPurpleBorder),
+                border: Border.all(color: AppColors.lightPurple),
                 boxShadow: [
                   BoxShadow(
                     color: Theme.of(

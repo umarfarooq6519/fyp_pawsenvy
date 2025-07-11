@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/utils/colors.dart';
 import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
 
 class ExtendedCard extends StatelessWidget {
   final String title;
@@ -20,19 +21,18 @@ class ExtendedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      margin: EdgeInsets.symmetric(
+        vertical: AppSpacing.sm,
+      ), // was extendedCardMargin
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg + AppSpacing.xs,
+        vertical: AppSpacing.lg,
+      ),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.deepPurpleBorder, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(AppBorderRadius.large),
+        border: Border.all(color: AppColors.lightPurple, width: 1),
+        boxShadow: AppShadows.lightShadow,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -46,14 +46,14 @@ class ExtendedCard extends StatelessWidget {
                     ? const Icon(Icons.pets, color: Color(0xFFBDB8E2), size: 28)
                     : null,
           ),
-          const SizedBox(width: 6),
+          SizedBox(width: AppSpacing.xs + AppSpacing.xs),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title, style: AppTextStyles.headingSmall),
                 if (subtitle != null) ...[
-                  const SizedBox(height: 0),
+                  SizedBox(height: 0),
                   Text(
                     subtitle!,
                     style: AppTextStyles.bodyBase.copyWith(
@@ -62,13 +62,13 @@ class ExtendedCard extends StatelessWidget {
                   ),
                 ],
                 if (tags != null && tags!.isNotEmpty) ...[
-                  const SizedBox(height: 4),
+                  SizedBox(height: AppSpacing.xs),
                   Text(tags!.join(' | '), style: AppTextStyles.bodySmall),
                 ],
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: AppSpacing.sm),
           if (trailing != null)
             Align(
               alignment: Alignment.bottomRight,

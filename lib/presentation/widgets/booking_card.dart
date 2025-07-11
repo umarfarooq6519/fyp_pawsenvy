@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/utils/colors.dart';
 import '../../core/utils/text_styles.dart';
+import '../../core/utils/date_time_utils.dart';
+import '../../core/theme/app_theme.dart';
 
 class BookingCard extends StatelessWidget {
   final String petName;
@@ -17,37 +19,15 @@ class BookingCard extends StatelessWidget {
     required this.time,
   });
 
-  String _formatTime(String time24) {
-    try {
-      final parts = time24.split(':');
-      if (parts.length != 2) return time24;
-
-      final hour = int.parse(parts[0]);
-      final minute = parts[1];
-
-      if (hour == 0) {
-        return '12:$minute AM';
-      } else if (hour < 12) {
-        return '$hour:$minute AM';
-      } else if (hour == 12) {
-        return '12:$minute PM';
-      } else {
-        return '${hour - 12}:$minute PM';
-      }
-    } catch (e) {
-      return time24;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(9),
+      padding: EdgeInsets.all(AppSpacing.sm + 1),
       decoration: BoxDecoration(
         gradient: AppColors.profileGradient,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.deepPurpleBorder),
+        borderRadius: BorderRadius.circular(AppBorderRadius.medium),
+        border: Border.all(color: AppColors.lightPurple),
         // boxShadow: [BoxShadow(color: AppColors.shadowColor, blurRadius: 7)],
       ),
       child: Row(
@@ -60,7 +40,7 @@ class BookingCard extends StatelessWidget {
                 backgroundImage: AssetImage(petImage),
                 backgroundColor: Colors.transparent,
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: AppSpacing.md),
               Text(
                 petName,
                 style: AppTextStyles.bodyBase.copyWith(
@@ -74,7 +54,7 @@ class BookingCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  _formatTime(time),
+                  DateTimeUtils.formatTime12Hour(time),
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.lightGrey,
                     fontSize: 12,
@@ -93,7 +73,7 @@ class BookingCard extends StatelessWidget {
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: AppSpacing.md),
               CircleAvatar(radius: 20, backgroundImage: AssetImage(vetImage)),
             ],
           ),

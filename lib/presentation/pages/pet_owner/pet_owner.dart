@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/utils/colors.dart';
-import 'package:fyp_pawsenvy/data/pets.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/your_pets_screen.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_reminders.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_dashboard.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet_profile_large.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/profiles/profile_medium.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/common/expandable_fab.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/common/app_drawer.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/community.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:flutter_popup_card/flutter_popup_card.dart';
 
 class PetOwner extends StatefulWidget {
   const PetOwner({super.key});
@@ -34,6 +32,7 @@ class _PetOwnerState extends State<PetOwner> {
       top: false,
       bottom: true,
       child: Scaffold(
+        drawer: const AppDrawer(),
         appBar: AppBar(
           toolbarHeight: kToolbarHeight + 10,
           elevation: 0,
@@ -43,31 +42,32 @@ class _PetOwnerState extends State<PetOwner> {
           leadingWidth: 78,
           leading: Padding(
             padding: const EdgeInsets.only(left: 25),
-            child: InkWell(
-              highlightColor: Colors.transparent,
-              splashColor: Colors.transparent,
-              onTap: _showProfilePopup,
-              child: CircleAvatar(
-                backgroundImage: AssetImage('assets/images/person1.png'),
-              ),
+            child: Builder(
+              builder:
+                  (context) => InkWell(
+                    highlightColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    onTap: () => Scaffold.of(context).openDrawer(),
+                    child: const CircleAvatar(
+                      backgroundImage: AssetImage('assets/images/person1.png'),
+                    ),
+                  ),
             ),
           ),
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 20),
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PetProfileLarge(profile: pets[0]),
-                    ),
-                  );
-                },
-                child: IconButton(
-                  onPressed: () {},
-                  icon: Icon(LineIcons.bell, size: 30),
-                ),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(LineIcons.bell, size: 28),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(LineIcons.camera, size: 28),
+                  ),
+                ],
               ),
             ),
           ],
@@ -75,24 +75,24 @@ class _PetOwnerState extends State<PetOwner> {
         body: _screens[_selectedIndex],
         floatingActionButton:
             _selectedIndex == 2
-                ? Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.purple,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-
-                    onTap: () {},
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: const Icon(
-                        LineIcons.plus,
-                        color: Colors.white,
-                        size: 24,
-                      ),
+                ? ExpandableFab(
+                  distance: 60,
+                  children: [
+                    ActionButton(
+                      onPressed: () {},
+                      icon: const Icon(LineIcons.calendar),
+                      label: 'Add Booking',
+                      backgroundColor: Colors.orange.shade200,
+                      iconColor: AppColors.black,
                     ),
-                  ),
+                    ActionButton(
+                      onPressed: () {},
+                      icon: const Icon(LineIcons.bell),
+                      label: 'Add Reminder',
+                      backgroundColor: Colors.deepOrange.shade200,
+                      iconColor: AppColors.black,
+                    ),
+                  ],
                 )
                 : null,
         bottomNavigationBar: Container(
@@ -106,85 +106,6 @@ class _PetOwnerState extends State<PetOwner> {
           child: _bottomNav(),
         ),
       ),
-    );
-  }
-
-  void _showProfilePopup() {
-    showPopupCard(
-      context: context,
-      builder:
-          (context) => PopupCard(
-            elevation: 0,
-            color: Colors.transparent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24.0),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  width: 400,
-                  height: 520,
-                  child: ProfileMedium(
-                    name: 'Umar Farooq',
-                    image: 'assets/images/person1.png',
-                    type: 'Pet Owner',
-                    tag1: 'Male',
-                    tag2: 'Lahore',
-                    about:
-                        'Pet lover, community member, and animal welfare advocate.',
-                    verified: true,
-                    isFavorite: false,
-                    onFavorite: () {},
-                  ),
-                ),
-                SizedBox(height: 6),
-                Padding(
-                  padding: const EdgeInsets.only(right: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(50),
-                          gradient: const LinearGradient(
-                            begin: Alignment.topRight,
-                            end: Alignment.bottomLeft,
-                            colors: [Color(0xFFF6D6E6), Color(0xFFE6FBFA)],
-                          ),
-                        ),
-                        child: IconButton(
-                          color: Colors.black,
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(LineIcons.pen, size: 22),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: IconButton(
-                          color: Colors.black,
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(LineIcons.times, size: 22),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-      alignment: Alignment.center,
-      dimBackground: true,
-      useSafeArea: true,
     );
   }
 

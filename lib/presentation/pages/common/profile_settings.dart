@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
 import 'package:line_icons/line_icons.dart';
 
 class ProfileSettings extends StatelessWidget {
@@ -33,10 +34,14 @@ class ProfileSettings extends StatelessWidget {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.xl,
+        ), // was pagePadding
         children: [
           Container(
-            padding: EdgeInsets.symmetric(vertical: 40),
+            padding: EdgeInsets.symmetric(
+              vertical: AppSpacing.huge,
+            ), // was EdgeInsets.symmetric(vertical: 40)
             child: Column(
               children: [
                 CircleAvatar(radius: 46, backgroundImage: AssetImage(avatar)),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/common/search_bar.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/common/search_with_filter.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet_profile_large.dart';
-import 'package:line_icons/line_icons.dart';
+import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
 
 import '../../widgets/profiles/profile_small.dart';
 
@@ -32,38 +32,11 @@ class SearchList extends StatelessWidget {
       body: Column(
         children: [
           // Search/filter bar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              children: [
-                Expanded(child: CustomSearchBar()),
-                const SizedBox(width: 10),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: const Color(0xFFE0E0E0)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.deepPurple.withOpacity(0.15),
-                        blurRadius: 8,
-                      ),
-                    ],
-                  ),
-                  child: IconButton(
-                    splashColor: Colors.transparent,
-                    focusColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    color: Colors.black,
-                    padding: EdgeInsets.all(15),
-                    icon: const Icon(LineIcons.filter, color: Colors.black54),
-                    onPressed: onFilter,
-                  ),
-                ),
-              ],
-            ),
+          SearchWithFilter(
+            searchController: searchController,
+            onFilterPressed: onFilter,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           // List of cards
           Expanded(
             child: ListView.builder(
@@ -71,7 +44,7 @@ class SearchList extends StatelessWidget {
               itemBuilder: (context, index) {
                 final item = components[index];
                 return Padding(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   child: ProfileSmall(
                     name: item['name'] ?? '',
                     image: item['avatar'] ?? 'assets/images/placeholder.png',
