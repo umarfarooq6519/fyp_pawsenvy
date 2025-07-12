@@ -35,10 +35,10 @@ class AppRouter {
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
           return SearchList(
-            searchController: TextEditingController(),
-            title: extra?['title'] ?? 'Search',
             onSearch: () {},
             onFilter: () {},
+            searchController: TextEditingController(),
+            title: extra?['title'] ?? 'Search',
             components: extra?['components'] ?? [],
           );
         },

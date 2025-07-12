@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/router/routes.dart';
-import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
 import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
 import 'package:fyp_pawsenvy/data/pets.dart';
 import 'package:fyp_pawsenvy/data/users.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/utils/colors.dart';
+import 'package:fyp_pawsenvy/core/theme/colors.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/your_pets_screen.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_reminders.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_dashboard.dart';
@@ -83,14 +83,14 @@ class _PetOwnerState extends State<PetOwner> {
                       icon: const Icon(LineIcons.calendar),
                       label: 'Add Booking',
                       backgroundColor: Colors.orange.shade200,
-                      iconColor: AppColors.black,
+                      iconColor: AppColorStyles.black,
                     ),
                     ActionButton(
                       onPressed: () {},
                       icon: const Icon(LineIcons.bell),
                       label: 'Add Reminder',
                       backgroundColor: Colors.deepOrange.shade200,
-                      iconColor: AppColors.black,
+                      iconColor: AppColorStyles.black,
                     ),
                   ],
                 )

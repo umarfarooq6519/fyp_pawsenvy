@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
 import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
 import 'package:line_icons/line_icons.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
-import 'package:fyp_pawsenvy/core/utils/colors.dart';
-import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/colors.dart';
+import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
 import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
 
 @immutable
@@ -86,14 +86,14 @@ class _ExpandableFabState extends State<ExpandableFab>
           height: 56,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppBorderRadius.medium),
-            color: AppColors.purple,
+            color: AppColorStyles.purple,
             boxShadow: AppShadows.mediumShadow,
           ),
           child: InkWell(
             borderRadius: BorderRadius.circular(AppBorderRadius.medium),
             onTap: _toggle,
             child: const Center(
-              child: Icon(Icons.close, color: AppColors.white, size: 24),
+              child: Icon(Icons.close, color: AppColorStyles.white, size: 24),
             ),
           ),
         ),
@@ -122,14 +122,14 @@ class _ExpandableFabState extends State<ExpandableFab>
             height: 56,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppBorderRadius.medium),
-              color: AppColors.purple,
+              color: AppColorStyles.purple,
               boxShadow: AppShadows.mediumShadow,
             ),
             child: InkWell(
               borderRadius: BorderRadius.circular(AppBorderRadius.medium),
               onTap: _toggle,
               child: const Center(
-                child: Icon(Icons.add, color: AppColors.white, size: 28),
+                child: Icon(Icons.add, color: AppColorStyles.white, size: 28),
               ),
             ),
           ),
@@ -227,7 +227,7 @@ class ActionButton extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconTheme(
-                data: IconThemeData(color: AppColors.black, size: 20),
+                data: IconThemeData(color: AppColorStyles.black, size: 20),
                 child: icon,
               ),
               if (label != null) ...[

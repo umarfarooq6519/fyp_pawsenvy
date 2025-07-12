@@ -6,9 +6,9 @@ import 'package:fyp_pawsenvy/core/router/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Load environment variables
+
   await dotenv.load(fileName: ".env");
-  // Initialize Firebase
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const MainApp());

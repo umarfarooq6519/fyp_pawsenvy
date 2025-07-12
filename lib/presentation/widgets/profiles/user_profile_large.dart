@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:fyp_pawsenvy/core/utils/colors.dart';
-import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/colors.dart';
+import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
 
 class UserProfileLarge extends StatelessWidget {
   const UserProfileLarge({super.key, required this.user});
@@ -20,7 +20,7 @@ class UserProfileLarge extends StatelessWidget {
                 width: double.infinity,
                 height: 320,
                 decoration: BoxDecoration(
-                  gradient: AppColors.profileGradient,
+                  gradient: AppColorStyles.profileGradient,
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(32),
                     bottomRight: Radius.circular(32),
@@ -186,9 +186,9 @@ class UserProfileLarge extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Container(
                 decoration: BoxDecoration(
-                  gradient: AppColors.profileGradient,
+                  gradient: AppColorStyles.profileGradient,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.lightPurple),
+                  border: Border.all(color: AppColorStyles.lightPurple),
                   boxShadow: [
                     BoxShadow(
                       color: Theme.of(

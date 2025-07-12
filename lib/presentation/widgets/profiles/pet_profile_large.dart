@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:fyp_pawsenvy/core/utils/colors.dart';
-import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/colors.dart';
+import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
 
 class PetProfileLarge extends StatelessWidget {
   const PetProfileLarge({super.key, required this.profile});
@@ -21,7 +21,7 @@ class PetProfileLarge extends StatelessWidget {
                 width: double.infinity,
                 height: 340,
                 decoration: BoxDecoration(
-                  gradient: AppColors.profileGradient,
+                  gradient: AppColorStyles.profileGradient,
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(32),
                     bottomRight: Radius.circular(32),
@@ -178,9 +178,9 @@ class PetProfileLarge extends StatelessWidget {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                gradient: AppColors.profileGradient,
+                gradient: AppColorStyles.profileGradient,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.lightPurple),
+                border: Border.all(color: AppColorStyles.lightPurple),
                 boxShadow: [
                   BoxShadow(
                     color: Theme.of(

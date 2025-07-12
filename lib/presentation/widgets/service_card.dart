@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/utils/colors.dart';
-import '../../core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/colors.dart';
+import '../../core/theme/text_styles.dart';
 import '../../core/theme/app_theme.dart';
 
 class ServiceCard extends StatelessWidget {
@@ -28,7 +28,7 @@ class ServiceCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(AppBorderRadius.large),
-                border: Border.all(color: AppColors.lightPurple, width: 2),
+                border: Border.all(color: AppColorStyles.lightPurple, width: 2),
                 boxShadow: AppShadows.lightShadow,
               ),
               child: ClipRRect(

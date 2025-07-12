@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:fyp_pawsenvy/core/utils/colors.dart';
-import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/colors.dart';
+import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
 import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
 
 class ProfileSmall extends StatelessWidget {
@@ -27,10 +27,12 @@ class ProfileSmall extends StatelessWidget {
     return Container(
       width: 200,
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.lightPurple),
-        gradient: AppColors.profileGradient,
+        border: Border.all(color: AppColorStyles.lightPurple),
+        gradient: AppColorStyles.profileGradient,
         borderRadius: BorderRadius.circular(AppBorderRadius.xLarge),
-        boxShadow: [BoxShadow(color: AppColors.lightPurple, blurRadius: 7)],
+        boxShadow: [
+          BoxShadow(color: AppColorStyles.lightPurple, blurRadius: 7),
+        ],
       ),
       margin: EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
@@ -40,7 +42,7 @@ class ProfileSmall extends StatelessWidget {
         children: [
           // Card body with tap using InkWell for full coverage
           Material(
-            color: AppColors.transparent,
+            color: AppColorStyles.transparent,
             borderRadius: BorderRadius.circular(28),
             child: InkWell(
               borderRadius: BorderRadius.circular(28),
@@ -69,9 +71,9 @@ class ProfileSmall extends StatelessWidget {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.white,
+                        color: AppColorStyles.white,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.lightPurple),
+                        border: Border.all(color: AppColorStyles.lightPurple),
                       ),
                       child: Text(
                         name,
@@ -86,7 +88,7 @@ class ProfileSmall extends StatelessWidget {
                           ? '$tag1 - $tag2'
                           : tag1 ?? '',
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.lightGrey,
+                        color: AppColorStyles.lightGrey,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -100,10 +102,14 @@ class ProfileSmall extends StatelessWidget {
               top: 10,
               right: 10,
               child: Material(
-                color: AppColors.transparent,
+                color: AppColorStyles.transparent,
                 child: IconButton(
                   onPressed: onFavorite,
-                  icon: Icon(LineIcons.heart, color: AppColors.red, size: 22),
+                  icon: Icon(
+                    LineIcons.heart,
+                    color: AppColorStyles.red,
+                    size: 22,
+                  ),
                   splashRadius: 20,
                 ),
               ),

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:line_icons/line_icons.dart';
-import '../../../../core/utils/colors.dart';
-import '../../../../core/utils/text_styles.dart';
+import '../../../../core/theme/colors.dart';
+import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/date_time_utils.dart';
-import '../../../../data/models/reminder_item.dart';
-import '../../../../data/models/booking_item.dart';
+import '../../../../core/models/reminder_item.dart';
+import '../../../../core/models/booking_item.dart';
 import '../../../widgets/booking_card.dart';
 
 class OwnerReminders extends StatefulWidget {
@@ -23,16 +23,16 @@ class _OwnerRemindersState extends State<OwnerReminders> {
   final List<dynamic> _reminders = [
     ReminderItem(
       title: "Daria's 20th Birthday",
-      time: null,
+      time: "2:30",
       icon: Icons.star,
       iconColor: Colors.red,
       isCompleted: false,
     ),
     BookingItem(
       petName: "Fluffy",
-      petImage: "assets/images/cat.png",
+      petAvatar: "assets/images/cat.png",
       vetName: "Dr Smith",
-      vetImage: "assets/images/person2.png",
+      vetAvatar: "assets/images/person2.png",
       time: "14:30",
     ),
     ReminderItem(
@@ -46,44 +46,31 @@ class _OwnerRemindersState extends State<OwnerReminders> {
       title: "Design Crit",
       time: "10:00",
       icon: Icons.circle_outlined,
-      iconColor: AppColors.grey,
+      iconColor: AppColorStyles.grey,
       isCompleted: false,
     ),
     BookingItem(
       petName: "Buddy",
-      petImage: "assets/images/dog.png",
+      petAvatar: "assets/images/dog.png",
       vetName: "Dr Johnson",
-      vetImage: "assets/images/person3.png",
+      vetAvatar: "assets/images/person3.png",
       time: "16:15",
     ),
     ReminderItem(
       title: "Haircut with Vincent",
       time: "13:00",
       icon: Icons.circle_outlined,
-      iconColor: AppColors.grey,
-      isCompleted: false,
-    ),
-    ReminderItem(
-      title: "Make pasta",
-      time: null,
-      icon: Icons.circle_outlined,
-      iconColor: AppColors.grey,
+      iconColor: AppColorStyles.grey,
       isCompleted: false,
     ),
     BookingItem(
       petName: "Charlie",
-      petImage: "assets/images/cat.png",
+      petAvatar: "assets/images/cat.png",
       vetName: "Dr Williams",
-      vetImage: "assets/images/person4.png",
+      vetAvatar: "assets/images/person4.png",
       time: "11:00",
     ),
-    ReminderItem(
-      title: "Pushups x100",
-      time: null,
-      icon: Icons.circle_outlined,
-      iconColor: AppColors.lightGrey,
-      isCompleted: false,
-    ),
+
     ReminderItem(
       title: "Wind down",
       time: "21:00",
@@ -149,14 +136,14 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                   Text(
                     '${DateTimeUtils.getMonthName(_selectedDay)} ${_selectedDay.day}',
                     style: AppTextStyles.bodyBase.copyWith(
-                      color: AppColors.lightGrey,
+                      color: AppColorStyles.lightGrey,
                       fontSize: 14,
                     ),
                   ),
                   Text(
                     '2025',
                     style: AppTextStyles.bodyBase.copyWith(
-                      color: AppColors.lightGrey,
+                      color: AppColorStyles.lightGrey,
                       fontSize: 14,
                     ),
                   ),
@@ -168,14 +155,14 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                   Text(
                     'Today you have',
                     style: AppTextStyles.bodyBase.copyWith(
-                      color: AppColors.lightGrey,
+                      color: AppColorStyles.lightGrey,
                       fontSize: 14,
                     ),
                   ),
                   Text(
                     '0 reminders',
                     style: AppTextStyles.bodyBase.copyWith(
-                      color: AppColors.lightGrey,
+                      color: AppColorStyles.lightGrey,
                       fontSize: 14,
                     ),
                   ),
@@ -205,11 +192,12 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                   width: 50,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.purple : Colors.transparent,
+                    color:
+                        isSelected ? AppColorStyles.purple : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                     border:
                         isToday
-                            ? Border.all(color: AppColors.purple, width: 2)
+                            ? Border.all(color: AppColorStyles.purple, width: 2)
                             : null,
                   ),
                   child: Column(
@@ -218,7 +206,8 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                       Text(
                         date.day.toString(),
                         style: AppTextStyles.bodyBase.copyWith(
-                          color: isSelected ? Colors.white : AppColors.black,
+                          color:
+                              isSelected ? Colors.white : AppColorStyles.black,
                           fontWeight:
                               isSelected ? FontWeight.w600 : FontWeight.w400,
                           fontSize: 16,
@@ -228,7 +217,9 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                         DateTimeUtils.getAbbreviatedWeekdayName(date),
                         style: AppTextStyles.bodySmall.copyWith(
                           color:
-                              isSelected ? Colors.white : AppColors.lightGrey,
+                              isSelected
+                                  ? Colors.white
+                                  : AppColorStyles.lightGrey,
                           fontSize: 12,
                         ),
                       ),
@@ -260,7 +251,7 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                       if (item is ReminderItem && !item.isCompleted)
                         SlidableAction(
                           onPressed: (context) => _completeItem(index),
-                          backgroundColor: AppColors.pastelGreen,
+                          backgroundColor: AppColorStyles.pastelGreen,
                           foregroundColor: Colors.black,
                           icon: LineIcons.check,
                           borderRadius: BorderRadius.circular(14),
@@ -269,7 +260,7 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                       // Delete action
                       SlidableAction(
                         onPressed: (context) => _deleteItem(index),
-                        backgroundColor: AppColors.pastelRed,
+                        backgroundColor: AppColorStyles.pastelRed,
                         foregroundColor: Colors.black,
                         icon: LineIcons.trash,
                         borderRadius: BorderRadius.circular(14),
@@ -284,7 +275,9 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: AppColors.lightGrey.withOpacity(0.3),
+                                color: AppColorStyles.lightGrey.withOpacity(
+                                  0.3,
+                                ),
                                 width: 1,
                               ),
                             ),
@@ -293,9 +286,9 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                           : item is BookingItem
                           ? BookingCard(
                             petName: item.petName,
-                            petImage: item.petImage,
+                            petImage: item.petAvatar,
                             vetName: item.vetName,
-                            vetImage: item.vetImage,
+                            vetImage: item.vetAvatar,
                             time: item.time,
                           )
                           : const SizedBox.shrink(),
@@ -335,7 +328,9 @@ class ReminderTile extends StatelessWidget {
               decoration:
                   reminder.isCompleted ? TextDecoration.lineThrough : null,
               color:
-                  reminder.isCompleted ? AppColors.lightGrey : AppColors.black,
+                  reminder.isCompleted
+                      ? AppColorStyles.lightGrey
+                      : AppColorStyles.black,
             ),
           ),
         ),
@@ -345,7 +340,7 @@ class ReminderTile extends StatelessWidget {
           Text(
             reminder.time!,
             style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.lightGrey,
+              color: AppColorStyles.lightGrey,
               fontSize: 12,
             ),
           ),

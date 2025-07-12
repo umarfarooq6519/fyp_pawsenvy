@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/router/routes.dart';
-import 'package:fyp_pawsenvy/core/utils/colors.dart';
-import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/colors.dart';
+import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
 import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/common/app_button.dart';
 import 'package:go_router/go_router.dart';
 
-class Welcome extends StatefulWidget {
+class Welcome extends StatelessWidget {
   const Welcome({super.key});
 
-  @override
-  State<Welcome> createState() => _WelcomeState();
-}
-
-class _WelcomeState extends State<Welcome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +16,7 @@ class _WelcomeState extends State<Welcome> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [AppColors.gradientStart, AppColors.gradientEnd],
+            colors: [AppColorStyles.gradientStart, AppColorStyles.gradientEnd],
           ),
         ),
         child: Column(
@@ -86,7 +80,7 @@ class _WelcomeState extends State<Welcome> {
                     'Welcome to PawsEnvy',
                     style: AppTextStyles.headingLarge.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.black,
+                      color: AppColorStyles.black,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -94,7 +88,7 @@ class _WelcomeState extends State<Welcome> {
                   Text(
                     'Connect with pet lovers, find care services, and manage your pet\'s needs all in one place. Join our community today!',
                     style: AppTextStyles.bodyBase.copyWith(
-                      color: AppColors.grey,
+                      color: AppColorStyles.grey,
                       height: 1.5,
                     ),
                     textAlign: TextAlign.center,
@@ -110,7 +104,26 @@ class _WelcomeState extends State<Welcome> {
               width: double.infinity,
               height: 56,
               margin: EdgeInsets.only(bottom: AppSpacing.huge),
-              child: GoogleSignInButton(
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  minimumSize: const Size.fromHeight(56),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppBorderRadius.large),
+                  ),
+                  elevation: 2,
+                  shadowColor: Colors.black26,
+                ),
+                icon: Image.asset(
+                  'assets/icons/google_logo.png',
+                  height: 24,
+                  width: 24,
+                ),
+                label: const Text(
+                  'Sign in with Google',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 onPressed: () {
                   context.go(Routes.petOwner);
                 },
@@ -122,3 +135,5 @@ class _WelcomeState extends State<Welcome> {
     );
   }
 }
+
+class GoogleSignInButton {}

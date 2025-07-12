@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../core/utils/colors.dart';
-import '../../core/utils/text_styles.dart';
+import '../../core/theme/colors.dart';
+import '../../core/theme/text_styles.dart';
 import '../../core/utils/date_time_utils.dart';
 import '../../core/theme/app_theme.dart';
 
@@ -25,9 +25,9 @@ class BookingCard extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(AppSpacing.sm + 1),
       decoration: BoxDecoration(
-        gradient: AppColors.profileGradient,
+        gradient: AppColorStyles.profileGradient,
         borderRadius: BorderRadius.circular(AppBorderRadius.medium),
-        border: Border.all(color: AppColors.lightPurple),
+        border: Border.all(color: AppColorStyles.lightPurple),
         // boxShadow: [BoxShadow(color: AppColors.shadowColor, blurRadius: 7)],
       ),
       child: Row(
@@ -56,7 +56,7 @@ class BookingCard extends StatelessWidget {
                 Text(
                   DateTimeUtils.formatTime12Hour(time),
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.lightGrey,
+                    color: AppColorStyles.lightGrey,
                     fontSize: 12,
                   ),
                 ),

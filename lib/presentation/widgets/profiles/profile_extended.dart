@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/utils/colors.dart';
-import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/colors.dart';
+import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
 import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
 
 class ExtendedCard extends StatelessWidget {
@@ -29,9 +29,9 @@ class ExtendedCard extends StatelessWidget {
         vertical: AppSpacing.lg,
       ),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColorStyles.white,
         borderRadius: BorderRadius.circular(AppBorderRadius.large),
-        border: Border.all(color: AppColors.lightPurple, width: 1),
+        border: Border.all(color: AppColorStyles.lightPurple, width: 1),
         boxShadow: AppShadows.lightShadow,
       ),
       child: Row(
@@ -39,7 +39,7 @@ class ExtendedCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 26,
-            backgroundColor: AppColors.transparent,
+            backgroundColor: AppColorStyles.transparent,
             backgroundImage: avatar != null ? AssetImage(avatar!) : null,
             child:
                 avatar == null
@@ -57,7 +57,7 @@ class ExtendedCard extends StatelessWidget {
                   Text(
                     subtitle!,
                     style: AppTextStyles.bodyBase.copyWith(
-                      color: AppColors.black.withOpacity(0.6),
+                      color: AppColorStyles.black.withOpacity(0.6),
                     ),
                   ),
                 ],

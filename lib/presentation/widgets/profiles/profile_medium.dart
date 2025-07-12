@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:fyp_pawsenvy/core/utils/colors.dart';
-import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/colors.dart';
+import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
 import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
 
 class ProfileMedium extends StatelessWidget {
@@ -35,11 +35,13 @@ class ProfileMedium extends StatelessWidget {
     return Container(
       width: 260,
       decoration: BoxDecoration(
-    border: Border.all(color: AppColors.lightPurple),
-    gradient: AppColors.profileGradient,
-    borderRadius: BorderRadius.circular(AppBorderRadius.xLarge),
-    boxShadow: [BoxShadow(color: AppColors.lightPurple, blurRadius: 7)],
-  ),
+        border: Border.all(color: AppColorStyles.lightPurple),
+        gradient: AppColorStyles.profileGradient,
+        borderRadius: BorderRadius.circular(AppBorderRadius.xLarge),
+        boxShadow: [
+          BoxShadow(color: AppColorStyles.lightPurple, blurRadius: 7),
+        ],
+      ),
       margin: EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.sm,
@@ -62,7 +64,7 @@ class ProfileMedium extends StatelessWidget {
                     backgroundImage: AssetImage(
                       image ?? 'assets/images/placeholder.png',
                     ),
-                    backgroundColor: AppColors.transparent,
+                    backgroundColor: AppColorStyles.transparent,
                   ),
                 ),
                 SizedBox(height: AppSpacing.xl), // was xxl
@@ -80,7 +82,7 @@ class ProfileMedium extends StatelessWidget {
                             child: Text(
                               type!,
                               style: AppTextStyles.headingSmall.copyWith(
-                                color: AppColors.deepPurple,
+                                color: AppColorStyles.deepPurple,
                               ),
                             ),
                           ),
@@ -91,7 +93,7 @@ class ProfileMedium extends StatelessWidget {
                         padding: EdgeInsets.only(left: AppSpacing.sm),
                         child: Icon(
                           LineIcons.checkCircle,
-                          color: AppColors.deepPurple,
+                          color: AppColorStyles.deepPurple,
                           size: 26,
                         ),
                       ),
@@ -119,7 +121,7 @@ class ProfileMedium extends StatelessWidget {
                                     ? Colors.blue
                                     : tag1!.toLowerCase() == 'female'
                                     ? Colors.pink
-                                    : AppColors.deepPurple,
+                                    : AppColorStyles.deepPurple,
                             size: 20,
                           ),
                           SizedBox(width: AppSpacing.xs + AppSpacing.xs),
@@ -133,7 +135,7 @@ class ProfileMedium extends StatelessWidget {
                         if (tag2 != null && tag2!.isNotEmpty) ...[
                           Icon(
                             Icons.location_on,
-                            color: AppColors.deepPurple,
+                            color: AppColorStyles.deepPurple,
                             size: 20,
                           ),
                           SizedBox(width: AppSpacing.xs),
@@ -158,12 +160,12 @@ class ProfileMedium extends StatelessWidget {
             top: AppSpacing.sm + AppSpacing.xs,
             right: AppSpacing.sm + AppSpacing.xs,
             child: Material(
-              color: AppColors.transparent,
+              color: AppColorStyles.transparent,
               child: IconButton(
                 onPressed: onFavorite,
                 icon: Icon(
                   isFavorite ? LineIcons.heartAlt : LineIcons.heart,
-                  color: AppColors.red,
+                  color: AppColorStyles.red,
                   size: 28,
                 ),
                 splashRadius: 22,

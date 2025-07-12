@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/utils/colors.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/common/common.dart';
+import 'package:fyp_pawsenvy/core/theme/colors.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/common/search_bar.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
 
@@ -44,7 +44,7 @@ class SearchWithFilter extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(AppBorderRadius.medium),
-              border: Border.all(color: AppColors.lightPurple),
+              border: Border.all(color: AppColorStyles.lightPurple),
               boxShadow: AppShadows.purpleShadow,
             ),
             child: IconButton(

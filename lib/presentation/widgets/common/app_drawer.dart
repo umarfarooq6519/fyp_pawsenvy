@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/utils/colors.dart';
-import 'package:fyp_pawsenvy/core/utils/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/colors.dart';
+import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
 import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
 import 'package:line_icons/line_icons.dart';
 
@@ -10,7 +10,7 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColorStyles.white,
       child: SafeArea(
         child: Column(
           children: [
@@ -27,7 +27,7 @@ class AppDrawer extends StatelessWidget {
                     backgroundImage: const AssetImage(
                       'assets/images/person1.png',
                     ),
-                    backgroundColor: AppColors.lightGrey,
+                    backgroundColor: AppColorStyles.lightGrey,
                   ),
                   const SizedBox(height: 16),
                   // Name
@@ -35,7 +35,7 @@ class AppDrawer extends StatelessWidget {
                     'Umar Farooq',
                     style: AppTextStyles.headingSmall.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: AppColors.black,
+                      color: AppColorStyles.black,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -43,7 +43,7 @@ class AppDrawer extends StatelessWidget {
                   Text(
                     'umarfarooq@gmail.com',
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.grey,
+                      color: AppColorStyles.grey,
                     ),
                   ),
                 ],
@@ -74,8 +74,8 @@ class AppDrawer extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.pastelRed,
-                    foregroundColor: AppColors.black,
+                    backgroundColor: AppColorStyles.pastelRed,
+                    foregroundColor: AppColorStyles.black,
                     elevation: 0,
                     padding: EdgeInsets.symmetric(
                       vertical: AppSpacing.lg,
@@ -89,7 +89,7 @@ class AppDrawer extends StatelessWidget {
                   child: Text(
                     'Sign out',
                     style: AppTextStyles.buttonText.copyWith(
-                      color: AppColors.black,
+                      color: AppColorStyles.black,
                     ),
                   ),
                 ),
@@ -107,11 +107,11 @@ class AppDrawer extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return ListTile(
-      leading: Icon(icon, color: AppColors.black, size: 24),
+      leading: Icon(icon, color: AppColorStyles.black, size: 24),
       title: Text(
         title,
         style: AppTextStyles.bodyBase.copyWith(
-          color: AppColors.black,
+          color: AppColorStyles.black,
           fontWeight: FontWeight.w400,
         ),
       ),

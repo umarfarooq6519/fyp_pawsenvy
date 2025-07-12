@@ -1,15 +1,15 @@
 class BookingItem {
   final String petName;
-  final String petImage;
+  final String petAvatar;
   final String vetName;
-  final String vetImage;
+  final String vetAvatar;
   final String time;
 
   BookingItem({
     required this.petName,
-    required this.petImage,
+    required this.petAvatar,
     required this.vetName,
-    required this.vetImage,
+    required this.vetAvatar,
     required this.time,
   });
 }
