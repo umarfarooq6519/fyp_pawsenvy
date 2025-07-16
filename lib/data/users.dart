@@ -11,12 +11,12 @@ final List<Map<String, dynamic>> users = [
     'attributes': [
       {'icon': 'assets/images/cat.png', 'label': '2 Cats'},
       {'icon': 'assets/images/dog.png', 'label': '1 Dog'},
-      {'icon': Icons.watch_later_outlined, 'label': 'Member since 2022'},
+      {'icon': Icons.watch_later_outlined, 'label': 'Since 2022'},
     ],
     'avatar': 'assets/images/person1.png',
   },
   {
-    'name': 'Dr. Samuel',
+    'name': 'Samuel',
     'role': 'Veterinary',
     'location': 'Bandung',
     'gender': 'Male',
@@ -30,7 +30,7 @@ final List<Map<String, dynamic>> users = [
     'avatar': 'assets/images/person4.png',
   },
   {
-    'name': 'Dr. Ayesha',
+    'name': 'Ayesha',
     'role': 'Veterinary',
     'location': 'Jakarta',
     'gender': 'Female',
@@ -53,7 +53,7 @@ final List<Map<String, dynamic>> users = [
     'attributes': [
       {'icon': 'assets/images/dog.png', 'label': '1 Dog'},
       {'icon': Icons.pets, 'label': '1 Parrot'},
-      {'icon': Icons.watch_later_outlined, 'label': 'Member since 2021'},
+      {'icon': Icons.watch_later_outlined, 'label': 'Since 2021'},
     ],
     'avatar': 'assets/images/person3.png',
   },

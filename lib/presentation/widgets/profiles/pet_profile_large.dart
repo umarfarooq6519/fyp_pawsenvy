@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:fyp_pawsenvy/core/theme/colors.dart';
-import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 
 class PetProfileLarge extends StatelessWidget {
   const PetProfileLarge({super.key, required this.profile});
@@ -16,10 +16,9 @@ class PetProfileLarge extends StatelessWidget {
           // Main content with scroll
           Column(
             children: [
-              // ####### Profile image with full width and fixed height
               Container(
                 width: double.infinity,
-                height: 340,
+                height: 240,
                 decoration: BoxDecoration(
                   gradient: AppColorStyles.profileGradient,
                   borderRadius: const BorderRadius.only(
@@ -27,20 +26,16 @@ class PetProfileLarge extends StatelessWidget {
                     bottomRight: Radius.circular(32),
                   ),
                 ),
-                child: Stack(
-                  children: [
-                    // Show cat or dog image based on profile type
-                    Align(
-                      alignment: Alignment.center,
-                      child: _displayImage(profile),
-                    ),
-                    // Top bar
-                    SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 8,
-                        ),
+                child: SafeArea(
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.center,
+                        child: _displayImage(profile),
+                      ),
+                      // Top bar
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -61,8 +56,8 @@ class PetProfileLarge extends StatelessWidget {
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               // ############# Details (scrollable)
@@ -91,15 +86,12 @@ class PetProfileLarge extends StatelessWidget {
                                     Icon(
                                       LineIcons.mapMarker,
                                       size: 16,
-                                      color:
-                                          Theme.of(
-                                            context,
-                                          ).colorScheme.onSurfaceVariant,
+                                      color: AppColorStyles.black,
                                     ),
-                                    const SizedBox(width: 4),
+                                    const SizedBox(width: 2),
                                     Text(
                                       profile['location'] as String,
-                                      style: AppTextStyles.bodySmall,
+                                      style: AppTextStyles.bodyExtraSmall,
                                     ),
                                   ],
                                 ),
@@ -122,7 +114,10 @@ class PetProfileLarge extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          color:
+                              Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
@@ -149,7 +144,7 @@ class PetProfileLarge extends StatelessWidget {
                                   const SizedBox(height: 6),
                                   Text(
                                     attr['label'] as String,
-                                    style: AppTextStyles.bodySmall,
+                                    style: AppTextStyles.bodyExtraSmall,
                                   ),
                                 ],
                               );
@@ -158,13 +153,18 @@ class PetProfileLarge extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      Text('About this pet', style: AppTextStyles.headingSmall),
+                      Text(
+                        'About this pet',
+                        style: AppTextStyles.headingSmall.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       Text(
                         profile['about'] as String,
-                        style: AppTextStyles.bodyBase,
+                        style: AppTextStyles.bodySmall,
                       ),
-                      const SizedBox(height: 100), // Space for button
+                      const SizedBox(height: 80), // Space for button
                     ],
                   ),
                 ),
@@ -174,11 +174,12 @@ class PetProfileLarge extends StatelessWidget {
           Positioned(
             left: 20,
             right: 20,
-            bottom: 24,
+            bottom: 20,
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                gradient: AppColorStyles.profileGradient,
+                color: AppColorStyles.purple,
+                // gradient: AppColorStyles.profileGradient,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColorStyles.lightPurple),
                 boxShadow: [
@@ -205,7 +206,10 @@ class PetProfileLarge extends StatelessWidget {
                 onPressed: () {},
                 child: Text(
                   'Adopt this pet',
-                  style: AppTextStyles.buttonText.copyWith(color: Colors.black),
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColorStyles.white,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
@@ -224,7 +228,7 @@ class PetProfileLarge extends StatelessWidget {
           : type == 'Cat'
           ? 'assets/images/cat.png'
           : 'assets/images/placeholder.png',
-      fit: BoxFit.cover,
+      fit: BoxFit.contain,
     );
   }
 }

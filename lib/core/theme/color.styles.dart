@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 /// App color scheme definition
 class AppColorStyles {
   static const Color white = Colors.white;
+  static const Color offWhite = Color(0xffeeeeee);
   static const Color black = Color(0xff222222);
   static const Color transparent = Colors.transparent;
 

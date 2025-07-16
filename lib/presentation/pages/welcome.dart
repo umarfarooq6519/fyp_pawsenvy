@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/router/routes.dart';
-import 'package:fyp_pawsenvy/core/theme/colors.dart';
-import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
-import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
+import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/theme.dart';
 import 'package:go_router/go_router.dart';
 
 class Welcome extends StatelessWidget {
@@ -24,7 +24,7 @@ class Welcome extends StatelessWidget {
             // Image container with bottom rounded corners only
             Container(
               width: double.infinity,
-              height: 420,
+              height: 320,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(
                   AppBorderRadius.xLarge,
@@ -96,11 +96,9 @@ class Welcome extends StatelessWidget {
                 ],
               ),
             ),
-            const Spacer(), // Google Sign In Button
+            const Spacer(),
             Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.xl,
-              ), // was paddingHorizontalXXL
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               width: double.infinity,
               height: 56,
               margin: EdgeInsets.only(bottom: AppSpacing.huge),
@@ -109,6 +107,7 @@ class Welcome extends StatelessWidget {
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
                   minimumSize: const Size.fromHeight(56),
+
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppBorderRadius.large),
                   ),
@@ -116,13 +115,17 @@ class Welcome extends StatelessWidget {
                   shadowColor: Colors.black26,
                 ),
                 icon: Image.asset(
-                  'assets/icons/google_logo.png',
+                  'assets/images/google_logo.png',
                   height: 24,
                   width: 24,
                 ),
-                label: const Text(
-                  'Sign in with Google',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+
+                label: Padding(
+                  padding: const EdgeInsets.only(left: 2),
+                  child: Text(
+                    'Sign in with Google',
+                    style: AppTextStyles.bodyBase,
+                  ),
                 ),
                 onPressed: () {
                   context.go(Routes.petOwner);

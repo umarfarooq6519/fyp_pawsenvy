@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/reminders/reminder_tile.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:line_icons/line_icons.dart';
-import '../../../../core/theme/colors.dart';
-import '../../../../core/theme/text_styles.dart';
-import '../../../../core/utils/date_time_utils.dart';
-import '../../../../core/models/reminder_item.dart';
-import '../../../../core/models/booking_item.dart';
-import '../../../widgets/booking_card.dart';
+import '../../../../core/theme/color.styles.dart';
+import '../../../../core/theme/text.styles.dart';
+import '../../../../core/utils/datetime.util.dart';
+import '../../../../core/models/reminder.dart';
+import '../../../../core/models/booking.dart';
+import '../../../widgets/reminders/booking_tile.dart';
 
 class OwnerReminders extends StatefulWidget {
   const OwnerReminders({super.key});
@@ -19,51 +20,50 @@ class OwnerReminders extends StatefulWidget {
 class _OwnerRemindersState extends State<OwnerReminders> {
   DateTime _selectedDay = DateTime.now();
 
-  // Sample reminder data with booking cards
   final List<dynamic> _reminders = [
-    ReminderItem(
+    Reminder(
       title: "Daria's 20th Birthday",
       time: "2:30",
       icon: Icons.star,
       iconColor: Colors.red,
       isCompleted: false,
     ),
-    BookingItem(
+    Booking(
       petName: "Fluffy",
       petAvatar: "assets/images/cat.png",
-      vetName: "Dr Smith",
+      vetName: "Dr.Smith",
       vetAvatar: "assets/images/person2.png",
       time: "14:30",
     ),
-    ReminderItem(
+    Reminder(
       title: "Wake up",
       time: "09:00",
       icon: Icons.star,
       iconColor: Colors.orange,
       isCompleted: false,
     ),
-    ReminderItem(
+    Reminder(
       title: "Design Crit",
       time: "10:00",
       icon: Icons.circle_outlined,
       iconColor: AppColorStyles.grey,
       isCompleted: false,
     ),
-    BookingItem(
+    Booking(
       petName: "Buddy",
       petAvatar: "assets/images/dog.png",
       vetName: "Dr Johnson",
       vetAvatar: "assets/images/person3.png",
       time: "16:15",
     ),
-    ReminderItem(
+    Reminder(
       title: "Haircut with Vincent",
       time: "13:00",
       icon: Icons.circle_outlined,
       iconColor: AppColorStyles.grey,
       isCompleted: false,
     ),
-    BookingItem(
+    Booking(
       petName: "Charlie",
       petAvatar: "assets/images/cat.png",
       vetName: "Dr Williams",
@@ -71,7 +71,7 @@ class _OwnerRemindersState extends State<OwnerReminders> {
       time: "11:00",
     ),
 
-    ReminderItem(
+    Reminder(
       title: "Wind down",
       time: "21:00",
       icon: Icons.nightlight_round,
@@ -83,8 +83,8 @@ class _OwnerRemindersState extends State<OwnerReminders> {
   void _completeItem(int index) {
     setState(() {
       final item = _reminders[index];
-      if (item is ReminderItem) {
-        _reminders[index] = ReminderItem(
+      if (item is Reminder) {
+        _reminders[index] = Reminder(
           title: item.title,
           time: item.time,
           icon: item.icon,
@@ -105,9 +105,8 @@ class _OwnerRemindersState extends State<OwnerReminders> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Header with selected day
-        Container(
-          padding: const EdgeInsets.all(20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -170,10 +169,10 @@ class _OwnerRemindersState extends State<OwnerReminders> {
               ),
             ],
           ),
-        ), // Horizontal Calendar
+        ),
         Container(
-          height: 80,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          height: 70,
+          padding: const EdgeInsets.symmetric(horizontal: 5),
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: 23,
@@ -231,7 +230,7 @@ class _OwnerRemindersState extends State<OwnerReminders> {
           ),
         ),
 
-        const SizedBox(height: 20), // Reminders List
+        const SizedBox(height: 10), // Reminders List
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -245,10 +244,8 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                   endActionPane: ActionPane(
                     motion: const ScrollMotion(),
                     children: [
-                      SizedBox(
-                        width: 6,
-                      ), // Complete action (only for reminders)
-                      if (item is ReminderItem && !item.isCompleted)
+                      SizedBox(width: 6),
+                      if (item is Reminder && !item.isCompleted)
                         SlidableAction(
                           onPressed: (context) => _completeItem(index),
                           backgroundColor: AppColorStyles.pastelGreen,
@@ -268,7 +265,7 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                     ],
                   ),
                   child:
-                      item is ReminderItem
+                      item is Reminder
                           ? Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -283,67 +280,14 @@ class _OwnerRemindersState extends State<OwnerReminders> {
                             ),
                             child: ReminderTile(reminder: item),
                           )
-                          : item is BookingItem
-                          ? BookingCard(
-                            petName: item.petName,
-                            petImage: item.petAvatar,
-                            vetName: item.vetName,
-                            vetImage: item.vetAvatar,
-                            time: item.time,
-                          )
+                          : item is Booking
+                          ? BookingTile(booking: item)
                           : const SizedBox.shrink(),
                 ),
               );
             },
           ),
         ),
-      ],
-    );
-  }
-}
-
-class ReminderTile extends StatelessWidget {
-  final ReminderItem reminder;
-
-  const ReminderTile({super.key, required this.reminder});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        // Icon
-        Container(
-          width: 24,
-          height: 24,
-          margin: const EdgeInsets.only(right: 16),
-          child: Icon(reminder.icon, color: reminder.iconColor, size: 20),
-        ),
-
-        // Title
-        Expanded(
-          child: Text(
-            reminder.title,
-            style: AppTextStyles.bodyBase.copyWith(
-              fontWeight: FontWeight.w400,
-              decoration:
-                  reminder.isCompleted ? TextDecoration.lineThrough : null,
-              color:
-                  reminder.isCompleted
-                      ? AppColorStyles.lightGrey
-                      : AppColorStyles.black,
-            ),
-          ),
-        ),
-
-        // Time
-        if (reminder.time != null)
-          Text(
-            reminder.time!,
-            style: AppTextStyles.bodySmall.copyWith(
-              color: AppColorStyles.lightGrey,
-              fontSize: 12,
-            ),
-          ),
       ],
     );
   }

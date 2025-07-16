@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/router/routes.dart';
-import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
-import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/theme.dart';
+import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/data/pets.dart';
 import 'package:go_router/go_router.dart';
 import '../../widgets/service_card.dart';

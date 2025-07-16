@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/theme/colors.dart';
+import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/your_pets_screen.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_reminders.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_dashboard.dart';
@@ -32,9 +33,10 @@ class _PetOwnerState extends State<PetOwner> {
       top: false,
       bottom: true,
       child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         drawer: const AppDrawer(),
         appBar: AppBar(
-          toolbarHeight: kToolbarHeight + 10,
+          toolbarHeight: kToolbarHeight + 4,
           elevation: 0,
           surfaceTintColor: Colors.transparent,
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -56,16 +58,16 @@ class _PetOwnerState extends State<PetOwner> {
           ),
           actions: [
             Padding(
-              padding: const EdgeInsets.only(right: 20),
+              padding: const EdgeInsets.only(right: 14),
               child: Row(
                 children: [
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(LineIcons.bell, size: 28),
+                    icon: Icon(LineIcons.camera, size: 26),
                   ),
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(LineIcons.camera, size: 28),
+                    icon: Icon(LineIcons.bell, size: 26),
                   ),
                 ],
               ),
@@ -115,16 +117,17 @@ class _PetOwnerState extends State<PetOwner> {
       backgroundColor: Colors.transparent,
       color: Colors.black,
       activeColor: Colors.black,
-      iconSize: 24,
+      iconSize: 22,
       tabBackgroundColor: Colors.transparent,
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       selectedIndex: _selectedIndex,
       onTabChange: (index) {
         setState(() {
           _selectedIndex = index;
         });
       },
-      tabActiveBorder: Border.all(color: Colors.black54, width: 1),
+      textStyle: AppTextStyles.bodyExtraSmall,
+      tabActiveBorder: Border.all(color: AppColorStyles.grey, width: 1),
       tabs: [
         const GButton(
           icon: LineIcons.home,
@@ -154,7 +157,7 @@ class _PetOwnerState extends State<PetOwner> {
           iconActiveColor: Colors.black,
           border: Border.fromBorderSide(BorderSide.none),
           leading: const CircleAvatar(
-            radius: 14,
+            radius: 11,
             backgroundImage: AssetImage('assets/images/person1.png'),
           ),
         ),

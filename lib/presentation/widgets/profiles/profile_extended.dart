@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/theme/colors.dart';
-import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
-import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
+import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/theme.dart';
 
 class ExtendedCard extends StatelessWidget {
   final String title;
@@ -21,9 +21,7 @@ class ExtendedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(
-        vertical: AppSpacing.sm,
-      ), // was extendedCardMargin
+      margin: EdgeInsets.symmetric(vertical: AppSpacing.sm),
       padding: EdgeInsets.symmetric(
         horizontal: AppSpacing.lg + AppSpacing.xs,
         vertical: AppSpacing.lg,
@@ -57,7 +55,7 @@ class ExtendedCard extends StatelessWidget {
                   Text(
                     subtitle!,
                     style: AppTextStyles.bodyBase.copyWith(
-                      color: AppColorStyles.black.withOpacity(0.6),
+                      color: AppColorStyles.grey,
                     ),
                   ),
                 ],

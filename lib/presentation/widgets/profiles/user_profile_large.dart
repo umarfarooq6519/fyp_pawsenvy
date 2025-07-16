@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:fyp_pawsenvy/core/theme/colors.dart';
-import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 
 class UserProfileLarge extends StatelessWidget {
   const UserProfileLarge({super.key, required this.user});
@@ -10,7 +10,7 @@ class UserProfileLarge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Column(
@@ -18,7 +18,7 @@ class UserProfileLarge extends StatelessWidget {
               // Avatar section
               Container(
                 width: double.infinity,
-                height: 320,
+                height: 240,
                 decoration: BoxDecoration(
                   gradient: AppColorStyles.profileGradient,
                   borderRadius: const BorderRadius.only(
@@ -26,46 +26,44 @@ class UserProfileLarge extends StatelessWidget {
                     bottomRight: Radius.circular(32),
                   ),
                 ),
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: CircleAvatar(
-                        radius: 80,
-                        backgroundImage: AssetImage(
+                child: SafeArea(
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.center,
+                        child: Image.asset(
                           user['avatar'] ?? 'assets/images/placeholder.png',
-                        ),
-                        backgroundColor: Theme.of(context).colorScheme.surface,
-                      ),
-                    ),
-                    SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 8,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                              icon: Icon(
-                                LineIcons.arrowLeft,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                              onPressed: () => Navigator.of(context).pop(),
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                LineIcons.verticalEllipsis,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                              onPressed: () {},
-                            ),
-                          ],
+                          fit: BoxFit.contain,
                         ),
                       ),
-                    ),
-                  ],
+                      SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              IconButton(
+                                icon: Icon(
+                                  LineIcons.arrowLeft,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
+                                onPressed: () => Navigator.of(context).pop(),
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  LineIcons.verticalEllipsis,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
+                                onPressed: () {},
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               // Details section
@@ -88,47 +86,47 @@ class UserProfileLarge extends StatelessWidget {
                                   user['name'] ?? '',
                                   style: AppTextStyles.headingMedium,
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 0),
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    Icon(
-                                      user['role'] == 'veterinary'
-                                          ? LineIcons.stethoscope
-                                          : LineIcons.paw,
-                                      size: 18,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          user['role'] == 'veterinary'
+                                              ? LineIcons.stethoscope
+                                              : LineIcons.paw,
+                                          size: 18,
+                                          color: AppColorStyles.black,
+                                        ),
+                                        const SizedBox(width: 2),
+                                        Text(
+                                          user['role'] == 'veterinary'
+                                              ? 'Veterinary'
+                                              : 'Pet Owner',
+                                          style: AppTextStyles.bodySmall
+                                              .copyWith(
+                                                color: AppColorStyles.black,
+                                              ),
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      user['role'] == 'veterinary'
-                                          ? 'Veterinary'
-                                          : 'Pet Owner',
-                                      style: AppTextStyles.headingSmall
-                                          .copyWith(
-                                            color:
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.primary,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      LineIcons.mapMarker,
-                                      size: 16,
-                                      color:
-                                          Theme.of(
-                                            context,
-                                          ).colorScheme.onSurfaceVariant,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      user['location'] ?? '',
-                                      style: AppTextStyles.bodySmall,
+                                    Text(' - '),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          LineIcons.mapMarker,
+                                          size: 18,
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.onSurfaceVariant,
+                                        ),
+                                        Text(
+                                          user['location'] ?? '',
+                                          style: AppTextStyles.bodySmall,
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
@@ -142,7 +140,10 @@ class UserProfileLarge extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          color:
+                              Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
@@ -179,46 +180,37 @@ class UserProfileLarge extends StatelessWidget {
             ],
           ), // Sticky contact button
           Positioned(
-            left: 0,
-            right: 0,
-            bottom: 24,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: AppColorStyles.profileGradient,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColorStyles.lightPurple),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Implement contact action
-                  },
-                  icon: Icon(LineIcons.commentDots, color: Colors.black),
-                  label: Text(
-                    'Contact',
-                    style: AppTextStyles.buttonText.copyWith(
-                      color: Colors.black,
-                    ),
+            left: 20,
+            right: 20,
+            bottom: 20,
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColorStyles.lightPurple),
+              ),
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColorStyles.purple,
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    foregroundColor: Colors.black,
-                    minimumSize: const Size.fromHeight(54),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 0,
-                    shadowColor: Colors.transparent,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  elevation: 2,
+                  shadowColor: AppColorStyles.black,
+                ),
+                onPressed: () {},
+                icon: Icon(
+                  LineIcons.phone,
+                  color: AppColorStyles.white,
+                  size: 20,
+                ),
+                label: Text(
+                  'Contact',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColorStyles.white,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),

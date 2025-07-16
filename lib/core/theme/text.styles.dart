@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
+import 'color.styles.dart';
 
 /// App text styles
 class AppTextStyles {
-  // Headings
+  // ########### HEADINGS
+  static TextStyle get headingExtraLarge => const TextStyle(
+    fontSize: 30,
+    fontWeight: FontWeight.w600,
+    color: AppColorStyles.black,
+    fontFamily: 'Poppins',
+  );
   static TextStyle get headingLarge => const TextStyle(
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: FontWeight.w600,
     color: AppColorStyles.black,
     fontFamily: 'Poppins',
   );
 
   static TextStyle get headingMedium => const TextStyle(
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: FontWeight.w600,
     color: AppColorStyles.black,
     fontFamily: 'Poppins',
@@ -25,21 +31,25 @@ class AppTextStyles {
     fontFamily: 'Poppins',
   );
 
-  // Body text
+  // ########### BODY
   static TextStyle get bodyBase => const TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w400,
     color: AppColorStyles.black,
     fontFamily: 'Poppins',
   );
-
   static TextStyle get bodySmall => const TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: AppColorStyles.black,
     fontFamily: 'Poppins',
   );
-  // Button text
+  static TextStyle get bodyExtraSmall => const TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: AppColorStyles.black,
+    fontFamily: 'Poppins',
+  );
   static TextStyle get buttonText => const TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w500,

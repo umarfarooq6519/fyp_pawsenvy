@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
-import 'package:fyp_pawsenvy/core/theme/colors.dart';
-import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
-import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
+import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/theme.dart';
 
 @immutable
 class ExpandableFab extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/theme/colors.dart';
-import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
-import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
+import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/theme.dart';
 import 'package:line_icons/line_icons.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -86,12 +86,7 @@ class AppDrawer extends StatelessWidget {
                       ),
                     ),
                   ),
-                  child: Text(
-                    'Sign out',
-                    style: AppTextStyles.buttonText.copyWith(
-                      color: AppColorStyles.black,
-                    ),
-                  ),
+                  child: Text('Sign out', style: AppTextStyles.bodyBase),
                 ),
               ),
             ),

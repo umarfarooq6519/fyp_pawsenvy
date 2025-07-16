@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/theme/colors.dart';
-import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
+import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:line_icons/line_icons.dart';
@@ -29,40 +29,41 @@ class _YourPetsScreenState extends State<YourPetsScreen> {
             2 * chipSpacing -
             plusChipWidth) /
         2;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return ListView(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Plus chip first
-            _buildGradientChip(
-              width: plusChipWidth,
-              icon: LineIcons.plus,
-              selected: true,
-              onTap: () {},
-            ),
-            SizedBox(width: chipSpacing),
-            _buildGradientChip(
-              width: chipWidth,
-              icon: LineIcons.paw,
-              label: 'Owned',
-              selected: _selectedChip == 0,
-              onTap: () => setState(() => _selectedChip = 0),
-            ),
-            SizedBox(width: chipSpacing),
-            _buildGradientChip(
-              width: chipWidth,
-              icon: LineIcons.heart,
-              label: 'Liked',
-              selected: _selectedChip == 1,
-              onTap: () => setState(() => _selectedChip = 1),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Plus chip first
+              _buildGradientChip(
+                width: plusChipWidth,
+                icon: LineIcons.plus,
+                selected: true,
+                onTap: () {},
+              ),
+              SizedBox(width: chipSpacing),
+              _buildGradientChip(
+                width: chipWidth,
+                icon: LineIcons.paw,
+                label: 'Owned',
+                selected: _selectedChip == 0,
+                onTap: () => setState(() => _selectedChip = 0),
+              ),
+              SizedBox(width: chipSpacing),
+              _buildGradientChip(
+                width: chipWidth,
+                icon: LineIcons.heart,
+                label: 'Liked',
+                selected: _selectedChip == 1,
+                onTap: () => setState(() => _selectedChip = 1),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 24),
         SizedBox(
-          height: 500,
+          height: 450,
           child: Swiper(
             itemCount: displayedPets.length,
             itemBuilder: (context, index) {
@@ -86,15 +87,19 @@ class _YourPetsScreenState extends State<YourPetsScreen> {
             loop: true,
           ),
         ),
-        const SizedBox(height: 18),
-        AnimatedSmoothIndicator(
-          activeIndex: _activePetIndex,
-          count: displayedPets.length,
-          effect: ExpandingDotsEffect(
-            dotHeight: 10,
-            dotWidth: 10,
-            activeDotColor: Colors.deepPurple,
-            dotColor: Colors.deepPurple.shade100,
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          child: Center(
+            child: AnimatedSmoothIndicator(
+              activeIndex: _activePetIndex,
+              count: displayedPets.length,
+              effect: ExpandingDotsEffect(
+                dotHeight: 10,
+                dotWidth: 10,
+                activeDotColor: Colors.deepPurple,
+                dotColor: Colors.deepPurple.shade100,
+              ),
+            ),
           ),
         ),
       ],
@@ -117,7 +122,7 @@ class _YourPetsScreenState extends State<YourPetsScreen> {
       onTap: onTap,
       child: Container(
         width: width,
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
         decoration: BoxDecoration(
           gradient: selected ? gradient : null,
           color: selected ? null : Colors.grey.shade200,
@@ -149,7 +154,7 @@ class _YourPetsScreenState extends State<YourPetsScreen> {
               const SizedBox(width: 8),
               Text(
                 label,
-                style: AppTextStyles.bodyBase.copyWith(
+                style: AppTextStyles.bodySmall.copyWith(
                   color: selected ? Colors.deepPurple : Colors.black54,
                 ),
               ),

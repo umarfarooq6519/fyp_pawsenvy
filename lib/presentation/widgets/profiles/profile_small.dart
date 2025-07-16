@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:fyp_pawsenvy/core/theme/colors.dart';
-import 'package:fyp_pawsenvy/core/theme/text_styles.dart';
-import 'package:fyp_pawsenvy/core/theme/app_theme.dart';
+import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/theme.dart';
 
 class ProfileSmall extends StatelessWidget {
   final String name;
@@ -37,10 +37,9 @@ class ProfileSmall extends StatelessWidget {
       margin: EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.sm,
-      ), // was profileSmallMargin
+      ),
       child: Stack(
         children: [
-          // Card body with tap using InkWell for full coverage
           Material(
             color: AppColorStyles.transparent,
             borderRadius: BorderRadius.circular(28),
@@ -52,7 +51,6 @@ class ProfileSmall extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 0),
                     SizedBox(
                       height: 90,
                       child: Center(
@@ -77,17 +75,15 @@ class ProfileSmall extends StatelessWidget {
                       ),
                       child: Text(
                         name,
-                        style: AppTextStyles.bodyBase.copyWith(
+                        style: AppTextStyles.bodySmall.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      tag1 != null && tag2 != null && tag2!.isNotEmpty
-                          ? '$tag1 - $tag2'
-                          : tag1 ?? '',
-                      style: AppTextStyles.bodySmall.copyWith(
+                      '$tag1 - $tag2',
+                      style: AppTextStyles.bodyExtraSmall.copyWith(
                         color: AppColorStyles.lightGrey,
                       ),
                       textAlign: TextAlign.center,

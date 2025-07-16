@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/theme/colors.dart';
-import '../../core/theme/text_styles.dart';
-import '../../core/theme/app_theme.dart';
+import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
+import '../../core/theme/text.styles.dart';
+import '../../core/theme/theme.dart';
 
 class ServiceCard extends StatelessWidget {
   final String image;
