@@ -30,26 +30,18 @@ class DateTimeUtils {
     return months[date.month - 1];
   }
 
-  /// Convert 24-hour time format to 12-hour format with AM/PM
-  static String formatTime12Hour(String time24) {
-    try {
-      final parts = time24.split(':');
-      if (parts.length != 2) return time24;
-
-      final hour = int.parse(parts[0]);
-      final minute = parts[1];
-
-      if (hour == 0) {
-        return '12:$minute AM';
-      } else if (hour < 12) {
-        return '$hour:$minute AM';
-      } else if (hour == 12) {
-        return '12:$minute PM';
-      } else {
-        return '${hour - 12}:$minute PM';
-      }
-    } catch (e) {
-      return time24;
+  /// Convert DateTime to 12-hour format with AM/PM
+  static String formatTime12Hour(DateTime dateTime) {
+    final hour = dateTime.hour;
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+    if (hour == 0) {
+      return '12:$minute AM';
+    } else if (hour < 12) {
+      return '$hour:$minute AM';
+    } else if (hour == 12) {
+      return '12:$minute PM';
+    } else {
+      return '${hour - 12}:$minute PM';
     }
   }
 
