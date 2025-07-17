@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/router/routes.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/theme.dart';
-import 'package:go_router/go_router.dart';
+import 'package:fyp_pawsenvy/core/services/auth.service.dart';
+import 'package:provider/provider.dart';
 
 class Welcome extends StatelessWidget {
   const Welcome({super.key});
@@ -46,24 +46,6 @@ class Welcome extends StatelessWidget {
                 child: Image.asset(
                   'assets/images/welcome.jpg',
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    // Fallback container if image doesn't exist
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          AppBorderRadius.xLarge,
-                        ).copyWith(
-                          // was cardRadius
-                          topLeft: Radius.zero,
-                          topRight: Radius.zero,
-                        ),
-                        color: Colors.orange.shade300,
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.pets, size: 80, color: Colors.white),
-                      ),
-                    );
-                  },
                 ),
               ),
             ),
@@ -102,41 +84,42 @@ class Welcome extends StatelessWidget {
               width: double.infinity,
               height: 56,
               margin: EdgeInsets.only(bottom: AppSpacing.huge),
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
-                  minimumSize: const Size.fromHeight(56),
-
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppBorderRadius.large),
-                  ),
-                  elevation: 2,
-                  shadowColor: Colors.black26,
-                ),
-                icon: Image.asset(
-                  'assets/images/google_logo.png',
-                  height: 24,
-                  width: 24,
-                ),
-
-                label: Padding(
-                  padding: const EdgeInsets.only(left: 2),
-                  child: Text(
-                    'Sign in with Google',
-                    style: AppTextStyles.bodyBase,
-                  ),
-                ),
-                onPressed: () {
-                  context.go(Routes.petOwner);
-                },
-              ),
+              child: _googleSigninButton(context),
             ),
           ],
         ),
       ),
     );
   }
-}
 
-class GoogleSignInButton {}
+  ElevatedButton _googleSigninButton(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        minimumSize: const Size.fromHeight(56),
+
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppBorderRadius.large),
+        ),
+        elevation: 2,
+        shadowColor: Colors.black26,
+      ),
+      icon: Image.asset('assets/images/google_logo.png', height: 24, width: 24),
+
+      label: Padding(
+        padding: const EdgeInsets.only(left: 2),
+        child: Text('Sign in with Google', style: AppTextStyles.bodyBase),
+      ),
+      onPressed: () async {
+        try {
+          await authService.signInWithGoogle();
+        } catch (e) {
+          print("Error signing in with Google: $e");
+        }
+      },
+    );
+  }
+}

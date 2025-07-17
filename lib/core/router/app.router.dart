@@ -6,12 +6,18 @@ import 'package:fyp_pawsenvy/presentation/pages/pet_owner/pet_owner.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/search_list.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet_profile_large.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/profiles/user_profile_large.dart';
+import 'package:fyp_pawsenvy/presentation/auth_tree.dart';
 import 'package:fyp_pawsenvy/core/router/routes.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: Routes.petOwner,
+    initialLocation: Routes.authTree,
     routes: [
+      GoRoute(
+        path: Routes.authTree,
+        name: 'authTree',
+        builder: (context, state) => const AuthTree(),
+      ),
       GoRoute(
         path: Routes.welcome,
         name: 'welcome',

@@ -1,5 +1,6 @@
 class Routes {
-  static const String welcome = '/';
+  static const String authTree = '/';
+  static const String welcome = '/welcome';
   static const String petOwner = '/pet-owner';
   static const String veterinary = '/veterinary';
   static const String searchList = '/search';

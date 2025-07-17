@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/services/auth.service.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/your_pets_screen.dart';
@@ -9,6 +11,7 @@ import 'package:fyp_pawsenvy/presentation/widgets/common/app_drawer.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/community.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
 
 class PetOwner extends StatefulWidget {
   const PetOwner({super.key});
@@ -29,6 +32,9 @@ class _PetOwnerState extends State<PetOwner> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final User? user = authService.currentUser;
+
     return SafeArea(
       top: false,
       bottom: true,
@@ -50,8 +56,14 @@ class _PetOwnerState extends State<PetOwner> {
                     highlightColor: Colors.transparent,
                     splashColor: Colors.transparent,
                     onTap: () => Scaffold.of(context).openDrawer(),
-                    child: const CircleAvatar(
-                      backgroundImage: AssetImage('assets/images/person1.png'),
+                    // ############ Circle Avatar
+                    child: CircleAvatar(
+                      backgroundImage:
+                          user != null
+                              ? NetworkImage(user.photoURL!)
+                              : const AssetImage('assets/images/person1.png')
+                                  as ImageProvider,
+                      backgroundColor: AppColorStyles.lightGrey,
                     ),
                   ),
             ),

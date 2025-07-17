@@ -15,19 +15,15 @@ class DBService {
   );
   final CollectionReference reminders = FirebaseFirestore.instance.collection(
     'reminders',
-  );
-
-  // add a pet (owned)
-  Future<void> addPet(Pet pet) async {
+  );  Future<void> addPet(Pet pet) async {
     try {
-      final result = await bookings.add(pet.toMap());
+      final result = await pets.add(pet.toMap());
       if (kDebugMode) print('Pet added ${result.id}');
     } catch (e) {
       throw Exception('addPet() failed: $e');
     }
   }
 
-  // add a booking
   Future<void> addBooking(Booking booking) async {
     try {
       final result = await bookings.add(booking.toMap());

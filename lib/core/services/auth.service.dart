@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -12,6 +11,7 @@ class AuthService extends ChangeNotifier {
 
   Future<void> signInWithGoogle() async {
     try {
+      print('signInWithGoogle() function started');
       final GoogleSignIn googleSignIn = GoogleSignIn();
 
       // Ensure previous sessions are cleared
@@ -36,6 +36,7 @@ class AuthService extends ChangeNotifier {
 
       await _auth.signInWithCredential(credential);
 
+      print('signInWithGoogle() function completed');
       notifyListeners();
     } catch (e) {
       throw Exception('signInWithGoogle() error: $e');
@@ -44,6 +45,6 @@ class AuthService extends ChangeNotifier {
 
   Future<void> signOut() async {
     await _auth.signOut();
+    notifyListeners();
   }
-  
 }

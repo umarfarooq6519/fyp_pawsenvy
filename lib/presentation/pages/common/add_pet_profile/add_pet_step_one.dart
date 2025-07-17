@@ -32,28 +32,31 @@ class AddPetStepOne extends StatefulWidget {
 }
 
 class _AddPetStepOneState extends State<AddPetStepOne> {
-  Future<void> _uploadAvatar() async {
-    final storage = Provider.of<StorageService>(context, listen: false);
-
-    try {
-      final String? avatarUrl = await storage.uploadPetAvatar();
-
-      if (avatarUrl != null && widget.onAvatarChanged != null) {
-        widget.onAvatarChanged!(avatarUrl);
-      }
-    } catch (e) {
-      // Handle error - could show a snackbar
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to upload avatar. Please try again.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+  
+  Future<void> _handleAvatarTap() async {
+    final storageService = Provider.of<StorageService>(context, listen: false);
+    final String? uploadedUrl = await storageService.uploadPetAvatar();
+    
+    if (uploadedUrl != null && widget.onAvatarChanged != null) {
+      widget.onAvatarChanged!(uploadedUrl);
     }
   }
 
+  ImageProvider _getAvatarImage() {
+    // Show uploaded image if available
+    if (widget.avatarPath != null && widget.avatarPath!.startsWith('http')) {
+      return NetworkImage(widget.avatarPath!);
+    }
+    
+    // Show species default or placeholder
+    if (widget.selectedSpecies == PetSpecies.cat) {
+      return const AssetImage('assets/images/cat.png');
+    } else if (widget.selectedSpecies == PetSpecies.dog) {
+      return const AssetImage('assets/images/dog.png');
+    }
+    
+    return const AssetImage('assets/images/placeholder.png');
+  }
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -66,47 +69,23 @@ class _AddPetStepOneState extends State<AddPetStepOne> {
             style: AppTextStyles.headingLarge,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 40), // Avatar picker
-          Consumer<StorageService>(
-            builder: (context, storage, child) {
-              return GestureDetector(
-                onTap: _uploadAvatar,
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundColor: AppColorStyles.lightPurple,
-                      backgroundImage:
-                          widget.avatarPath != null
-                              ? NetworkImage(widget.avatarPath!)
-                              : AssetImage(
-                                    widget.selectedSpecies == null
-                                        ? 'assets/images/placeholder.png'
-                                        : (widget.selectedSpecies ==
-                                                PetSpecies.cat
-                                            ? 'assets/images/cat.png'
-                                            : 'assets/images/dog.png'),
-                                  )
-                                  as ImageProvider,
-                    ),
-                    if (storage.isUploading)
-                      Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: Colors.black54,
-                          borderRadius: BorderRadius.circular(60),
-                        ),
-                        child: const Center(
-                          child: CircularProgressIndicator(color: Colors.white),
-                        ),
-                      ),
-                  ],
-                ),
-              );
-            },
-          ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 40),          GestureDetector(
+            onTap: _handleAvatarTap,
+            child: Consumer<StorageService>(
+              builder: (context, storageService, child) {
+                return CircleAvatar(
+                  radius: 60,
+                  backgroundColor: AppColorStyles.lightPurple,
+                  backgroundImage: _getAvatarImage(),
+                  child: storageService.isUploading
+                      ? const CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        )
+                      : null,
+                );
+              },
+            ),
+          ),          const SizedBox(height: 8),
           Text(
             'Tap to add photo',
             style: AppTextStyles.bodySmall.copyWith(

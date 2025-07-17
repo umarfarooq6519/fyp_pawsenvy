@@ -1,14 +1,20 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/services/auth.service.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/theme.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final User? user = authService.currentUser;
+
     return Drawer(
       backgroundColor: AppColorStyles.white,
       child: SafeArea(
@@ -17,16 +23,18 @@ class AppDrawer extends StatelessWidget {
             // Header section with avatar, name, and email
             Container(
               width: double.infinity,
-              padding: EdgeInsets.all(AppSpacing.xl), // was EdgeInsets.all(24)
+              padding: EdgeInsets.all(AppSpacing.xl),
               child: Column(
                 children: [
                   const SizedBox(height: 20),
                   // Circle Avatar
                   CircleAvatar(
                     radius: 50,
-                    backgroundImage: const AssetImage(
-                      'assets/images/person1.png',
-                    ),
+                    backgroundImage:
+                        user != null
+                            ? NetworkImage(user.photoURL!)
+                            : const AssetImage('assets/images/person1.png')
+                                as ImageProvider,
                     backgroundColor: AppColorStyles.lightGrey,
                   ),
                   const SizedBox(height: 16),
@@ -66,33 +74,39 @@ class AppDrawer extends StatelessWidget {
                   ),
                 ],
               ),
-            ), // Sign out button at bottom
+            ),
             Container(
-              padding: EdgeInsets.all(AppSpacing.xl), // was EdgeInsets.all(24)
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColorStyles.pastelRed,
-                    foregroundColor: AppColorStyles.black,
-                    elevation: 0,
-                    padding: EdgeInsets.symmetric(
-                      vertical: AppSpacing.lg,
-                    ), // was EdgeInsets.symmetric(vertical: 16)
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        AppBorderRadius.medium,
-                      ),
-                    ),
-                  ),
-                  child: Text('Sign out', style: AppTextStyles.bodyBase),
-                ),
-              ),
+              width: double.infinity,
+              padding: EdgeInsets.all(AppSpacing.xl),
+              child: _signOutButton(context, authService),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  ElevatedButton _signOutButton(BuildContext context, AuthService authService) {
+    return ElevatedButton(
+      onPressed: () async {
+        try {
+          await authService.signOut();
+        } catch (e) {
+          print("Error signing out: $e");
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColorStyles.pastelRed,
+        foregroundColor: AppColorStyles.black,
+        elevation: 0,
+        padding: EdgeInsets.symmetric(
+          vertical: AppSpacing.lg,
+        ), // was EdgeInsets.symmetric(vertical: 16)
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppBorderRadius.medium),
+        ),
+      ),
+      child: Text('Sign out', style: AppTextStyles.bodyBase),
     );
   }
 

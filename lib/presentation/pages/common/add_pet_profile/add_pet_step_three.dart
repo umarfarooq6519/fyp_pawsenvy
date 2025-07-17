@@ -36,9 +36,7 @@ class AddPetStepThree extends StatelessWidget {
             style: AppTextStyles.headingLarge,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 40),
-
-          // Avatar preview
+          const SizedBox(height: 40), // Avatar preview
           Center(
             child: Container(
               width: 100,
@@ -48,25 +46,26 @@ class AddPetStepThree extends StatelessWidget {
                 color: AppColorStyles.lightPurple,
                 border: Border.all(color: AppColorStyles.purple, width: 2),
               ),
-              child: avatarPath != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: Image.asset(avatarPath!, fit: BoxFit.cover),
-                    )
-                  : Icon(
-                      Icons.pets,
-                      size: 40,
-                      color: AppColorStyles.purple,
-                    ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: _getAvatarWidget(),
+              ),
             ),
           ),
 
-          const SizedBox(height: 30),          // Review information
+          const SizedBox(height: 30), // Review information
           _buildReviewItem('Name', petName ?? 'Not provided'),
-          _buildReviewItem('Species', selectedSpecies?.toString().split('.').last.toUpperCase() ?? 'Not selected'),
-          _buildReviewItem('Gender', selectedGender?.toUpperCase() ?? 'Not selected'),
+          _buildReviewItem(
+            'Species',
+            selectedSpecies?.toString().split('.').last.toUpperCase() ??
+                'Not selected',
+          ),
+          _buildReviewItem(
+            'Gender',
+            selectedGender?.toUpperCase() ?? 'Not selected',
+          ),
           _buildReviewItem('Bio', petBio ?? 'No bio provided'),
-          
+
           // Additional information from step two
           if (additionalData != null) ...[
             const SizedBox(height: 12),
@@ -78,11 +77,25 @@ class AddPetStepThree extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            _buildReviewItem('Breed', additionalData!['breed'] ?? 'Not provided'),
+            _buildReviewItem(
+              'Breed',
+              additionalData!['breed'] ?? 'Not provided',
+            ),
             _buildReviewItem('Age', additionalData!['age'] ?? 'Not provided'),
-            _buildReviewItem('Color', additionalData!['color'] ?? 'Not provided'),
-            _buildReviewItem('Weight', additionalData!['weight'] ?? 'Not provided'),
-            _buildReviewItem('Health Records', additionalData!['healthRecords'] != null ? 'Uploaded' : 'Not uploaded'),
+            _buildReviewItem(
+              'Color',
+              additionalData!['color'] ?? 'Not provided',
+            ),
+            _buildReviewItem(
+              'Weight',
+              additionalData!['weight'] ?? 'Not provided',
+            ),
+            _buildReviewItem(
+              'Health Records',
+              additionalData!['healthRecords'] != null
+                  ? 'Uploaded'
+                  : 'Not uploaded',
+            ),
           ],
 
           const SizedBox(height: 30),
@@ -98,10 +111,7 @@ class AddPetStepThree extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Summary',
-                  style: AppTextStyles.headingSmall,
-                ),
+                Text('Summary', style: AppTextStyles.headingSmall),
                 const SizedBox(height: 8),
                 Text(
                   'Please review the information above. Once you submit, your pet profile will be created.',
@@ -133,14 +143,55 @@ class AddPetStepThree extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: AppTextStyles.bodySmall,
-            ),
-          ),
+          Expanded(child: Text(value, style: AppTextStyles.bodySmall)),
         ],
       ),
+    );
+  }
+
+  Widget _getAvatarWidget() {
+    // Show uploaded image if available (network image from Firebase)
+    if (avatarPath != null && avatarPath!.startsWith('http')) {
+      return Image.network(
+        avatarPath!,
+        fit: BoxFit.cover,
+        width: 100,
+        height: 100,
+        errorBuilder: (context, error, stackTrace) {
+          return _getDefaultAvatar();
+        },
+      );
+    }
+
+    // Show species default or placeholder
+    if (selectedSpecies == PetSpecies.cat) {
+      return Image.asset(
+        'assets/images/cat.png',
+        fit: BoxFit.cover,
+        width: 100,
+        height: 100,
+      );
+    } else if (selectedSpecies == PetSpecies.dog) {
+      return Image.asset(
+        'assets/images/dog.png',
+        fit: BoxFit.cover,
+        width: 100,
+        height: 100,
+      );
+    }
+
+    return _getDefaultAvatar();
+  }
+
+  Widget _getDefaultAvatar() {
+    return Image.asset(
+      'assets/images/placeholder.png',
+      fit: BoxFit.cover,
+      width: 100,
+      height: 100,
+      errorBuilder: (context, error, stackTrace) {
+        return Icon(Icons.pets, size: 40, color: AppColorStyles.purple);
+      },
     );
   }
 }

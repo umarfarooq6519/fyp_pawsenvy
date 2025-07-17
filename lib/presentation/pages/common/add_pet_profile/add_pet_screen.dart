@@ -2,9 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/theme/color.styles.dart';
 import '../../../../core/theme/text.styles.dart';
 import '../../../../core/models/pet.dart';
+import '../../../../core/services/auth.service.dart';
+import '../../../../core/services/db.service.dart';
 import 'add_pet_step_one.dart';
 import 'add_pet_step_two.dart';
 import 'add_pet_step_three.dart';
@@ -74,6 +78,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                     avatarPath: _avatarPath,
                     onSpeciesChanged: _onSpeciesChanged,
                     onGenderChanged: _onGenderChanged,
+                    onAvatarChanged: _onAvatarChanged,
                   ),
                   AddPetStepTwo(
                     breedController: _breedController,
@@ -232,7 +237,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
     );
   }
 
-
   void _pickHealthRecords() {
     // Implement image picker for health records
     setState(() {
@@ -249,6 +253,12 @@ class _AddPetScreenState extends State<AddPetScreen> {
   void _onGenderChanged(String gender) {
     setState(() {
       _selectedGender = gender;
+    });
+  }
+
+  void _onAvatarChanged(String? avatarPath) {
+    setState(() {
+      _avatarPath = avatarPath;
     });
   }
 
@@ -270,24 +280,49 @@ class _AddPetScreenState extends State<AddPetScreen> {
     }
   }
 
-  void _submitForm() {
-    // Implement form submission with all collected data
-    final petData = {
-      'name': _nameController.text,
-      'bio': _bioController.text,
-      'gender': _selectedGender,
-      'species': _selectedSpecies,
-      'avatar': _avatarPath,
-      'breed': _breedController.text,
-      'age': _ageController.text,
-      'color': _colorController.text,
-      'weight': _weightController.text,
-      'healthRecords': _healthRecordsPath,
-    };
+  Future<void> _submitForm() async {
+    if (!_validateForm()) return;
 
-    print('Pet data to submit: $petData');
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final currentUser = authService.currentUser;
 
-    // For now, just navigate back
-    Navigator.of(context).pop();
+      if (currentUser == null) return;
+
+      final Pet newPet = _createPetFromFormData(currentUser.uid);
+      await DBService().addPet(newPet);
+
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      print('Error saving pet: $e');
+    }
+  }
+
+  bool _validateForm() {
+    return _nameController.text.trim().isNotEmpty &&
+        _selectedSpecies != null &&
+        _selectedGender != null;
+  }
+
+  Pet _createPetFromFormData(String ownerId) {
+    final now = Timestamp.now();
+    return Pet(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      ownerId: ownerId,
+      name: _nameController.text.trim(),
+      species: _selectedSpecies!,
+      breed: _breedController.text.trim(),
+      age: int.tryParse(_ageController.text) ?? 0,
+      gender: _selectedGender!,
+      color: _colorController.text.trim(),
+      weight: double.tryParse(_weightController.text) ?? 0.0,
+      avatar: _avatarPath ?? '',
+      bio: _bioController.text.trim(),
+      status: PetStatus.normal,
+      healthRecords:
+          _healthRecordsPath != null ? {'path': _healthRecordsPath} : null,
+      createdAt: now,
+      updatedAt: now,
+    );
   }
 }
