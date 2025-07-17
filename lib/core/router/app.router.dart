@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/add_pet_profile/add_pet_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fyp_pawsenvy/presentation/pages/welcome.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/pet_owner.dart';
@@ -64,6 +65,11 @@ class AppRouter {
           }
           return UserProfileLarge(user: user);
         },
+      ),
+      GoRoute(
+        path: Routes.addPetSreen,
+        name: 'addPetScreen',
+        builder: (context, state) => const AddPetScreen(),
       ),
     ],
   );

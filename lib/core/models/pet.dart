@@ -79,7 +79,7 @@ class Pet {
       'avatar': avatar,
       'bio': bio,
       'status': _petStatusToString(status),
-      // 'healthRecords': healthRecords,
+      'healthRecords': healthRecords,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };

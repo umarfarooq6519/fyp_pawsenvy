@@ -13,6 +13,9 @@ class DBService {
   final CollectionReference bookings = FirebaseFirestore.instance.collection(
     'bookings',
   );
+  final CollectionReference reminders = FirebaseFirestore.instance.collection(
+    'reminders',
+  );
 
   // add a pet (owned)
   Future<void> addPet(Pet pet) async {

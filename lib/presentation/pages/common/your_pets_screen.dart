@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:line_icons/line_icons.dart';
 import '../../../data/pets.dart';
@@ -34,14 +35,15 @@ class _YourPetsScreenState extends State<YourPetsScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            mainAxisAlignment: MainAxisAlignment.center,            children: [
               // Plus chip first
               _buildGradientChip(
                 width: plusChipWidth,
                 icon: LineIcons.plus,
                 selected: true,
-                onTap: () {},
+                onTap: () {
+                  GoRouter.of(context).push('/add-pet');
+                },
               ),
               SizedBox(width: chipSpacing),
               _buildGradientChip(
