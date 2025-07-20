@@ -59,17 +59,16 @@ class Welcome extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    'Welcome to PawsEnvy',
+                    'PawsEnvy',
                     style: AppTextStyles.headingLarge.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColorStyles.black,
+                      fontWeight: FontWeight.w700,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: 10),
                   Text(
                     'Connect with pet lovers, find care services, and manage your pet\'s needs all in one place. Join our community today!',
-                    style: AppTextStyles.bodyBase.copyWith(
+                    style: AppTextStyles.bodySmall.copyWith(
                       color: AppColorStyles.grey,
                       height: 1.5,
                     ),

@@ -2,9 +2,12 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
 
 class StorageService extends ChangeNotifier {
   final storage = FirebaseStorage.instance;
+
+  var uuid = Uuid();
 
   List<String> _imageUrls = [];
   bool _isLoading = false;
@@ -48,19 +51,48 @@ class StorageService extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final v4 = uuid.v4();
+
       final picker = ImagePicker();
       final image = await picker.pickImage(source: ImageSource.gallery);
       if (image == null) return null;
 
       final file = File(image.path);
-      final filePath =
-          'pet_avatars/avatar_${DateTime.now().millisecondsSinceEpoch}.png';
+      final filePath = 'pet_avatars/avatar_$v4.png';
 
       final ref = storage.ref(filePath);
       await ref.putFile(file);
       final downloadUrl = await ref.getDownloadURL();
 
       _imageUrls.add(downloadUrl);
+      return downloadUrl;
+    } catch (e) {
+      if (kDebugMode) print('Upload error: $e');
+      return null;
+    } finally {
+      _isUploading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<String?> uploadUserAvatar() async {
+    _isUploading = true;
+    notifyListeners();
+
+    try {
+      final v4 = uuid.v4();
+
+      final picker = ImagePicker();
+      final image = await picker.pickImage(source: ImageSource.gallery);
+      if (image == null) return null;
+
+      final file = File(image.path);
+      final filePath = 'user_avatars/avatar_$v4.png';
+
+      final ref = storage.ref(filePath);
+      await ref.putFile(file);
+      final downloadUrl = await ref.getDownloadURL();
+
       return downloadUrl;
     } catch (e) {
       if (kDebugMode) print('Upload error: $e');

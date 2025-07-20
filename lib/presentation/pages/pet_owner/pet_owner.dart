@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/services/auth.service.dart';
+import 'package:fyp_pawsenvy/core/services/db.service.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/create_user_profile/create_user_profile.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/your_pets_screen.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_reminders.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_dashboard.dart';
@@ -22,6 +24,9 @@ class PetOwner extends StatefulWidget {
 
 class _PetOwnerState extends State<PetOwner> {
   int _selectedIndex = 0;
+  final DBService _dbService = DBService();
+  bool _profileCheckComplete = false;
+  bool _isProfileComplete = false;
 
   final List<Widget> _screens = [
     OwnerDashboard(),
@@ -31,10 +36,55 @@ class _PetOwnerState extends State<PetOwner> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _checkProfileCompleteness();
+  }
+
+  Future<void> _checkProfileCompleteness() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final User? user = authService.currentUser;
+
+    if (user != null) {
+      final isComplete = await _dbService.isUserProfileComplete(user.uid);
+      if (mounted) {
+        setState(() {
+          _isProfileComplete = isComplete;
+          _profileCheckComplete = true;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
     final User? user = authService.currentUser;
 
+    // Check if user is authenticated
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: Text('User not authenticated')),
+      );
+    }
+
+    // Show loading while checking profile completeness
+    if (!_profileCheckComplete) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }    // If profile is not complete, show CreateUserProfile with callback
+    if (!_isProfileComplete) {
+      return CreateUserProfile(
+        isProfileIncomplete: true, // Hide back button since profile is incomplete
+        onProfileComplete: () {
+          _checkProfileCompleteness(); // Re-check profile completeness
+        },
+      );
+    }
+
+    return _buildPetOwnerInterface(context, user);
+  }
+
+  Widget _buildPetOwnerInterface(BuildContext context, User user) {
     return SafeArea(
       top: false,
       bottom: true,
@@ -56,14 +106,22 @@ class _PetOwnerState extends State<PetOwner> {
                     highlightColor: Colors.transparent,
                     splashColor: Colors.transparent,
                     onTap: () => Scaffold.of(context).openDrawer(),
-                    // ############ Circle Avatar
-                    child: CircleAvatar(
-                      backgroundImage:
-                          user != null
-                              ? NetworkImage(user.photoURL!)
-                              : const AssetImage('assets/images/person1.png')
-                                  as ImageProvider,
-                      backgroundColor: AppColorStyles.lightGrey,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppColorStyles.deepPurple,
+                          width: 2,
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        backgroundImage:
+                            user.photoURL != null
+                                ? NetworkImage(user.photoURL!)
+                                : const AssetImage('assets/images/person1.png')
+                                    as ImageProvider,
+                        backgroundColor: AppColorStyles.lightGrey,
+                      ),
                     ),
                   ),
             ),

@@ -6,6 +6,7 @@ import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/theme.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -31,16 +32,15 @@ class AppDrawer extends StatelessWidget {
                   CircleAvatar(
                     radius: 50,
                     backgroundImage:
-                        user != null
-                            ? NetworkImage(user.photoURL!)
-                            : const AssetImage('assets/images/person1.png')
-                                as ImageProvider,
+                        user?.photoURL != null
+                            ? NetworkImage(user!.photoURL!)
+                            : const AssetImage('assets/images/person1.png'),
                     backgroundColor: AppColorStyles.lightGrey,
                   ),
                   const SizedBox(height: 16),
                   // Name
                   Text(
-                    'Umar Farooq',
+                    user?.displayName ?? "Guest",
                     style: AppTextStyles.headingSmall.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColorStyles.black,
@@ -49,7 +49,7 @@ class AppDrawer extends StatelessWidget {
                   const SizedBox(height: 4),
                   // Email
                   Text(
-                    'umarfarooq@gmail.com',
+                    user?.email ?? 'no email found',
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColorStyles.grey,
                     ),
@@ -91,6 +91,7 @@ class AppDrawer extends StatelessWidget {
       onPressed: () async {
         try {
           await authService.signOut();
+          context.go('/');
         } catch (e) {
           print("Error signing out: $e");
         }

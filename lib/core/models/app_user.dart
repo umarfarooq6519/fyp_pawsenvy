@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fyp_pawsenvy/core/models/vet_profile.dart';
 
-enum UserRole { owner, vet }
+enum UserRole { owner, vet, undefined }
 
 class AppUser {
   final String id;
@@ -35,7 +35,7 @@ class AppUser {
   factory AppUser.fromMap(String id, Map<String, dynamic> data) {
     return AppUser(
       id: id,
-      userRole: _userRoleFromString(data['userType'] ?? 'owner'),
+      userRole: userRoleFromString(data['userType'] ?? 'undefined'),
       name: data['name'] ?? '',
       email: data['email'] ?? '',
       phone: data['phone'] ?? '',
@@ -69,13 +69,15 @@ class AppUser {
   }
 }
 
-UserRole _userRoleFromString(String value) {
+UserRole userRoleFromString(String value) {
   switch (value) {
     case 'vet':
       return UserRole.vet;
     case 'owner':
-    default:
       return UserRole.owner;
+    case 'undefined':
+    default:
+      return UserRole.undefined;
   }
 }
 
@@ -84,7 +86,7 @@ UserRole _userRoleFromString(String value) {
 // ##################### return format #####################
 /*
   {
-    "userType": "owner" | "vet",
+    "userType": "owner" | "vet" | "undefined",
     "name": "John Doe",
     "email": "john@example.com",
     "phone": "+1234567890",

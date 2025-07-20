@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/add_pet_profile/add_pet_screen.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/create_pet_profile/create_pet_profile.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/create_user_profile/create_user_profile.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/role_selection_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fyp_pawsenvy/presentation/pages/welcome.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/pet_owner.dart';
@@ -73,9 +75,21 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: Routes.addPetSreen,
-        name: 'addPetScreen',
-        builder: (context, state) => const AddPetScreen(),
+        path: Routes.roleSelectionPage,
+        name: 'roleSelectionPage',
+        builder: (context, state) => const RoleSelectionPage(),
+      ),
+      GoRoute(
+        path: Routes.createPetProfile,
+        name: 'createPetProfile',
+        builder: (context, state) => const CreatePetProfile(),
+      ),
+      GoRoute(
+        path: Routes.createUserProfile,
+        name: 'createUserProfile',
+        builder: (context, state) => const CreateUserProfile(
+          isProfileIncomplete: true, // Hide back button for standalone route
+        ),
       ),
     ],
   );

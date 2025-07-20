@@ -35,14 +35,15 @@ class _YourPetsScreenState extends State<YourPetsScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,            children: [
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
               // Plus chip first
               _buildGradientChip(
                 width: plusChipWidth,
                 icon: LineIcons.plus,
                 selected: true,
                 onTap: () {
-                  GoRouter.of(context).push('/add-pet');
+                  GoRouter.of(context).push('/create-pet-profile');
                 },
               ),
               SizedBox(width: chipSpacing),
@@ -64,31 +65,31 @@ class _YourPetsScreenState extends State<YourPetsScreen> {
             ],
           ),
         ),
-        SizedBox(
-          height: 450,
-          child: Swiper(
-            itemCount: displayedPets.length,
-            itemBuilder: (context, index) {
-              final pet = displayedPets[index];
-              return ProfileMedium(
-                name: pet['name'] ?? '',
-                image: pet['avatar'] ?? 'assets/images/placeholder.png',
-                type: pet['type'] ?? '',
-                about: pet['about'] ?? '',
-                tag1: pet['gender'],
-                tag2: pet['location'],
-                verified: true,
-                isFavorite: false,
-                onTap: () {},
-                onFavorite: () {},
-              );
-            },
-            onIndexChanged: (i) => setState(() => _activePetIndex = i),
-            viewportFraction: 0.8,
-            scale: 0.92,
-            loop: true,
-          ),
-        ),
+        // SizedBox(
+        //   height: 450,
+        //   child: Swiper(
+        //     itemCount: displayedPets.length,
+        //     itemBuilder: (context, index) {
+        //       final pet = displayedPets[index];
+        //       return ProfileMedium(
+        //         name: pet['name'] ?? '',
+        //         image: pet['avatar'] ?? 'assets/images/placeholder.png',
+        //         type: pet['type'] ?? '',
+        //         about: pet['about'] ?? '',
+        //         tag1: pet['gender'],
+        //         tag2: pet['location'],
+        //         verified: true,
+        //         isFavorite: false,
+        //         onTap: () {},
+        //         onFavorite: () {},
+        //       );
+        //     },
+        //     onIndexChanged: (i) => setState(() => _activePetIndex = i),
+        //     viewportFraction: 0.8,
+        //     scale: 0.92,
+        //     loop: true,
+        //   ),
+        // ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 18),
           child: Center(

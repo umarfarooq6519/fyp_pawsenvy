@@ -4,25 +4,29 @@ import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
 import '../../../../core/theme/color.styles.dart';
 import '../../../../core/theme/text.styles.dart';
 import '../../../../core/models/pet.dart';
 import '../../../../core/services/auth.service.dart';
 import '../../../../core/services/db.service.dart';
-import 'add_pet_step_one.dart';
-import 'add_pet_step_two.dart';
-import 'add_pet_step_three.dart';
+import 'add_pet_basic.dart';
+import 'add_pet_additional.dart';
+import 'add_pet_review.dart';
 
-class AddPetScreen extends StatefulWidget {
-  const AddPetScreen({super.key});
+class CreatePetProfile extends StatefulWidget {
+  const CreatePetProfile({super.key});
 
   @override
-  State<AddPetScreen> createState() => _AddPetScreenState();
+  State<CreatePetProfile> createState() => _CreatePetProfileState();
 }
 
-class _AddPetScreenState extends State<AddPetScreen> {
+class _CreatePetProfileState extends State<CreatePetProfile> {
+  var uuid = Uuid();
+
   int currentStep = 0;
   final PageController _pageController = PageController();
+
   // Form controllers
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
@@ -282,6 +286,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
 
   Future<void> _submitForm() async {
     if (!_validateForm()) return;
+    final v4 = uuid.v4();
 
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
@@ -289,8 +294,8 @@ class _AddPetScreenState extends State<AddPetScreen> {
 
       if (currentUser == null) return;
 
-      final Pet newPet = _createPetFromFormData(currentUser.uid);
-      await DBService().addPet(newPet);
+      final Pet newPet = _createPetFromData(currentUser.uid);
+      await DBService().addPet(newPet, v4);
 
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
@@ -304,10 +309,12 @@ class _AddPetScreenState extends State<AddPetScreen> {
         _selectedGender != null;
   }
 
-  Pet _createPetFromFormData(String ownerId) {
+  Pet _createPetFromData(String ownerId) {
     final now = Timestamp.now();
+    final v4 = uuid.v4();
+
     return Pet(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: v4,
       ownerId: ownerId,
       name: _nameController.text.trim(),
       species: _selectedSpecies!,
