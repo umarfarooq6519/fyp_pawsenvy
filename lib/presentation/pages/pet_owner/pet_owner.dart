@@ -1,15 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/router/routes.dart';
 import 'package:fyp_pawsenvy/core/services/auth.service.dart';
 import 'package:fyp_pawsenvy/core/services/db.service.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/create_user_profile/create_user_profile.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/user/create_user_profile/create_user_profile.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/your_pets_screen.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_reminders.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_dashboard.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/common/expandable_fab.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/common/app_drawer.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/community.dart';
 import 'package:line_icons/line_icons.dart';
@@ -23,8 +25,11 @@ class PetOwner extends StatefulWidget {
 }
 
 class _PetOwnerState extends State<PetOwner> {
+  late AuthService _auth;
+  late DBService _db;
+  late User? _user;
+
   int _selectedIndex = 0;
-  final DBService _dbService = DBService();
   bool _profileCheckComplete = false;
   bool _isProfileComplete = false;
 
@@ -37,16 +42,16 @@ class _PetOwnerState extends State<PetOwner> {
 
   @override
   void initState() {
+    _auth = Provider.of<AuthService>(context, listen: false);
+    _db = Provider.of<DBService>(context, listen: false);
+    _user = _auth.currentUser;
     super.initState();
-    _checkProfileCompleteness();
+    _checkIfProfileComplete();
   }
 
-  Future<void> _checkProfileCompleteness() async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final User? user = authService.currentUser;
-
-    if (user != null) {
-      final isComplete = await _dbService.isUserProfileComplete(user.uid);
+  Future<void> _checkIfProfileComplete() async {
+    if (_user != null) {
+      final isComplete = await _db.isUserProfileComplete(_user!.uid);
       if (mounted) {
         setState(() {
           _isProfileComplete = isComplete;
@@ -58,30 +63,23 @@ class _PetOwnerState extends State<PetOwner> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final User? user = authService.currentUser;
-
-    // Check if user is authenticated
-    if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text('User not authenticated')),
-      );
-    }
+    if (_user == null) context.go(Routes.welcome);
 
     // Show loading while checking profile completeness
     if (!_profileCheckComplete) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }    // If profile is not complete, show CreateUserProfile with callback
+    }
+
     if (!_isProfileComplete) {
       return CreateUserProfile(
-        isProfileIncomplete: true, // Hide back button since profile is incomplete
+        isProfileIncomplete: true,
         onProfileComplete: () {
-          _checkProfileCompleteness(); // Re-check profile completeness
+          _checkIfProfileComplete();
         },
       );
     }
 
-    return _buildPetOwnerInterface(context, user);
+    return _buildPetOwnerInterface(context, _user!);
   }
 
   Widget _buildPetOwnerInterface(BuildContext context, User user) {

@@ -9,6 +9,7 @@ class CreateUserReview extends StatelessWidget {
   final String? userBio;
   final String? avatarPath;
   final GeoPoint? location;
+  final DateTime? dateOfBirth;
   final VoidCallback onSubmit;
   final bool isLoading;
 
@@ -19,6 +20,7 @@ class CreateUserReview extends StatelessWidget {
     required this.userBio,
     required this.avatarPath,
     required this.location,
+    required this.dateOfBirth,
     required this.onSubmit,
     this.isLoading = false,
   });
@@ -57,8 +59,19 @@ class CreateUserReview extends StatelessWidget {
 
           const SizedBox(height: 30),          // Review information
           _buildReviewSection('Basic Information', [
-            _buildReviewItem('Name', userName ?? 'Not provided'),            _buildReviewItem('Phone', userPhone ?? 'Not provided'),
+            _buildReviewItem('Name', userName ?? 'Not provided'),
+            _buildReviewItem('Phone', userPhone ?? 'Not provided'),
             _buildReviewItem('Bio', userBio ?? 'No bio provided'),
+          ]),
+
+          const SizedBox(height: 20),
+
+          _buildReviewSection('Personal Information', [            _buildReviewItem(
+              'Date of Birth',
+              dateOfBirth != null
+                  ? _formatDate(dateOfBirth!)
+                  : 'Not provided',
+            ),
           ]),
 
           const SizedBox(height: 20),
@@ -198,8 +211,11 @@ class CreateUserReview extends StatelessWidget {
               style: AppTextStyles.bodySmall,
             ),
           ),
-        ],
-      ),
+        ],      ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 }

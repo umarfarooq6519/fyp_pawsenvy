@@ -4,8 +4,9 @@ enum PetSpecies { dog, cat }
 
 enum PetStatus { normal, lost, adopted }
 
+enum PetTemperament { friendly, calm, energetic, protective, stubborn, quiet }
+
 class Pet {
-  final String id;
   final String ownerId;
   final String avatar;
   final String name;
@@ -17,12 +18,12 @@ class Pet {
   final String color;
   final double weight;
   final PetStatus status;
+  final List<PetTemperament> temperament;
   final Map<String, dynamic>? healthRecords;
   final Timestamp createdAt;
   final Timestamp updatedAt;
 
   Pet({
-    required this.id,
     required this.ownerId,
     required this.name,
     required this.species,
@@ -34,14 +35,14 @@ class Pet {
     required this.avatar,
     required this.bio,
     required this.status,
+    required this.temperament,
     this.healthRecords,
     required this.createdAt,
     required this.updatedAt,
   });
 
-  factory Pet.fromMap(String id, Map<String, dynamic> data) {
+  factory Pet.fromMap(Map<String, dynamic> data) {
     return Pet(
-      id: id,
       ownerId: data['ownerId'] ?? '',
       name: data['name'] ?? '',
       species: _petSpeciesFromString(data['species'] ?? 'dog'),
@@ -56,6 +57,12 @@ class Pet {
       avatar: data['avatar'] ?? '',
       bio: data['bio'] ?? '',
       status: _petStatusFromString(data['status'] ?? 'normal'),
+      temperament:
+          (data['temperament'] is List)
+              ? (data['temperament'] as List)
+                  .map((t) => petTemperamentFromString(t as String))
+                  .toList()
+              : <PetTemperament>[],
       healthRecords:
           data['healthRecords'] is Map<String, dynamic>
               ? Map<String, dynamic>.from(data['healthRecords'])
@@ -67,7 +74,6 @@ class Pet {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'ownerId': ownerId,
       'name': name,
       'species': _petSpeciesToString(species),
@@ -79,6 +85,7 @@ class Pet {
       'avatar': avatar,
       'bio': bio,
       'status': _petStatusToString(status),
+      'temperament': temperament.map(petTemperamentToString).toList(),
       'healthRecords': healthRecords,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
@@ -130,6 +137,41 @@ PetStatus _petStatusFromString(String status) {
   }
 }
 
+String petTemperamentToString(PetTemperament temperament) {
+  switch (temperament) {
+    case PetTemperament.friendly:
+      return 'friendly';
+    case PetTemperament.calm:
+      return 'calm';
+    case PetTemperament.energetic:
+      return 'energetic';
+    case PetTemperament.protective:
+      return 'protective';
+    case PetTemperament.stubborn:
+      return 'stubborn';
+    case PetTemperament.quiet:
+      return 'quiet';
+  }
+}
+
+PetTemperament petTemperamentFromString(String temperament) {
+  switch (temperament) {
+    case 'friendly':
+      return PetTemperament.friendly;
+    case 'calm':
+      return PetTemperament.calm;
+    case 'energetic':
+      return PetTemperament.energetic;
+    case 'protective':
+      return PetTemperament.protective;
+    case 'stubborn':
+      return PetTemperament.stubborn;
+    case 'quiet':
+      return PetTemperament.quiet;
+    default:
+      throw ArgumentError('Unknown temperament: $temperament');
+  }
+}
 
 // ##################### return format #####################
 /*
@@ -147,6 +189,8 @@ PetStatus _petStatusFromString(String status) {
     "avatar": "https://.../pet.png",
     "bio": "Friendly and playful",
     "status": "normal" | "lost" | "adopted",
+    "temperament": ["friendly", "calm"],
+    "healthRecords": { ... }, // optional
     "createdAt": Timestamp, // Firestore Timestamp
     "updatedAt": Timestamp 
   }

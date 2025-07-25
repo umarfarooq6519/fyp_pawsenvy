@@ -1,31 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../core/theme/color.styles.dart';
 import '../../../core/theme/text.styles.dart';
 import '../../../core/utils/datetime.util.dart';
 import '../../../core/theme/theme.dart';
 import '../../../core/models/booking.dart';
-
+import '../../../core/models/pet.dart';
+import '../../../core/models/app_user.dart';
 import '../../../core/services/db.service.dart';
 
 class BookingTile extends StatelessWidget {
   final Booking booking;
-  final DBService db = DBService();
 
-  BookingTile({super.key, required this.booking});
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<Map<String, dynamic>?>>(
+  const BookingTile({super.key, required this.booking});
+  @override  Widget build(BuildContext context) {
+    final dbService = Provider.of<DBService>(context, listen: false);
+    return FutureBuilder<List<dynamic>>(
       future: Future.wait([
-        db.fetchPetByID(booking.petID),
-        db.fetchVetByID(booking.vetID),
+        dbService.fetchPetByID(booking.petID),
+        dbService.fetchVetByID(booking.vetID),
       ]),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+      builder: (context, snapshot) {        if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }
-        final pet = snapshot.data?[0];
-        final vet = snapshot.data?[1];
+        final Pet? pet = snapshot.data?[0] as Pet?;
+        final AppUser? vet = snapshot.data?[1] as AppUser?;
         return Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -43,19 +42,18 @@ class BookingTile extends StatelessWidget {
                   children: [
                     // Pet avatar and name
                     Row(
-                      children: [
-                        CircleAvatar(
+                      children: [                        CircleAvatar(
                           radius: 18,
                           backgroundImage:
-                              pet != null && pet['avatar'] != null
-                                  ? NetworkImage(pet['avatar'])
+                              pet != null && pet.avatar.isNotEmpty
+                                  ? NetworkImage(pet.avatar)
                                   : null,
                           backgroundColor: Colors.transparent,
                         ),
                         SizedBox(width: 6),
                         Text(
-                          pet != null && pet['name'] != null
-                              ? pet['name']
+                          pet != null
+                              ? pet.name
                               : booking.petID,
                           style: AppTextStyles.bodySmall,
                         ),
@@ -66,13 +64,12 @@ class BookingTile extends StatelessWidget {
                       style: AppTextStyles.bodyExtraSmall.copyWith(
                         color: AppColorStyles.lightGrey,
                       ),
-                    ),
-                    // Vet name and avatar (inverted)
+                    ),                    // Vet name and avatar (inverted)
                     Row(
                       children: [
                         Text(
-                          vet != null && vet['name'] != null
-                              ? vet['name']
+                          vet != null
+                              ? vet.name
                               : booking.vetID,
                           overflow: TextOverflow.ellipsis,
                           style: AppTextStyles.bodySmall.copyWith(
@@ -83,8 +80,8 @@ class BookingTile extends StatelessWidget {
                         CircleAvatar(
                           radius: 18,
                           backgroundImage:
-                              vet != null && vet['avatar'] != null
-                                  ? NetworkImage(vet['avatar'])
+                              vet != null && vet.avatar.isNotEmpty
+                                  ? NetworkImage(vet.avatar)
                                   : null,
                         ),
                       ],

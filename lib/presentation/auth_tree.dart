@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/services/db.service.dart';
 import 'package:fyp_pawsenvy/core/models/app_user.dart';
+import 'package:fyp_pawsenvy/core/services/auth.service.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/role_selection_page.dart';
+import 'package:fyp_pawsenvy/presentation/pages/pet_owner/pet_owner.dart';
+import 'package:fyp_pawsenvy/presentation/pages/veterinary/veterinary.dart';
+import 'package:fyp_pawsenvy/presentation/pages/welcome.dart';
+import 'package:fyp_pawsenvy/providers/user.provider.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../core/services/auth.service.dart';
-import 'pages/welcome.dart';
-import 'pages/pet_owner/pet_owner.dart';
 
 class AuthTree extends StatelessWidget {
   const AuthTree({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final db = DBService();
     return Consumer<AuthService>(
-      builder: (context, authService, child) {
+      builder: (context, authService, _) {
+        // use authStateChange to check if user authenticated or not
         return StreamBuilder<User?>(
           stream: authService.authStateChanges,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return _loadingInterface();
+              return Scaffold(body: Center(child: CircularProgressIndicator()));
             }
 
             final user = snapshot.data;
@@ -29,41 +30,39 @@ class AuthTree extends StatelessWidget {
               return const Welcome();
             }
 
-            // User is signed in, check their role
-            return FutureBuilder<UserRole>(
-              future: db.getUserRole(user.uid),
-              builder: (context, roleSnapshot) {
-                if (roleSnapshot.connectionState == ConnectionState.waiting) {
-                  return _loadingInterface();
-                }
+            // pass on the UserProvider to rest of the app (if authenticated)
+            return ChangeNotifierProvider<UserProvider>(
+              create: (_) {
+                final userProvider = UserProvider();
 
-                final role = roleSnapshot.data ?? UserRole.undefined;
-
-                if (role == UserRole.undefined) {
-                  // Replace with your actual profile creation page
-                  return RoleSelectionPage();
-                }
-                if (role == UserRole.owner) {
-                  return const PetOwner();
-                }
-                // Add more role checks as needed
-                return const Welcome();
+                userProvider.listenToUser(user.uid);
+                return userProvider;
               },
+              child: Consumer<UserProvider>(
+                builder: (context, userProvider, _) {
+                  final appUser = userProvider.user;
+
+                  if (appUser == null) {
+                    return Scaffold(
+                      body: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
+                  // check the userRole and display accordingly
+                  switch (appUser.userRole) {
+                    case UserRole.owner:
+                      return const PetOwner();
+                    case UserRole.vet:
+                      return const Veterinary();
+                    case UserRole.undefined:
+                      return const RoleSelectionPage();
+                  }
+                },
+              ),
             );
           },
         );
       },
-    );
-  }
-
-  Scaffold _loadingInterface() {
-    return const Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [CircularProgressIndicator()],
-        ),
-      ),
     );
   }
 }

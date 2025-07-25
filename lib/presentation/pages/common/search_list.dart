@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
+import 'package:fyp_pawsenvy/core/models/pet.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/common/search_with_filter.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet_profile_large.dart';
 import 'package:fyp_pawsenvy/core/theme/theme.dart';
@@ -51,10 +52,13 @@ class SearchList extends StatelessWidget {
                     tag1: item['role'] ?? '',
                     tag2: item['location'] ?? '',
                     onTap: () {
+                      // Convert the map item to a Pet object first
+                      // This is a temporary solution - ideally search should work with Pet objects
+                      final pet = Pet.fromMap(item);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PetProfileLarge(profile: item),
+                          builder: (context) => PetProfileLarge(pet: pet),
                         ),
                       );
                     },

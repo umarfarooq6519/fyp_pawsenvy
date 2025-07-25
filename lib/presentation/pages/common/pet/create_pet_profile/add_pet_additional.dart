@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import '../../../../core/theme/color.styles.dart';
-import '../../../../core/theme/text.styles.dart';
+import '../../../../../core/theme/color.styles.dart';
+import '../../../../../core/theme/text.styles.dart';
+import '../../../../../core/models/pet.dart';
 
 class AddPetStepTwo extends StatelessWidget {
   final TextEditingController breedController;
@@ -9,8 +10,10 @@ class AddPetStepTwo extends StatelessWidget {
   final TextEditingController colorController;
   final TextEditingController weightController;
   final String? healthRecordsPath;
+  final List<PetTemperament> selectedTemperaments;
   final VoidCallback onPickHealthRecords;
   final Function(String, dynamic)? onDataChanged;
+  final Function(List<PetTemperament>)? onTemperamentsChanged;
 
   const AddPetStepTwo({
     super.key,
@@ -19,8 +22,10 @@ class AddPetStepTwo extends StatelessWidget {
     required this.colorController,
     required this.weightController,
     required this.healthRecordsPath,
+    required this.selectedTemperaments,
     required this.onPickHealthRecords,
     this.onDataChanged,
+    this.onTemperamentsChanged,
   });
 
   @override
@@ -82,6 +87,10 @@ class AddPetStepTwo extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 30),
+
+          // Temperament selection
+          _buildTemperamentSection(),
 
           const SizedBox(height: 30),
 
@@ -190,6 +199,95 @@ class AddPetStepTwo extends StatelessWidget {
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildTemperamentSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Temperament',
+          style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w500),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Choose up to 3 traits that describe your pet',
+          style: AppTextStyles.bodyExtraSmall.copyWith(
+            color: AppColorStyles.lightGrey,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children:
+              PetTemperament.values.map((temperament) {
+                final isSelected = selectedTemperaments.contains(temperament);
+                final canSelect = selectedTemperaments.length < 3 || isSelected;
+
+                return FilterChip(
+                  label: Text(
+                    petTemperamentToString(temperament),
+                    style: AppTextStyles.bodyExtraSmall.copyWith(
+                      color:
+                          isSelected
+                              ? AppColorStyles.white
+                              : canSelect
+                              ? AppColorStyles.deepPurple
+                              : AppColorStyles.lightGrey,
+                      fontWeight:
+                          isSelected ? FontWeight.w500 : FontWeight.normal,
+                    ),
+                  ),
+                  selected: isSelected,
+                  onSelected:
+                      canSelect
+                          ? (selected) {
+                            if (onTemperamentsChanged != null) {
+                              final newTemperaments = List<PetTemperament>.from(
+                                selectedTemperaments,
+                              );
+                              if (selected) {
+                                newTemperaments.add(temperament);
+                              } else {
+                                newTemperaments.remove(temperament);
+                              }
+                              onTemperamentsChanged!(newTemperaments);
+                            }
+                          }
+                          : null,
+                  selectedColor: AppColorStyles.deepPurple,
+                  backgroundColor: AppColorStyles.lightGrey.withOpacity(0.1),
+                  disabledColor: AppColorStyles.lightGrey.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(
+                      color:
+                          isSelected
+                              ? AppColorStyles.deepPurple
+                              : canSelect
+                              ? AppColorStyles.lightGrey
+                              : AppColorStyles.lightGrey.withOpacity(0.5),
+                      width: 1,
+                    ),
+                  ),
+                  showCheckmark: false,
+                );
+              }).toList(),
+        ),
+        if (selectedTemperaments.length == 3)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              'Maximum 3 temperaments selected',
+              style: AppTextStyles.bodyExtraSmall.copyWith(
+                color: AppColorStyles.deepPurple,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
       ],
     );
   }

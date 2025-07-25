@@ -1,111 +1,86 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
-class StorageService extends ChangeNotifier {
+class StorageService {
   final storage = FirebaseStorage.instance;
-
   var uuid = Uuid();
 
-  List<String> _imageUrls = [];
-  bool _isLoading = false;
-  bool _isUploading = false;
-
-  List<String> get imageUrls => _imageUrls;
-  bool get isLoading => _isLoading;
-  bool get isUploading => _isUploading;
-
-  Future<void> getAllAvatars() async {
-    _isLoading = true;
-    notifyListeners();
-
+  Future<List<String>> getAllAvatars() async {
     final ListResult result = await storage.ref('pet_avatars/').listAll();
     final urls = await Future.wait(
       result.items.map((ref) => ref.getDownloadURL()),
     );
-
-    _imageUrls = urls;
-
-    _isLoading = false;
-    notifyListeners();
-  }
-
-  Future<void> deletePetAvatar(String avatarUrl) async {
-    try {
-      _imageUrls.remove(avatarUrl);
-
-      final String path = _extractPathFromUrl(avatarUrl);
-      await storage.ref(path).delete();
-    } catch (e) {
-      if (kDebugMode) {
-        print('Delete error: $e');
-      }
-    }
-    notifyListeners();
+    return urls;
   }
 
   Future<String?> uploadPetAvatar() async {
-    _isUploading = true;
-    notifyListeners();
-
     try {
-      final v4 = uuid.v4();
+      final String v4 = uuid.v4();
 
+      // trigger the gallery picker
       final picker = ImagePicker();
       final image = await picker.pickImage(source: ImageSource.gallery);
+
       if (image == null) return null;
 
-      final file = File(image.path);
-      final filePath = 'pet_avatars/avatar_$v4.png';
+      // Compress the image
+      final compressed = await FlutterImageCompress.compressWithFile(
+        image.path,
+        quality: 70,
+        minWidth: 512,
+        minHeight: 512,
+        format: CompressFormat.jpeg,
+      );
 
+      if (compressed == null) return null;
+
+      // upload compressed image to firebase storage
+      final filePath = 'pet_avatars/pet-$v4.jpg';
       final ref = storage.ref(filePath);
-      await ref.putFile(file);
-      final downloadUrl = await ref.getDownloadURL();
+      await ref.putData(Uint8List.fromList(compressed));
 
-      _imageUrls.add(downloadUrl);
+      final downloadUrl = await ref.getDownloadURL();
       return downloadUrl;
     } catch (e) {
       if (kDebugMode) print('Upload error: $e');
       return null;
-    } finally {
-      _isUploading = false;
-      notifyListeners();
     }
   }
 
-  Future<String?> uploadUserAvatar() async {
-    _isUploading = true;
-    notifyListeners();
-
+  Future<String?> uploadUserAvatar(String uID) async {
     try {
-      final v4 = uuid.v4();
-
+      // trigger the gallery picker
       final picker = ImagePicker();
       final image = await picker.pickImage(source: ImageSource.gallery);
+
       if (image == null) return null;
 
-      final file = File(image.path);
-      final filePath = 'user_avatars/avatar_$v4.png';
+      // Compress the image
+      final compressed = await FlutterImageCompress.compressWithFile(
+        image.path,
+        quality: 70,
+        minWidth: 512,
+        minHeight: 512,
+        format: CompressFormat.jpeg,
+      );
 
+      if (compressed == null) return null;
+
+      // upload compressed image to firebase storage
+      final filePath = 'user_avatars/user-$uID.jpg';
       final ref = storage.ref(filePath);
-      await ref.putFile(file);
-      final downloadUrl = await ref.getDownloadURL();
+      await ref.putData(Uint8List.fromList(compressed));
 
+      final downloadUrl = await ref.getDownloadURL();
       return downloadUrl;
     } catch (e) {
       if (kDebugMode) print('Upload error: $e');
       return null;
-    } finally {
-      _isUploading = false;
-      notifyListeners();
     }
-  }
-
-  String _extractPathFromUrl(String url) {
-    final uri = Uri.parse(url);
-    final encodedPath = uri.path.split('/o/').last;
-    return Uri.decodeComponent(encodedPath.split('?').first);
   }
 }

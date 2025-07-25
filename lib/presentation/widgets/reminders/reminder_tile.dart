@@ -3,13 +3,11 @@ import 'package:fyp_pawsenvy/core/models/reminder.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/utils/datetime.util.dart';
-import 'package:fyp_pawsenvy/core/services/db.service.dart';
 
 class ReminderTile extends StatelessWidget {
   final Reminder reminder;
-  final DBService db = DBService();
 
-  ReminderTile({super.key, required this.reminder});
+  const ReminderTile({super.key, required this.reminder});
 
   @override
   Widget build(BuildContext context) {

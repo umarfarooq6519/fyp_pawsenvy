@@ -5,8 +5,21 @@ import 'package:fyp_pawsenvy/core/theme/theme.dart';
 import 'package:fyp_pawsenvy/core/services/auth.service.dart';
 import 'package:provider/provider.dart';
 
-class Welcome extends StatelessWidget {
+class Welcome extends StatefulWidget {
   const Welcome({super.key});
+
+  @override
+  State<Welcome> createState() => _WelcomeState();
+}
+
+class _WelcomeState extends State<Welcome> {
+  late AuthService _auth;
+
+  @override
+  void initState() {
+    super.initState();
+    _auth = Provider.of<AuthService>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,15 +37,11 @@ class Welcome extends StatelessWidget {
             // Image container with bottom rounded corners only
             Container(
               width: double.infinity,
-              height: 320,
+              height: MediaQuery.of(context).size.height * 0.5,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(
                   AppBorderRadius.xLarge,
-                ).copyWith(
-                  // was cardRadius
-                  topLeft: Radius.zero,
-                  topRight: Radius.zero,
-                ),
+                ).copyWith(topLeft: Radius.zero, topRight: Radius.zero),
                 boxShadow: AppShadows.heavyShadow,
               ),
               child: ClipRRect(
@@ -51,11 +60,8 @@ class Welcome extends StatelessWidget {
             ),
             const Spacer(), // Content section
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.xl,
-              ), // was paddingHorizontalXXL
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Column(
-                // mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
@@ -92,8 +98,6 @@ class Welcome extends StatelessWidget {
   }
 
   ElevatedButton _googleSigninButton(BuildContext context) {
-    final authService = Provider.of<AuthService>(context, listen: false);
-
     return ElevatedButton.icon(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
@@ -114,9 +118,18 @@ class Welcome extends StatelessWidget {
       ),
       onPressed: () async {
         try {
-          await authService.signInWithGoogle();
+          final result = await _auth.signInWithGoogle();
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('${result!.user!.displayName} signed in')),
+            );
+          }
         } catch (e) {
-          print("Error signing in with Google: $e");
+          if (context.mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Error signing-in: $e')));
+          }
         }
       },
     );

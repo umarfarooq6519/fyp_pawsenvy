@@ -1,11 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
+import 'package:fyp_pawsenvy/core/models/app_user.dart';
 
-class UserProfileLarge extends StatelessWidget {
-  const UserProfileLarge({super.key, required this.user});
-  final Map<String, dynamic> user;
+class UserProfileScreen extends StatelessWidget {
+  const UserProfileScreen({super.key, required this.user});
+  final AppUser user;
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +34,16 @@ class UserProfileLarge extends StatelessWidget {
                     children: [
                       Align(
                         alignment: Alignment.center,
-                        child: Image.asset(
-                          user['avatar'] ?? 'assets/images/placeholder.png',
-                          fit: BoxFit.contain,
+                        child: CircleAvatar(
+                          radius: 70,
+                          backgroundColor: Colors.white,
+                          backgroundImage:
+                              user.avatar.isNotEmpty
+                                  ? NetworkImage(user.avatar)
+                                  : const AssetImage(
+                                        'assets/images/person1.png',
+                                      )
+                                      as ImageProvider,
                         ),
                       ),
                       SafeArea(
@@ -83,17 +93,18 @@ class UserProfileLarge extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  user['name'] ?? '',
+                                  user.name.isNotEmpty
+                                      ? user.name
+                                      : 'No name given :(',
                                   style: AppTextStyles.headingMedium,
                                 ),
-                                const SizedBox(height: 0),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Row(
                                       children: [
                                         Icon(
-                                          user['role'] == 'veterinary'
+                                          user.userRole == UserRole.vet
                                               ? LineIcons.stethoscope
                                               : LineIcons.paw,
                                           size: 18,
@@ -101,7 +112,7 @@ class UserProfileLarge extends StatelessWidget {
                                         ),
                                         const SizedBox(width: 2),
                                         Text(
-                                          user['role'] == 'veterinary'
+                                          user.userRole == UserRole.vet
                                               ? 'Veterinary'
                                               : 'Pet Owner',
                                           style: AppTextStyles.bodySmall
@@ -122,9 +133,30 @@ class UserProfileLarge extends StatelessWidget {
                                                 context,
                                               ).colorScheme.onSurfaceVariant,
                                         ),
-                                        Text(
-                                          user['location'] ?? '',
-                                          style: AppTextStyles.bodySmall,
+                                        FutureBuilder<String>(
+                                          future: _getLocationNameFromGeoPoint(
+                                            user.location,
+                                          ),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return Text(
+                                                'Fetching location...',
+                                                style: AppTextStyles.bodySmall,
+                                              );
+                                            } else if (snapshot.hasError) {
+                                              return Text(
+                                                'Error fetching location',
+                                                style: AppTextStyles.bodySmall,
+                                              );
+                                            } else {
+                                              return Text(
+                                                snapshot.data ??
+                                                    'Unknown Location',
+                                                style: AppTextStyles.bodySmall,
+                                              );
+                                            }
+                                          },
                                         ),
                                       ],
                                     ),
@@ -147,31 +179,40 @@ class UserProfileLarge extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: List.generate(
-                            (user['attributes'] as List).length,
-                            (i) {
-                              final attr =
-                                  (user['attributes'] as List)[i]
-                                      as Map<String, dynamic>;
-                              return Column(
-                                children: [
-                                  _buildAttributeIcon(attr['icon'], context),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    attr['label'] as String,
-                                    style: AppTextStyles.bodySmall,
-                                  ),
-                                ],
-                              );
-                            },
-                          ),
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildAttributeItem(
+                              context,
+                              LineIcons.paw,
+                              '${user.ownedPets.length} Pets',
+                            ),
+                            _buildAttributeItem(
+                              context,
+                              LineIcons.heart,
+                              '${user.likedPets.length} Liked',
+                            ),
+                            _buildAttributeItem(
+                              context,
+                              LineIcons.calendar,
+                              '${DateTime.now().year - user.dob.year} years',
+                            ),
+                            if (user.userRole == UserRole.vet &&
+                                user.vetProfile != null)
+                              _buildAttributeItem(
+                                context,
+                                LineIcons.stethoscope,
+                                'Verified',
+                              ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 24),
                       Text('About', style: AppTextStyles.headingSmall),
                       const SizedBox(height: 8),
-                      Text(user['about'] ?? '', style: AppTextStyles.bodyBase),
+                      Text(
+                        user.bio.isNotEmpty ? user.bio : 'No bio available',
+                        style: AppTextStyles.bodyBase,
+                      ),
                       const SizedBox(height: 100),
                     ],
                   ),
@@ -200,7 +241,9 @@ class UserProfileLarge extends StatelessWidget {
                   elevation: 2,
                   shadowColor: AppColorStyles.black,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  // Contact logic will be implemented later
+                },
                 icon: Icon(
                   LineIcons.phone,
                   color: AppColorStyles.white,
@@ -221,23 +264,42 @@ class UserProfileLarge extends StatelessWidget {
     );
   }
 
-  Widget _buildAttributeIcon(dynamic icon, BuildContext context) {
-    if (icon == null) {
-      return const SizedBox(height: 36, width: 36);
-    }
-    if (icon is String) {
-      return CircleAvatar(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        child: Image.asset(icon, width: 28, height: 28),
+  Future<String> _getLocationNameFromGeoPoint(GeoPoint coordinates) async {
+    try {
+      final placemarks = await placemarkFromCoordinates(
+        coordinates.latitude,
+        coordinates.longitude,
       );
+
+      if (placemarks.isNotEmpty) {
+        final placemark = placemarks.first;
+        return "${placemark.locality}, ${placemark.administrativeArea}";
+      } else {
+        return "Unknown Location";
+      }
+    } catch (e) {
+      return "Error fetching location: $e";
     }
-    return CircleAvatar(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      child: Icon(
-        icon as IconData,
-        color: Theme.of(context).colorScheme.primary,
-        size: 24,
-      ),
+  }
+
+  Widget _buildAttributeItem(
+    BuildContext context,
+    IconData icon,
+    String label,
+  ) {
+    return Column(
+      children: [
+        CircleAvatar(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          child: Icon(
+            icon,
+            color: Theme.of(context).colorScheme.primary,
+            size: 24,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(label, style: AppTextStyles.bodySmall),
+      ],
     );
   }
 }

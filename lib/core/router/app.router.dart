@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/create_pet_profile/create_pet_profile.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/create_user_profile/create_user_profile.dart';
+import 'package:fyp_pawsenvy/core/models/pet.dart';
+import 'package:fyp_pawsenvy/core/models/app_user.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/pet/create_pet_profile/create_pet_profile.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/user/create_user_profile/create_user_profile.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/role_selection_page.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/user/user_profile_wrapper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fyp_pawsenvy/presentation/pages/welcome.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/pet_owner.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/search_list.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet_profile_large.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/profiles/user_profile_large.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/user/user_profile_screen.dart';
 import 'package:fyp_pawsenvy/presentation/auth_tree.dart';
 import 'package:fyp_pawsenvy/core/router/routes.dart';
 
@@ -56,22 +59,16 @@ class AppRouter {
         path: Routes.petProfile,
         name: 'petProfile',
         builder: (context, state) {
-          final pet = state.extra as Map<String, dynamic>?;
-          if (pet == null) {
-            return const Scaffold(body: Center(child: Text('Pet not found')));
-          }
-          return PetProfileLarge(profile: pet);
+          final pet = state.extra as Pet;
+          return PetProfileLarge(pet: pet);
         },
       ),
       GoRoute(
         path: Routes.userProfile,
         name: 'userProfile',
         builder: (context, state) {
-          final user = state.extra as Map<String, dynamic>?;
-          if (user == null) {
-            return const Scaffold(body: Center(child: Text('User not found')));
-          }
-          return UserProfileLarge(user: user);
+          final String userId = state.extra as String;
+          return UserProfileWrapper(uID: userId);
         },
       ),
       GoRoute(
@@ -87,9 +84,9 @@ class AppRouter {
       GoRoute(
         path: Routes.createUserProfile,
         name: 'createUserProfile',
-        builder: (context, state) => const CreateUserProfile(
-          isProfileIncomplete: true, // Hide back button for standalone route
-        ),
+        builder:
+            (context, state) =>
+                const CreateUserProfile(isProfileIncomplete: true),
       ),
     ],
   );

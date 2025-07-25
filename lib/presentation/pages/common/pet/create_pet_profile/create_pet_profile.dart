@@ -1,15 +1,14 @@
-// ignore_for_file: deprecated_member_use
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/services/storage.service.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:uuid/uuid.dart';
-import '../../../../core/theme/color.styles.dart';
-import '../../../../core/theme/text.styles.dart';
-import '../../../../core/models/pet.dart';
-import '../../../../core/services/auth.service.dart';
-import '../../../../core/services/db.service.dart';
+import '../../../../../core/theme/color.styles.dart';
+import '../../../../../core/theme/text.styles.dart';
+import '../../../../../core/models/pet.dart';
+import '../../../../../core/services/auth.service.dart';
+import '../../../../../core/services/db.service.dart';
 import 'add_pet_basic.dart';
 import 'add_pet_additional.dart';
 import 'add_pet_review.dart';
@@ -22,8 +21,12 @@ class CreatePetProfile extends StatefulWidget {
 }
 
 class _CreatePetProfileState extends State<CreatePetProfile> {
-  var uuid = Uuid();
+  late AuthService _auth;
+  late DBService _db;
+  late StorageService _storage;
+  late User? _user;
 
+  // page controllers
   int currentStep = 0;
   final PageController _pageController = PageController();
 
@@ -40,8 +43,10 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
   PetSpecies? _selectedSpecies;
   String? _avatarPath;
   String? _healthRecordsPath;
+  List<PetTemperament> _selectedTemperaments = [];
 
-  final List<String> stepTitles = ['Basic', 'Additional', 'Review'];
+  final List<String> steps = ['Basic', 'Additional', 'Review'];
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -51,7 +56,17 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
     _colorController.dispose();
     _weightController.dispose();
     _pageController.dispose();
+    _auth.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    _auth = Provider.of<AuthService>(context, listen: false);
+    _db = Provider.of<DBService>(context, listen: false);
+    _storage = Provider.of<StorageService>(context, listen: false);
+    _user = _auth.currentUser;
+    super.initState();
   }
 
   @override
@@ -67,6 +82,7 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
             // Form content
             Expanded(
               child: PageView(
+                scrollBehavior: null,
                 controller: _pageController,
                 onPageChanged: (index) {
                   setState(() {
@@ -90,7 +106,9 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
                     colorController: _colorController,
                     weightController: _weightController,
                     healthRecordsPath: _healthRecordsPath,
+                    selectedTemperaments: _selectedTemperaments,
                     onPickHealthRecords: _pickHealthRecords,
+                    onTemperamentsChanged: _onTemperamentsChanged,
                   ),
                   AddPetStepThree(
                     petName: _nameController.text,
@@ -98,6 +116,7 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
                     selectedGender: _selectedGender,
                     selectedSpecies: _selectedSpecies,
                     avatarPath: _avatarPath,
+                    selectedTemperaments: _selectedTemperaments,
                     additionalData: {
                       'breed': _breedController.text,
                       'age': _ageController.text,
@@ -124,7 +143,7 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
       child: Row(
         children: [
-          for (int i = 0; i < stepTitles.length; i++) ...[
+          for (int i = 0; i < steps.length; i++) ...[
             // Step circle
             Container(
               width: 32,
@@ -155,7 +174,7 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
             ),
 
             // Line between steps (if not last step)
-            if (i < stepTitles.length - 1)
+            if (i < steps.length - 1)
               Expanded(
                 child: Container(
                   height: 2,
@@ -194,14 +213,14 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
               size: 20,
             ),
             style: ButtonStyle(
-              side: MaterialStateProperty.all(
+              side: WidgetStateProperty.all(
                 BorderSide(color: AppColorStyles.purple),
               ),
-              shape: MaterialStateProperty.all(
+              shape: WidgetStateProperty.all(
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              backgroundColor: MaterialStateProperty.all(Colors.transparent),
-              overlayColor: MaterialStateProperty.all(
+              backgroundColor: WidgetStateProperty.all(Colors.transparent),
+              overlayColor: WidgetStateProperty.all(
                 AppColorStyles.purple.withOpacity(0.1),
               ),
             ),
@@ -213,17 +232,15 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
           // Next/Continue button
           ElevatedButton.icon(
             onPressed:
-                currentStep < stepTitles.length - 1
-                    ? _goToNextStep
-                    : _submitForm,
+                currentStep < steps.length - 1 ? _goToNextStep : _submitForm,
             icon: Icon(
-              currentStep < stepTitles.length - 1
+              currentStep < steps.length - 1
                   ? LineIcons.arrowRight
                   : LineIcons.check,
               color: AppColorStyles.white,
             ),
             label: Text(
-              currentStep < stepTitles.length - 1 ? 'Next' : 'Submit',
+              currentStep < steps.length - 1 ? 'Next' : 'Submit',
               style: AppTextStyles.bodyBase.copyWith(
                 color: AppColorStyles.white,
               ),
@@ -260,14 +277,20 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
     });
   }
 
-  void _onAvatarChanged(String? avatarPath) {
+  void _onAvatarChanged(String uploadedUrl) {
     setState(() {
-      _avatarPath = avatarPath;
+      _avatarPath = uploadedUrl;
+    });
+  }
+
+  void _onTemperamentsChanged(List<PetTemperament> temperaments) {
+    setState(() {
+      _selectedTemperaments = temperaments;
     });
   }
 
   void _goToNextStep() {
-    if (currentStep < stepTitles.length - 1) {
+    if (currentStep < steps.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -286,21 +309,13 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
 
   Future<void> _submitForm() async {
     if (!_validateForm()) return;
-    final v4 = uuid.v4();
 
-    try {
-      final authService = Provider.of<AuthService>(context, listen: false);
-      final currentUser = authService.currentUser;
+    if (_user == null) return;
 
-      if (currentUser == null) return;
+    final Pet newPet = _createPetFromData(_user!.uid);
+    await _db.addPetToDB(newPet);
 
-      final Pet newPet = _createPetFromData(currentUser.uid);
-      await DBService().addPet(newPet, v4);
-
-      if (mounted) Navigator.of(context).pop();
-    } catch (e) {
-      print('Error saving pet: $e');
-    }
+    if (mounted) Navigator.of(context).pop();
   }
 
   bool _validateForm() {
@@ -311,10 +326,8 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
 
   Pet _createPetFromData(String ownerId) {
     final now = Timestamp.now();
-    final v4 = uuid.v4();
 
     return Pet(
-      id: v4,
       ownerId: ownerId,
       name: _nameController.text.trim(),
       species: _selectedSpecies!,
@@ -326,10 +339,17 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
       avatar: _avatarPath ?? '',
       bio: _bioController.text.trim(),
       status: PetStatus.normal,
+      temperament: _selectedTemperaments,
       healthRecords:
           _healthRecordsPath != null ? {'path': _healthRecordsPath} : null,
       createdAt: now,
       updatedAt: now,
     );
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }

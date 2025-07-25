@@ -6,17 +6,15 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService extends ChangeNotifier {
-  final db = DBService();
-
+  final DBService _db = DBService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   User? get currentUser => _auth.currentUser;
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  Future<void> signInWithGoogle() async {
+  Future<UserCredential?> signInWithGoogle() async {
     try {
-      if (kDebugMode) print('signInWithGoogle() function started');
       final GoogleSignIn googleSignIn = GoogleSignIn();
 
       await googleSignIn.signOut(); // Ensure previous sessions are cleared
@@ -27,7 +25,7 @@ class AuthService extends ChangeNotifier {
       // Sign in and get user data
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
-      if (googleUser == null) return; // User canceled login
+      if (googleUser == null) return null;
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
@@ -41,34 +39,49 @@ class AuthService extends ChangeNotifier {
 
       // If new user, add to Firestore
       if (result.additionalUserInfo!.isNewUser) {
-        final user = result.user;
-
-        final appUser = AppUser(
-          id: user!.uid,
-          userRole: UserRole.undefined,
-          name: user.displayName ?? '',
-          email: user.email ?? '',
-          phone: user.phoneNumber ?? '',
-          avatar: user.photoURL ?? '',
-          bio: '',
-          location: const GeoPoint(0, 0),
-          createdAt: Timestamp.now(),
-          ownedPets: [],
-          likedPets: [],
-          vetProfile: null,
-        );
-        db.addUserToFirestore(appUser);
+        _handleUserAddToDB(result);
       }
-
-      if (kDebugMode) print('signInWithGoogle() function completed');
       notifyListeners();
+
+      return result;
     } catch (e) {
-      throw Exception('signInWithGoogle() error: $e');
+      debugPrint('signInWithGoogle() error: $e');
+      return null;
     }
   }
 
   Future<void> signOut() async {
     await _auth.signOut();
     notifyListeners();
+  }
+
+  Future<void> updateUserAvatar(String newUrl) async {
+    if (currentUser == null) return;
+
+    await currentUser!.updateProfile(photoURL: newUrl);
+    await currentUser!.reload();
+
+    await _db.users.doc(currentUser!.uid).update({'avatar': newUrl});
+  }
+
+  Future<void> _handleUserAddToDB(UserCredential result) async {
+    final user = result.user;
+    final appUser = AppUser(
+      userRole: UserRole.undefined,
+      name: user?.displayName ?? '',
+      email: user?.email ?? '',
+      phone: user?.phoneNumber ?? '',
+      avatar: user?.photoURL ?? '',
+      bio: '',
+      gender: Gender.undefined,
+      location: const GeoPoint(0, 0),
+      createdAt: Timestamp.now(),
+      dob: Timestamp(0, 0).toDate(),
+      ownedPets: [],
+      likedPets: [],
+      vetProfile: null,
+    );
+
+    await _db.addUserToDB(appUser, result.user!.uid);
   }
 }

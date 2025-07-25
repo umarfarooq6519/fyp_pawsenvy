@@ -3,46 +3,53 @@ import 'package:fyp_pawsenvy/core/models/vet_profile.dart';
 
 enum UserRole { owner, vet, undefined }
 
+enum Gender { male, female, undefined }
+
 class AppUser {
-  final String id;
   final UserRole userRole;
   final String name;
   final String email;
   final String phone;
+  final Gender gender;
   final String bio;
   final String avatar;
   final GeoPoint location;
   final Timestamp createdAt;
+  final DateTime dob;
   final List<String> ownedPets;
   final List<String> likedPets;
   final VetProfile? vetProfile; // Only for vets
 
   AppUser({
-    required this.id,
     required this.userRole,
     required this.name,
     required this.email,
     required this.phone,
     required this.avatar,
     required this.bio,
+    required this.gender,
     required this.location,
     required this.createdAt,
+    required this.dob,
     required this.ownedPets,
     required this.likedPets,
     this.vetProfile,
   });
 
-  factory AppUser.fromMap(String id, Map<String, dynamic> data) {
+  factory AppUser.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
     return AppUser(
-      id: id,
       userRole: userRoleFromString(data['userType'] ?? 'undefined'),
       name: data['name'] ?? '',
       email: data['email'] ?? '',
       phone: data['phone'] ?? '',
       avatar: data['avatar'] ?? '',
       bio: data['bio'] ?? '',
+      gender: genderFromString(data['gender'] ?? 'male'),
       location: data['location'] ?? const GeoPoint(0, 0),
       createdAt: data['createdAt'] ?? Timestamp.now(),
+      dob: (data['dob'] as Timestamp).toDate(),
       ownedPets: List<String>.from(data['ownedPets'] ?? []),
       vetProfile:
           data['vetProfile'] != null
@@ -60,8 +67,10 @@ class AppUser {
       'phone': phone,
       'bio': bio,
       'avatar': avatar,
+      'gender': gender.name,
       'location': location,
       'createdAt': createdAt,
+      'dob': Timestamp.fromDate(dob),
       'ownedPets': ownedPets,
       'likedPets': likedPets,
       if (vetProfile != null) 'vetProfile': vetProfile!.toMap(),
@@ -81,10 +90,21 @@ UserRole userRoleFromString(String value) {
   }
 }
 
-
+Gender genderFromString(String value) {
+  switch (value.toLowerCase()) {
+    case 'female':
+      return Gender.female;
+    case 'male':
+      return Gender.male;
+    case 'undefined':
+    default:
+      return Gender.undefined;
+  }
+}
 
 // ##################### return format #####################
 /*
+
   {
     "userType": "owner" | "vet" | "undefined",
     "name": "John Doe",
@@ -92,8 +112,10 @@ UserRole userRoleFromString(String value) {
     "phone": "+1234567890",
     "bio": "Short bio here",
     "avatar": "https://.../avatar.png",
+    "gender": "male" | "female",
     "location": GeoPoint(latitude, longitude), // Firestore GeoPoint object
     "createdAt": Timestamp, // Firestore Timestamp object
+    "dob": Timestamp, // Firestore Timestamp object
     "ownedPets": ["petId1", "petId2", ...], // List of pet IDs
     "likedPets": ["petId3", "petId4", ...],
 
@@ -102,4 +124,5 @@ UserRole userRoleFromString(String value) {
       // See VetProfile return format for details
     }
   }
+
 */

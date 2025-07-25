@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:fyp_pawsenvy/firebase_options.dart';
 import 'package:fyp_pawsenvy/core/services/storage.service.dart';
 import 'package:fyp_pawsenvy/core/services/auth.service.dart';
+import 'package:fyp_pawsenvy/core/services/db.service.dart';
 import 'package:fyp_pawsenvy/core/router/app.router.dart';
 
 void main() async {
@@ -23,8 +24,9 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => StorageService()),
+        Provider(create: (context) => StorageService()),
         ChangeNotifierProvider(create: (context) => AuthService()),
+        Provider(create: (context) => DBService()),
       ],
       child: MaterialApp.router(
         routerConfig: AppRouter.router,

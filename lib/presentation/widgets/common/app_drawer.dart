@@ -1,9 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/services/auth.service.dart';
+import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/theme.dart';
+import 'package:fyp_pawsenvy/core/router/routes.dart';
+import 'package:fyp_pawsenvy/providers/user.provider.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -13,8 +15,9 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final User? user = authService.currentUser;
+    final AppUser? appUser = context.watch<UserProvider>().user;
+    // ignore: no_leading_underscores_for_local_identifiers
+    final AuthService _auth = Provider.of<AuthService>(context, listen: false);
 
     return Drawer(
       backgroundColor: AppColorStyles.white,
@@ -32,15 +35,15 @@ class AppDrawer extends StatelessWidget {
                   CircleAvatar(
                     radius: 50,
                     backgroundImage:
-                        user?.photoURL != null
-                            ? NetworkImage(user!.photoURL!)
+                        appUser?.avatar != null
+                            ? NetworkImage(appUser!.avatar)
                             : const AssetImage('assets/images/person1.png'),
                     backgroundColor: AppColorStyles.lightGrey,
                   ),
                   const SizedBox(height: 16),
                   // Name
                   Text(
-                    user?.displayName ?? "Guest",
+                    appUser?.name ?? "Guest",
                     style: AppTextStyles.headingSmall.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColorStyles.black,
@@ -49,7 +52,7 @@ class AppDrawer extends StatelessWidget {
                   const SizedBox(height: 4),
                   // Email
                   Text(
-                    user?.email ?? 'no email found',
+                    appUser?.email ?? 'no email found',
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColorStyles.grey,
                     ),
@@ -65,7 +68,11 @@ class AppDrawer extends StatelessWidget {
                   _buildDrawerItem(
                     icon: Icons.account_circle_outlined,
                     title: 'My Profile Card',
-                    onTap: () {},
+                    onTap:
+                        () => _navigateToUserProfile(
+                          context,
+                          _auth.currentUser!.uid,
+                        ),
                   ),
                   _buildDrawerItem(
                     icon: LineIcons.cog,
@@ -78,7 +85,7 @@ class AppDrawer extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(AppSpacing.xl),
-              child: _signOutButton(context, authService),
+              child: _signOutButton(context),
             ),
           ],
         ),
@@ -86,16 +93,23 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  ElevatedButton _signOutButton(BuildContext context, AuthService authService) {
+  Future<void> _navigateToUserProfile(BuildContext context, String uID) async {
+    try {
+      if (context.mounted) {
+        context.push(Routes.userProfile, extra: uID);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading profile: $e')));
+      }
+    }
+  }
+
+  ElevatedButton _signOutButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () async {
-        try {
-          await authService.signOut();
-          context.go('/');
-        } catch (e) {
-          print("Error signing out: $e");
-        }
-      },
+      onPressed: () => _handleSignOut(context),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColorStyles.pastelRed,
         foregroundColor: AppColorStyles.black,
@@ -109,6 +123,23 @@ class AppDrawer extends StatelessWidget {
       ),
       child: Text('Sign out', style: AppTextStyles.bodyBase),
     );
+  }
+
+  void _handleSignOut(BuildContext context) async {
+    try {
+      await AuthService().signOut();
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Use Signed Out')));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error signing out: $e')));
+      }
+    }
   }
 
   Widget _buildDrawerItem({
@@ -129,7 +160,7 @@ class AppDrawer extends StatelessWidget {
       contentPadding: EdgeInsets.symmetric(
         horizontal: AppSpacing.xl,
         vertical: AppSpacing.xs,
-      ), // was EdgeInsets.symmetric(horizontal: 24, vertical: 4)
+      ),
     );
   }
 }

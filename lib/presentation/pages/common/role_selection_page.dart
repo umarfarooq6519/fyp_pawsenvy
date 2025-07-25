@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:fyp_pawsenvy/core/services/db.service.dart';
 import 'package:go_router/go_router.dart';
@@ -14,11 +15,12 @@ class RoleSelectionPage extends StatefulWidget {
 }
 
 class _RoleSelectionPageState extends State<RoleSelectionPage> {
-  final AuthService auth = AuthService();
-  final DBService db = DBService();
   bool isLoading = false;
 
-  get firstName => auth.currentUser?.displayName?.split(' ')[0] ?? '';
+  String get firstName {
+    final auth = Provider.of<AuthService>(context, listen: false);
+    return auth.currentUser?.displayName?.split(' ')[0] ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,8 +131,8 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                     vertical: 12,
                     horizontal: 18,
                   ),
-                ),
-                onPressed: () async {
+                ),                onPressed: () async {
+                  final auth = Provider.of<AuthService>(context, listen: false);
                   await auth.signOut();
                 },
                 child: Row(
@@ -152,12 +154,13 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
       ),
     );
   }
-
   Future<void> handleSelection(
     BuildContext context,
     UserRole role,
     String path,
   ) async {
+    final auth = Provider.of<AuthService>(context, listen: false);
+    final db = Provider.of<DBService>(context, listen: false);
     await db.setUserRole(auth.currentUser!.uid, role);
     // ignore: use_build_context_synchronously
     context.go(path);

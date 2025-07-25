@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/text.styles.dart';
-import '../../../../core/theme/color.styles.dart';
-import '../../../../core/models/pet.dart';
+import '../../../../../core/theme/text.styles.dart';
+import '../../../../../core/theme/color.styles.dart';
+import '../../../../../core/models/pet.dart';
 
 class AddPetStepThree extends StatelessWidget {
   final String? petName;
@@ -9,6 +9,7 @@ class AddPetStepThree extends StatelessWidget {
   final String? selectedGender;
   final PetSpecies? selectedSpecies;
   final String? avatarPath;
+  final List<PetTemperament>? selectedTemperaments;
   final Map<String, dynamic>? additionalData;
   final VoidCallback onSubmit;
 
@@ -19,6 +20,7 @@ class AddPetStepThree extends StatelessWidget {
     required this.selectedGender,
     required this.selectedSpecies,
     required this.avatarPath,
+    this.selectedTemperaments,
     this.additionalData,
     required this.onSubmit,
   });
@@ -96,6 +98,21 @@ class AddPetStepThree extends StatelessWidget {
                   ? 'Uploaded'
                   : 'Not uploaded',
             ),
+          ],
+
+          // Temperament information
+          if (selectedTemperaments != null &&
+              selectedTemperaments!.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              'Temperament',
+              style: AppTextStyles.bodyBase.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColorStyles.deepPurple,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _buildTemperamentDisplay(selectedTemperaments!),
           ],
 
           const SizedBox(height: 30),
@@ -192,6 +209,30 @@ class AddPetStepThree extends StatelessWidget {
       errorBuilder: (context, error, stackTrace) {
         return Icon(Icons.pets, size: 40, color: AppColorStyles.purple);
       },
+    );
+  }
+
+  Widget _buildTemperamentDisplay(List<PetTemperament> temperaments) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children:
+          temperaments.map((temperament) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColorStyles.deepPurple,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                petTemperamentToString(temperament),
+                style: AppTextStyles.bodyExtraSmall.copyWith(
+                  color: AppColorStyles.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            );
+          }).toList(),
     );
   }
 }

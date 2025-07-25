@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/theme/color.styles.dart';
-import '../../../../core/theme/text.styles.dart';
-import '../../../../core/models/pet.dart';
-import '../../../../core/services/storage.service.dart';
+import '../../../../../core/theme/color.styles.dart';
+import '../../../../../core/theme/text.styles.dart';
+import '../../../../../core/models/pet.dart';
+import '../../../../../core/services/storage.service.dart';
 
 class AddPetStepOne extends StatefulWidget {
   final TextEditingController nameController;
@@ -13,7 +14,7 @@ class AddPetStepOne extends StatefulWidget {
   final String? avatarPath;
   final Function(PetSpecies) onSpeciesChanged;
   final Function(String) onGenderChanged;
-  final Function(String)? onAvatarChanged;
+  final void Function(String) onAvatarChanged;
 
   const AddPetStepOne({
     super.key,
@@ -24,7 +25,7 @@ class AddPetStepOne extends StatefulWidget {
     required this.avatarPath,
     required this.onSpeciesChanged,
     required this.onGenderChanged,
-    this.onAvatarChanged,
+    required this.onAvatarChanged,
   });
 
   @override
@@ -32,31 +33,6 @@ class AddPetStepOne extends StatefulWidget {
 }
 
 class _AddPetStepOneState extends State<AddPetStepOne> {
-  
-  Future<void> _handleAvatarTap() async {
-    final storageService = Provider.of<StorageService>(context, listen: false);
-    final String? uploadedUrl = await storageService.uploadPetAvatar();
-    
-    if (uploadedUrl != null && widget.onAvatarChanged != null) {
-      widget.onAvatarChanged!(uploadedUrl);
-    }
-  }
-
-  ImageProvider _getAvatarImage() {
-    // Show uploaded image if available
-    if (widget.avatarPath != null && widget.avatarPath!.startsWith('http')) {
-      return NetworkImage(widget.avatarPath!);
-    }
-    
-    // Show species default or placeholder
-    if (widget.selectedSpecies == PetSpecies.cat) {
-      return const AssetImage('assets/images/cat.png');
-    } else if (widget.selectedSpecies == PetSpecies.dog) {
-      return const AssetImage('assets/images/dog.png');
-    }
-    
-    return const AssetImage('assets/images/placeholder.png');
-  }
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -69,23 +45,38 @@ class _AddPetStepOneState extends State<AddPetStepOne> {
             style: AppTextStyles.headingLarge,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 40),          GestureDetector(
-            onTap: _handleAvatarTap,
+          const SizedBox(height: 40),
+          GestureDetector(
+            onTap: () async {
+              final String? uploadedUrl =
+                  await Provider.of<StorageService>(
+                    context,
+                    listen: false,
+                  ).uploadPetAvatar();
+
+              if (uploadedUrl != null) {
+                widget.onAvatarChanged(uploadedUrl);
+              }
+            },
             child: Consumer<StorageService>(
               builder: (context, storageService, child) {
                 return CircleAvatar(
                   radius: 60,
                   backgroundColor: AppColorStyles.lightPurple,
-                  backgroundImage: _getAvatarImage(),
-                  child: storageService.isUploading
-                      ? const CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        )
-                      : null,
+                  backgroundImage:
+                      widget.avatarPath != null
+                          ? NetworkImage(widget.avatarPath!)
+                          : null,
+                  child: Icon(
+                    LineIcons.dog,
+                    color: AppColorStyles.lightGrey,
+                    size: 40,
+                  ),
                 );
               },
             ),
-          ),          const SizedBox(height: 8),
+          ),
+          const SizedBox(height: 8),
           Text(
             'Tap to add photo',
             style: AppTextStyles.bodySmall.copyWith(

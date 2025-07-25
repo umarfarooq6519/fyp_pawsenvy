@@ -6,25 +6,16 @@ import 'package:fyp_pawsenvy/core/theme/theme.dart';
 
 class ProfileMedium extends StatelessWidget {
   final Map<String, dynamic> profile;
-  final bool isFavorite;
-  final VoidCallback? onFavorite;
-  final VoidCallback? onTap;
-
   const ProfileMedium({
     super.key,
     required this.profile,
-    this.isFavorite = false,
-    this.onFavorite,
-    this.onTap,
   });
-
   @override
   Widget build(BuildContext context) {
     final String name = profile['name'] ?? '';
     final String? image = profile['image'] as String?;
     final String? type = profile['type'] as String?;
     final String? about = profile['about'] as String?;
-    final bool verified = profile['verified'] ?? false;
     final String? tag1 = profile['tag1'] as String?;
     final String? tag2 = profile['tag2'] as String?;
 
@@ -48,14 +39,12 @@ class ProfileMedium extends StatelessWidget {
             padding: EdgeInsets.all(AppSpacing.xl),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
+              children: [                Center(
                   child: CircleAvatar(
                     radius: 80,
-                    backgroundImage: AssetImage(
-                      image ?? 'assets/images/placeholder.png',
-                    ),
+                    backgroundImage: image != null ? NetworkImage(image) : null,
                     backgroundColor: AppColorStyles.transparent,
+                    child: image == null ? Icon(Icons.person, size: 80, color: Colors.grey) : null,
                   ),
                 ),
                 SizedBox(height: AppSpacing.md),
@@ -76,12 +65,6 @@ class ProfileMedium extends StatelessWidget {
                           ),
                       ],
                     ),
-                    if (verified)
-                      Icon(
-                        LineIcons.checkCircle,
-                        color: AppColorStyles.deepPurple,
-                        size: 24,
-                      ),
                   ],
                 ),
                 if (tag1 != null || tag2 != null)
@@ -131,18 +114,7 @@ class ProfileMedium extends StatelessWidget {
               ],
             ),
           ),
-          Positioned(
-            top: 8,
-            right: 8,
-            child: IconButton(
-              onPressed: onFavorite,
-              icon: Icon(
-                isFavorite ? LineIcons.heartAlt : LineIcons.heart,
-                color: AppColorStyles.red,
-                size: 26,
-              ),
-            ),
-          ),
+          // ...existing code...
         ],
       ),
     );

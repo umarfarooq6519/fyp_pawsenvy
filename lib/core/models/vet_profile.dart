@@ -174,6 +174,7 @@ Specialization? _specializationFromString(String value) {
     "clinicName": "Example Clinic",
     "licenseNumber": "ABC123",
     "specializations": ["surgery", "medicine", ...], // as strings
+    "services": ["petSitting", "petWalking", ...] // as strings
     "experience": 5,
     "operatingHours": {
       "mon": { "open": "09:00", "close": "17:00" },
@@ -184,7 +185,6 @@ Specialization? _specializationFromString(String value) {
       "sat": { "open": "10:00", "close": "14:00" },
       "sun": { "open": null, "close": null }
     },
-    "services": ["petSitting", "petWalking", ...] // as strings
   }
 
 */

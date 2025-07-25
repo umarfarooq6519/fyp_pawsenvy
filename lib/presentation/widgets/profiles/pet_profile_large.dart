@@ -1,12 +1,37 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
+import 'package:fyp_pawsenvy/core/models/pet.dart';
+import 'package:fyp_pawsenvy/core/services/auth.service.dart';
+import 'package:fyp_pawsenvy/core/services/db.service.dart';
 
-class PetProfileLarge extends StatelessWidget {
-  const PetProfileLarge({super.key, required this.profile});
+class PetProfileLarge extends StatefulWidget {
+  const PetProfileLarge({super.key, required this.pet});
 
-  final Map<String, dynamic> profile;
+  final Pet pet;
+
+  @override
+  State<PetProfileLarge> createState() => _PetProfileLargeState();
+}
+
+class _PetProfileLargeState extends State<PetProfileLarge> {
+  late final AuthService _auth;
+  late final DBService _db;
+  late final User? _user;
+
+  final bool _isLiked = false;
+  final bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _auth = Provider.of<AuthService>(context, listen: false);
+    _db = Provider.of<DBService>(context, listen: false);
+    _user = _auth.currentUser;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +56,24 @@ class PetProfileLarge extends StatelessWidget {
                     children: [
                       Align(
                         alignment: Alignment.center,
-                        child: _displayImage(profile),
+                        child: CircleAvatar(
+                          radius: 80,
+                          backgroundColor: Colors.white,
+                          backgroundImage:
+                              widget.pet.avatar.isNotEmpty
+                                  ? NetworkImage(widget.pet.avatar)
+                                  : AssetImage(
+                                        widget.pet.species == PetSpecies.dog
+                                            ? 'assets/images/dog.png'
+                                            : widget.pet.species ==
+                                                PetSpecies.cat
+                                            ? 'assets/images/cat.png'
+                                            : 'assets/images/placeholder.png',
+                                      )
+                                      as ImageProvider,
+                          onBackgroundImageError: (_, __) {},
+                          child: null,
+                        ),
                       ),
                       // Top bar
                       Padding(
@@ -70,6 +112,7 @@ class PetProfileLarge extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Name, species, gender
                       Row(
                         children: [
                           Expanded(
@@ -77,40 +120,26 @@ class PetProfileLarge extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  profile['name'] as String,
+                                  widget.pet.name,
                                   style: AppTextStyles.headingMedium,
                                 ),
                                 const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      LineIcons.mapMarker,
-                                      size: 16,
-                                      color: AppColorStyles.black,
-                                    ),
-                                    const SizedBox(width: 2),
-                                    Text(
-                                      profile['location'] as String,
-                                      style: AppTextStyles.bodyExtraSmall,
-                                    ),
-                                  ],
+                                Text(
+                                  '${_capitalizeFirst(widget.pet.species.name)} • ${_capitalizeFirst(widget.pet.gender)}',
+                                  style: AppTextStyles.bodyExtraSmall,
                                 ),
                               ],
                             ),
                           ),
                           IconButton(
                             onPressed: () {},
-                            icon: Icon(
-                              LineIcons.heart,
-                              color: Colors.red,
-                              size: 28,
-                            ),
+                            icon: Icon(LineIcons.heart),
+                            iconSize: 28,
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
                       const SizedBox(height: 16),
-                      // Attributes
+                      // Attributes section: weight, color, age, breed
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
@@ -122,48 +151,78 @@ class PetProfileLarge extends StatelessWidget {
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: List.generate(
-                            (profile['attributes'] as List).length,
-                            (i) {
-                              final attr =
-                                  (profile['attributes'] as List)[i]
-                                      as Map<String, dynamic>;
-                              return Column(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.surface,
-                                    child: Icon(
-                                      attr['icon'] as IconData,
-                                      color:
-                                          Theme.of(
-                                            context,
-                                          ).colorScheme.secondary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    attr['label'] as String,
-                                    style: AppTextStyles.bodyExtraSmall,
-                                  ),
-                                ],
-                              );
-                            },
-                          ),
+                          children: [
+                            _buildAttributeItem(
+                              context,
+                              LineIcons.weight,
+                              '${widget.pet.weight}kg',
+                            ),
+                            _buildAttributeItem(
+                              context,
+                              LineIcons.palette,
+                              _capitalizeFirst(widget.pet.color),
+                            ),
+                            _buildAttributeItem(
+                              context,
+                              LineIcons.calendar,
+                              '${widget.pet.age} yrs',
+                            ),
+                            _buildAttributeItem(
+                              context,
+                              LineIcons.dna,
+                              _capitalizeFirst(widget.pet.breed),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      if (widget.pet.temperament.isNotEmpty) ...[
+                        const SizedBox(height: 18),
+                        // Temperament
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
+                          children:
+                              widget.pet.temperament
+                                  .map(
+                                    (temp) => Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.primaryContainer,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        _capitalizeFirst(temp.name),
+                                        style: AppTextStyles.bodyExtraSmall
+                                            .copyWith(
+                                              color:
+                                                  Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimaryContainer,
+                                            ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
                       Text(
-                        'About this pet',
+                        'About ${widget.pet.name}',
                         style: AppTextStyles.headingSmall.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        profile['about'] as String,
-                        style: AppTextStyles.bodySmall,
-                      ),
+                      Text(widget.pet.bio, style: AppTextStyles.bodySmall),
+                      const SizedBox(height: 16),
+
+                      // Temperament section
                       const SizedBox(height: 80), // Space for button
                     ],
                   ),
@@ -219,16 +278,25 @@ class PetProfileLarge extends StatelessWidget {
     );
   }
 
-  Image _displayImage(Map<String, Object?> profile) {
-    final type = profile['type'];
-
-    return Image.asset(
-      type == 'Dog'
-          ? 'assets/images/dog.png'
-          : type == 'Cat'
-          ? 'assets/images/cat.png'
-          : 'assets/images/placeholder.png',
-      fit: BoxFit.contain,
+  Widget _buildAttributeItem(
+    BuildContext context,
+    IconData icon,
+    String label,
+  ) {
+    return Column(
+      children: [
+        CircleAvatar(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          child: Icon(icon, color: Theme.of(context).colorScheme.secondary),
+        ),
+        const SizedBox(height: 6),
+        Text(label, style: AppTextStyles.bodyExtraSmall),
+      ],
     );
+  }
+
+  String _capitalizeFirst(String text) {
+    if (text.isEmpty) return text;
+    return text[0].toUpperCase() + text.substring(1).toLowerCase();
   }
 }
