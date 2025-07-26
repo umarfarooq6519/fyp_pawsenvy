@@ -13,14 +13,14 @@ import '../../../core/services/auth.service.dart';
 import '../../../core/services/db.service.dart';
 import '../../widgets/profiles/profile_medium.dart';
 
-class YourPetsScreen extends StatefulWidget {
-  const YourPetsScreen({super.key});
+class PetsScreen extends StatefulWidget {
+  const PetsScreen({super.key});
 
   @override
-  State<YourPetsScreen> createState() => _YourPetsScreenState();
+  State<PetsScreen> createState() => _PetsScreenState();
 }
 
-class _YourPetsScreenState extends State<YourPetsScreen> {
+class _PetsScreenState extends State<PetsScreen> {
   int _activePetIndex = 0;
   int _selectedView = 0;
 

@@ -6,7 +6,7 @@ import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:line_icons/line_icons.dart';
 
-class CreateUserDetails extends StatefulWidget {
+class CompleteUserDetails extends StatefulWidget {
   final TextEditingController nameController;
   final TextEditingController phoneController;
   final TextEditingController bioController;
@@ -14,12 +14,11 @@ class CreateUserDetails extends StatefulWidget {
   final String? avatarPath;
   final GeoPoint? location;
   final DateTime? dateOfBirth;
-  final VoidCallback onAvatarChanged;
   final Function(Gender) onGenderChange;
   final Function(DateTime) onDobChanged;
   final Future<void> Function() onLocationChanged;
 
-  const CreateUserDetails({
+  const CompleteUserDetails({
     super.key,
     required this.nameController,
     required this.phoneController,
@@ -28,19 +27,19 @@ class CreateUserDetails extends StatefulWidget {
     required this.avatarPath,
     required this.location,
     required this.dateOfBirth,
-    required this.onAvatarChanged,
     required this.onDobChanged,
     required this.onGenderChange,
     required this.onLocationChanged,
   });
 
   @override
-  State<CreateUserDetails> createState() => _CreateUserDetailsState();
+  State<CompleteUserDetails> createState() => _CompleteUserDetailsState();
 }
 
-class _CreateUserDetailsState extends State<CreateUserDetails> {
+class _CompleteUserDetailsState extends State<CompleteUserDetails> {
   @override
   Widget build(BuildContext context) {
+    print(widget.bioController.text);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: ListView(
@@ -50,20 +49,17 @@ class _CreateUserDetailsState extends State<CreateUserDetails> {
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 32),
-
-          // Avatar
+          const SizedBox(height: 32), // Avatar
           Center(
             child: GestureDetector(
-              onTap: () => {widget.onAvatarChanged()},
+              onTap: () {},
               child: CircleAvatar(
                 radius: 50,
                 backgroundColor: AppColorStyles.lightGrey,
-                backgroundImage: NetworkImage(widget.avatarPath!),
-                child:
-                    widget.avatarPath == null
-                        ? const Icon(LineIcons.camera, size: 30)
-                        : null,
+                backgroundImage:
+                    widget.avatarPath != null
+                        ? NetworkImage(widget.avatarPath!)
+                        : AssetImage('assets/images/person1.png'),
               ),
             ),
           ),
@@ -105,7 +101,9 @@ class _CreateUserDetailsState extends State<CreateUserDetails> {
               DropdownMenuItem(value: Gender.female, child: Text('Female')),
             ],
             onChanged: (Gender? value) {
-              widget.onGenderChange(value!);
+              if (value != null) {
+                widget.onGenderChange(value);
+              }
             },
           ),
 
@@ -145,7 +143,7 @@ class _CreateUserDetailsState extends State<CreateUserDetails> {
           ListTile(
             leading: const Icon(LineIcons.birthdayCake),
             title: Text(
-              widget.dateOfBirth != null
+              widget.dateOfBirth != Timestamp(0, 0).toDate()
                   ? '${widget.dateOfBirth!.day}/${widget.dateOfBirth!.month}/${widget.dateOfBirth!.year}'
                   : 'Select Date of Birth',
             ),
@@ -168,7 +166,7 @@ class _CreateUserDetailsState extends State<CreateUserDetails> {
           ListTile(
             leading: const Icon(LineIcons.mapMarker, size: 20),
             title: Text(
-              widget.location != null
+              widget.location != GeoPoint(0, 0)
                   ? 'Lat: ${widget.location!.latitude.toStringAsFixed(4)}, Long: ${widget.location!.longitude.toStringAsFixed(4)}'
                   : 'Set Location',
             ),

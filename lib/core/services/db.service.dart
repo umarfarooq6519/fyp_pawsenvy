@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fyp_pawsenvy/core/models/booking.dart';
@@ -24,8 +25,22 @@ class DBService {
   // ################### User ###################
 
   // Real-time stream of the user's document
-  Stream<AppUser> getUserStream(String uid) {
-    return users.doc(uid).snapshots().map((doc) => AppUser.fromFirestore(doc));
+  Stream<AppUser> getUserStream(String uID) {
+    return users.doc(uID).snapshots().map((doc) => AppUser.fromFirestore(doc));
+  }
+
+  // Update multiple user doc fields
+  Future<bool> updateUserFields(
+    BuildContext context,
+    String uID,
+    Map<String, dynamic> fields,
+  ) async {
+    try {
+      await users.doc(uID).update(fields);
+      return true;
+    } catch (e) {
+      throw Exception('updateUserFields() failed: $e');
+    }
   }
 
   Future<void> addUserToDB(AppUser appUser, String uID) async {
@@ -37,22 +52,6 @@ class DBService {
     } catch (e) {
       if (kDebugMode) print('addUserToDB() failed: $e');
       throw Exception('addUserToDB() failed: $e');
-    }
-  }
-
-  Future<UserRole> getUserRole(String uID) async {
-    try {
-      final DocumentSnapshot doc;
-      doc = await users.doc(uID).get();
-
-      if (doc.exists) {
-        return AppUser.fromFirestore(doc).userRole;
-      }
-
-      return UserRole.undefined;
-    } catch (e) {
-      if (kDebugMode) print("Error fetching user role: $e");
-      return UserRole.undefined;
     }
   }
 

@@ -128,7 +128,7 @@ class _WelcomeState extends State<Welcome> {
           if (context.mounted) {
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(SnackBar(content: Text('Error signing-in: $e')));
+            ).showSnackBar(SnackBar(content: Text('Could not sign in')));
           }
         }
       },

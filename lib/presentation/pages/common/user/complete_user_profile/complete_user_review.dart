@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 
-class CreateUserReview extends StatelessWidget {
+class CompleteUserReview extends StatelessWidget {
   final String? userName;
   final String? userPhone;
   final String? userBio;
@@ -13,7 +13,7 @@ class CreateUserReview extends StatelessWidget {
   final VoidCallback onSubmit;
   final bool isLoading;
 
-  const CreateUserReview({
+  const CompleteUserReview({
     super.key,
     required this.userName,
     required this.userPhone,
@@ -57,7 +57,7 @@ class CreateUserReview extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 30),          // Review information
+          const SizedBox(height: 30), // Review information
           _buildReviewSection('Basic Information', [
             _buildReviewItem('Name', userName ?? 'Not provided'),
             _buildReviewItem('Phone', userPhone ?? 'Not provided'),
@@ -66,11 +66,10 @@ class CreateUserReview extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          _buildReviewSection('Personal Information', [            _buildReviewItem(
+          _buildReviewSection('Personal Information', [
+            _buildReviewItem(
               'Date of Birth',
-              dateOfBirth != null
-                  ? _formatDate(dateOfBirth!)
-                  : 'Not provided',
+              dateOfBirth != null ? _formatDate(dateOfBirth!) : 'Not provided',
             ),
           ]),
 
@@ -79,7 +78,7 @@ class CreateUserReview extends StatelessWidget {
           _buildReviewSection('Location Information', [
             _buildReviewItem(
               'Location',
-              location != null 
+              location != null
                   ? 'Set (${location!.latitude.toStringAsFixed(4)}, ${location!.longitude.toStringAsFixed(4)})'
                   : 'Not set',
             ),
@@ -99,22 +98,25 @@ class CreateUserReview extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: isLoading
-                  ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              child:
+                  isLoading
+                      ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                      : Text(
+                        'Create Profile',
+                        style: AppTextStyles.bodyBase.copyWith(
+                          color: AppColorStyles.white,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    )
-                  : Text(
-                      'Create Profile',
-                      style: AppTextStyles.bodyBase.copyWith(
-                        color: AppColorStyles.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
             ),
           ),
 
@@ -130,11 +132,7 @@ class CreateUserReview extends StatelessWidget {
         avatarPath!,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          return const Icon(
-            Icons.person,
-            size: 40,
-            color: Colors.white,
-          );
+          return const Icon(Icons.person, size: 40, color: Colors.white);
         },
       );
     }
@@ -144,20 +142,12 @@ class CreateUserReview extends StatelessWidget {
         avatarPath!,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          return const Icon(
-            Icons.person,
-            size: 40,
-            color: Colors.white,
-          );
+          return const Icon(Icons.person, size: 40, color: Colors.white);
         },
       );
     }
 
-    return const Icon(
-      Icons.person,
-      size: 40,
-      color: Colors.white,
-    );
+    return const Icon(Icons.person, size: 40, color: Colors.white);
   }
 
   Widget _buildReviewSection(String title, List<Widget> items) {
@@ -180,9 +170,7 @@ class CreateUserReview extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppColorStyles.lightPurple),
           ),
-          child: Column(
-            children: items,
-          ),
+          child: Column(children: items),
         ),
       ],
     );
@@ -205,13 +193,9 @@ class CreateUserReview extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              value,
-              style: AppTextStyles.bodySmall,
-            ),
-          ),
-        ],      ),
+          Expanded(child: Text(value, style: AppTextStyles.bodySmall)),
+        ],
+      ),
     );
   }
 

@@ -35,9 +35,12 @@ class AppUser {
     required this.likedPets,
     this.vetProfile,
   });
-
   factory AppUser.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+    final data = doc.data() as Map<String, dynamic>?;
+
+    if (data == null) {
+      throw Exception('Document data is null');
+    }
 
     return AppUser(
       userRole: userRoleFromString(data['userType'] ?? 'undefined'),
@@ -46,10 +49,13 @@ class AppUser {
       phone: data['phone'] ?? '',
       avatar: data['avatar'] ?? '',
       bio: data['bio'] ?? '',
-      gender: genderFromString(data['gender'] ?? 'male'),
+      gender: genderFromString(data['gender'] ?? 'undefined'),
       location: data['location'] ?? const GeoPoint(0, 0),
       createdAt: data['createdAt'] ?? Timestamp.now(),
-      dob: (data['dob'] as Timestamp).toDate(),
+      dob:
+          data['dob'] != null
+              ? (data['dob'] as Timestamp).toDate()
+              : Timestamp(0, 0).toDate(),
       ownedPets: List<String>.from(data['ownedPets'] ?? []),
       vetProfile:
           data['vetProfile'] != null

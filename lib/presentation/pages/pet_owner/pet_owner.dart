@@ -1,19 +1,17 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/router/routes.dart';
-import 'package:fyp_pawsenvy/core/services/auth.service.dart';
-import 'package:fyp_pawsenvy/core/services/db.service.dart';
+import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/user/create_user_profile/create_user_profile.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/your_pets_screen.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/user/complete_user_profile/complete_user_profile.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/pets_screen.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_reminders.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_dashboard.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/community.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/common/expandable_fab.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/common/app_drawer.dart';
-import 'package:go_router/go_router.dart';
+import 'package:fyp_pawsenvy/providers/user.provider.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/community.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 
@@ -25,64 +23,58 @@ class PetOwner extends StatefulWidget {
 }
 
 class _PetOwnerState extends State<PetOwner> {
-  late AuthService _auth;
-  late DBService _db;
-  late User? _user;
-
-  int _selectedIndex = 0;
-  bool _profileCheckComplete = false;
-  bool _isProfileComplete = false;
+  int _selectedScreen = 0;
 
   final List<Widget> _screens = [
     OwnerDashboard(),
     Community(),
     OwnerReminders(),
-    YourPetsScreen(),
+    PetsScreen(),
   ];
 
-  @override
-  void initState() {
-    _auth = Provider.of<AuthService>(context, listen: false);
-    _db = Provider.of<DBService>(context, listen: false);
-    _user = _auth.currentUser;
-    super.initState();
-    _checkIfProfileComplete();
-  }
+  bool _isProfileComplete(AppUser user) {
+    final defaultDob = Timestamp(0, 0).toDate();
+    final isLocationSet =
+        user.location.latitude != 0 || user.location.longitude != 0;
 
-  Future<void> _checkIfProfileComplete() async {
-    if (_user != null) {
-      final isComplete = await _db.isUserProfileComplete(_user!.uid);
-      if (mounted) {
-        setState(() {
-          _isProfileComplete = isComplete;
-          _profileCheckComplete = true;
-        });
-      }
-    }
+    return user.name.trim().isNotEmpty &&
+        user.phone.trim().isNotEmpty &&
+        user.avatar.trim().isNotEmpty &&
+        user.bio.trim().isNotEmpty &&
+        user.gender != Gender.undefined &&
+        user.dob != defaultDob &&
+        isLocationSet;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_user == null) context.go(Routes.welcome);
+    return Consumer<UserProvider>(
+      builder: (context, userProvider, child) {
+        final appUser = userProvider.user;
 
-    // Show loading while checking profile completeness
-    if (!_profileCheckComplete) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
+        // Show loading if user data is not available yet
+        if (appUser == null) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-    if (!_isProfileComplete) {
-      return CreateUserProfile(
-        isProfileIncomplete: true,
-        onProfileComplete: () {
-          _checkIfProfileComplete();
-        },
-      );
-    }
+        // Check profile completeness in real-time
+        if (!_isProfileComplete(appUser)) {
+          return CompleteUserProfile(
+            isProfileIncomplete: true,
+            onProfileComplete: () {
+              // The Consumer will automatically rebuild when UserProvider updates
+            },
+          );
+        }
 
-    return _buildPetOwnerInterface(context, _user!);
+        return _buildPetOwnerInterface(context, appUser);
+      },
+    );
   }
 
-  Widget _buildPetOwnerInterface(BuildContext context, User user) {
+  Widget _buildPetOwnerInterface(BuildContext context, AppUser user) {
     return SafeArea(
       top: false,
       bottom: true,
@@ -114,8 +106,8 @@ class _PetOwnerState extends State<PetOwner> {
                       ),
                       child: CircleAvatar(
                         backgroundImage:
-                            user.photoURL != null
-                                ? NetworkImage(user.photoURL!)
+                            user.avatar.isNotEmpty
+                                ? NetworkImage(user.avatar)
                                 : const AssetImage('assets/images/person1.png')
                                     as ImageProvider,
                         backgroundColor: AppColorStyles.lightGrey,
@@ -131,20 +123,20 @@ class _PetOwnerState extends State<PetOwner> {
                 children: [
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(LineIcons.camera, size: 26),
+                    icon: const Icon(LineIcons.camera, size: 26),
                   ),
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(LineIcons.bell, size: 26),
+                    icon: const Icon(LineIcons.bell, size: 26),
                   ),
                 ],
               ),
             ),
           ],
         ),
-        body: _screens[_selectedIndex],
+        body: _screens[_selectedScreen],
         floatingActionButton:
-            _selectedIndex == 2
+            _selectedScreen == 2
                 ? ExpandableFab(
                   distance: 60,
                   children: [
@@ -167,8 +159,8 @@ class _PetOwnerState extends State<PetOwner> {
                 : null,
         bottomNavigationBar: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(24),
               topRight: Radius.circular(24),
             ),
@@ -188,42 +180,21 @@ class _PetOwnerState extends State<PetOwner> {
       iconSize: 22,
       tabBackgroundColor: Colors.transparent,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      selectedIndex: _selectedIndex,
+      selectedIndex: _selectedScreen,
       onTabChange: (index) {
         setState(() {
-          _selectedIndex = index;
+          _selectedScreen = index;
         });
       },
       textStyle: AppTextStyles.bodyExtraSmall,
       tabActiveBorder: Border.all(color: AppColorStyles.grey, width: 1),
       tabs: [
-        const GButton(
-          icon: LineIcons.home,
-          text: 'Home',
-          iconColor: Colors.black,
-          iconActiveColor: Colors.black,
-          border: Border.fromBorderSide(BorderSide.none),
-        ),
-        const GButton(
-          icon: LineIcons.users,
-          text: 'Community',
-          iconColor: Colors.black,
-          iconActiveColor: Colors.black,
-          border: Border.fromBorderSide(BorderSide.none),
-        ),
-        const GButton(
-          icon: LineIcons.calendar,
-          text: 'Reminders',
-          iconColor: Colors.black,
-          iconActiveColor: Colors.black,
-          border: Border.fromBorderSide(BorderSide.none),
-        ),
+        const GButton(icon: LineIcons.home, text: 'Home'),
+        const GButton(icon: LineIcons.users, text: 'Community'),
+        const GButton(icon: LineIcons.calendar, text: 'Reminders'),
         GButton(
           icon: Icons.person_outline,
           text: 'Your Pets',
-          iconColor: Colors.black,
-          iconActiveColor: Colors.black,
-          border: Border.fromBorderSide(BorderSide.none),
           leading: const CircleAvatar(
             radius: 11,
             backgroundImage: AssetImage('assets/images/person1.png'),

@@ -12,12 +12,19 @@ class UserProvider with ChangeNotifier {
   StreamSubscription<AppUser>? _subscription;
 
   void listenToUser(String uid) {
-    _subscription?.cancel(); // cancel any previous scubscriptions
+    _subscription?.cancel();
 
-    _subscription = _dbService.getUserStream(uid).listen((appUser) {
-      _user = appUser;
-      notifyListeners();
-    });
+    _subscription = _dbService
+        .getUserStream(uid)
+        .listen(
+          (appUser) {
+            _user = appUser;
+            notifyListeners();
+          },
+          onError: (error) {
+            debugPrint('Error listening to user stream: $error');
+          },
+        );
   }
 
   @override
