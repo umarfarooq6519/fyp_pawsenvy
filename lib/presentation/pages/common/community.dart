@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/router/routes.dart';
 import 'package:fyp_pawsenvy/core/theme/theme.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
-import 'package:fyp_pawsenvy/data/pets.dart';
 import 'package:go_router/go_router.dart';
 import '../../widgets/service_card.dart';
 
@@ -39,59 +38,24 @@ class Community extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(width: 18),
             ServiceCard(
               image: 'assets/images/adoption.png',
               label: 'Adoption',
               onTap: () {
-                context.push(
-                  Routes.searchList,
-                  extra: {'title': 'Adoption', 'components': pets},
-                );
+                context.push(Routes.adoptionPets);
               },
             ),
-            const SizedBox(width: 18),
+            SizedBox(width: 8),
             ServiceCard(
               image: 'assets/images/veterinary.png',
-              label: 'Veterinary',
+              label: 'Lost & Found',
               onTap: () {
-                context.push(
-                  Routes.searchList,
-                  extra: {'title': 'Adoption', 'components': pets},
-                );
+                context.push(Routes.lostFoundPets);
               },
             ),
           ],
         ),
-        const SizedBox(height: 30),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Nearby Pet Care', style: AppTextStyles.headingMedium),
-            TextButton(
-              onPressed: () {},
-              child: Text(
-                'View All',
-                style: AppTextStyles.bodyBase.copyWith(color: Colors.black54),
-              ),
-            ),
-          ],
-        ),
-        // ...petCares.map(
-        //   (care) => ExtendedCard(
-        //     title: care['name'] ?? '',
-        //     tags:
-        //         (care['pets'] != null)
-        //             ? (care['pets'] is String
-        //                 ? (care['pets'] as String)
-        //                     .split('|')
-        //                     .map((e) => e.trim())
-        //                     .toList()
-        //                 : care['pets'] as List<String>?)
-        //             : null,
-        //     trailing: care['distance'] ?? '',
-        //     avatar: care['avatar'],
-        //   ),
-        // ),
       ],
     );
   }

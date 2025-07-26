@@ -7,6 +7,7 @@ enum PetStatus { normal, lost, adopted }
 enum PetTemperament { friendly, calm, energetic, protective, stubborn, quiet }
 
 class Pet {
+  final String? pID;
   final String ownerId;
   final String avatar;
   final String name;
@@ -22,8 +23,8 @@ class Pet {
   final Map<String, dynamic>? healthRecords;
   final Timestamp createdAt;
   final Timestamp updatedAt;
-
   Pet({
+    required this.pID,
     required this.ownerId,
     required this.name,
     required this.species,
@@ -41,8 +42,14 @@ class Pet {
     required this.updatedAt,
   });
 
-  factory Pet.fromMap(Map<String, dynamic> data) {
+  factory Pet.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>?;
+
+    if (data == null) {
+      throw Exception('Document data is null');
+    }
     return Pet(
+      pID: doc.id,
       ownerId: data['ownerId'] ?? '',
       name: data['name'] ?? '',
       species: _petSpeciesFromString(data['species'] ?? 'dog'),
@@ -71,9 +78,9 @@ class Pet {
       updatedAt: data['updatedAt'] ?? Timestamp.now(),
     );
   }
-
   Map<String, dynamic> toMap() {
     return {
+      'pID': pID,
       'ownerId': ownerId,
       'name': name,
       'species': _petSpeciesToString(species),

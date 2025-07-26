@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/models/pet.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/common/search_with_filter.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet_profile_large.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet_profile_screen.dart';
 import 'package:fyp_pawsenvy/core/theme/theme.dart';
 
-import '../../widgets/profiles/profile_small.dart';
+import '../../widgets/profiles/pet_profile_small.dart';
 
 class SearchList extends StatelessWidget {
   final TextEditingController searchController;
@@ -39,35 +39,35 @@ class SearchList extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.md),
           // List of cards
-          Expanded(
-            child: ListView.builder(
-              itemCount: components.length,
-              itemBuilder: (context, index) {
-                final item = components[index];
-                return Padding(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: ProfileSmall(
-                    name: item['name'] ?? '',
-                    image: item['avatar'] ?? 'assets/images/placeholder.png',
-                    tag1: item['role'] ?? '',
-                    tag2: item['location'] ?? '',
-                    onTap: () {
-                      // Convert the map item to a Pet object first
-                      // This is a temporary solution - ideally search should work with Pet objects
-                      final pet = Pet.fromMap(item);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PetProfileLarge(pet: pet),
-                        ),
-                      );
-                    },
-                    onFavorite: item['onFavorite'],
-                  ),
-                );
-              },
-            ),
-          ),
+          // Expanded(
+          //   child: ListView.builder(
+          //     itemCount: components.length,
+          //     itemBuilder: (context, index) {
+          //       final item = components[index];
+          //       return Padding(
+          //         padding: const EdgeInsets.all(AppSpacing.md),
+          //         child: ProfileSmall(
+          //           name: item['name'] ?? '',
+          //           image: item['avatar'] ?? 'assets/images/placeholder.png',
+          //           tag1: item['role'] ?? '',
+          //           tag2: item['location'] ?? '',
+          //           onTap: () {
+          //             // Convert the map item to a Pet object first
+          //             // This is a temporary solution - ideally search should work with Pet objects
+          //             final pet = Pet.fromFirestore(item);
+          //             Navigator.push(
+          //               context,
+          //               MaterialPageRoute(
+          //                 builder: (context) => PetProfileLarge(pet: pet),
+          //               ),
+          //             );
+          //           },
+          //           onFavorite: item['onFavorite'],
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );

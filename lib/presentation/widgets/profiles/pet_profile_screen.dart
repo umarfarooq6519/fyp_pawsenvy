@@ -1,36 +1,67 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/services/db.service.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:provider/provider.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/models/pet.dart';
-import 'package:fyp_pawsenvy/core/services/auth.service.dart';
-import 'package:fyp_pawsenvy/core/services/db.service.dart';
 
-class PetProfileLarge extends StatefulWidget {
-  const PetProfileLarge({super.key, required this.pet});
-
+// ignore: must_be_immutable
+class PetProfileScreen extends StatefulWidget {
+  const PetProfileScreen({super.key, required this.pet});
   final Pet pet;
 
   @override
-  State<PetProfileLarge> createState() => _PetProfileLargeState();
+  State<PetProfileScreen> createState() => _PetProfileScreenState();
 }
 
-class _PetProfileLargeState extends State<PetProfileLarge> {
-  late final AuthService _auth;
-  late final DBService _db;
-  late final User? _user;
+class _PetProfileScreenState extends State<PetProfileScreen> {
+  final DBService _db = DBService();
+  bool isLiked = false;
 
-  final bool _isLiked = false;
-  final bool _isLoading = true;
+  Future<void> handlePetLike(BuildContext context) async {
+    if (isLiked) {
+      await _db.removePetFromUserDoc(
+        widget.pet.ownerId,
+        'likedPets',
+        widget.pet.pID!,
+      );
+
+      setState(() {
+        isLiked = false;
+      });
+    } else {
+      await _db.savePetToUserDoc(
+        widget.pet.ownerId,
+        'likedPets',
+        widget.pet.pID!,
+      );
+
+      setState(() {
+        isLiked = true;
+      });
+    }
+  }
+
+  Future<bool> checkIfLiked(BuildContext context) async {
+    isLiked = await _db.checkIfUserHasPet(
+      widget.pet.ownerId,
+      widget.pet.pID!,
+      'likedPets',
+    );
+
+    debugPrint(isLiked ? 'Pet liked' : 'pet un-liked');
+
+    return isLiked;
+  }
 
   @override
   void initState() {
     super.initState();
-    _auth = Provider.of<AuthService>(context, listen: false);
-    _db = Provider.of<DBService>(context, listen: false);
-    _user = _auth.currentUser;
+    checkIfLiked(context).then((liked) {
+      setState(() {
+        isLiked = liked;
+      });
+    });
   }
 
   @override
@@ -71,8 +102,6 @@ class _PetProfileLargeState extends State<PetProfileLarge> {
                                             : 'assets/images/placeholder.png',
                                       )
                                       as ImageProvider,
-                          onBackgroundImageError: (_, __) {},
-                          child: null,
                         ),
                       ),
                       // Top bar
@@ -93,7 +122,73 @@ class _PetProfileLargeState extends State<PetProfileLarge> {
                                 LineIcons.verticalEllipsis,
                                 color: Theme.of(context).colorScheme.onSurface,
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Container(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          ListTile(
+                                            leading: const Icon(
+                                              LineIcons.heartbeat,
+                                            ),
+                                            title: const Text(
+                                              'Mark for adoption',
+                                            ),
+                                            onTap: () async {
+                                              Navigator.pop(context);
+
+                                              await _db.updatePetFields(
+                                                context,
+                                                widget.pet.pID!,
+                                                {
+                                                  'status':
+                                                      widget.pet.status ==
+                                                              PetStatus.normal
+                                                          ? 'adopted'
+                                                          : 'normal',
+                                                },
+                                              );
+
+                                              debugPrint(
+                                                'Pet adoption triggered',
+                                              );
+                                            },
+                                          ),
+                                          ListTile(
+                                            leading: const Icon(
+                                              LineIcons.search,
+                                            ),
+                                            title: const Text('Mark as Lost'),
+                                            onTap: () async {
+                                              Navigator.pop(context);
+
+                                              await _db.updatePetFields(
+                                                context,
+                                                widget.pet.pID!,
+                                                {
+                                                  'status':
+                                                      widget.pet.status ==
+                                                              PetStatus.normal
+                                                          ? 'lost'
+                                                          : 'normal',
+                                                },
+                                              );
+
+                                              debugPrint(
+                                                'Mark as lost triggered',
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -120,20 +215,63 @@ class _PetProfileLargeState extends State<PetProfileLarge> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  widget.pet.name,
+                                  widget.pet.name.isNotEmpty
+                                      ? widget.pet.name
+                                      : 'No name given :(',
                                   style: AppTextStyles.headingMedium,
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
-                                  '${_capitalizeFirst(widget.pet.species.name)} • ${_capitalizeFirst(widget.pet.gender)}',
-                                  style: AppTextStyles.bodyExtraSmall,
+                                Row(
+                                  children: [
+                                    Icon(
+                                      widget.pet.species == PetSpecies.dog
+                                          ? LineIcons.dog
+                                          : LineIcons.cat,
+                                      size: 18,
+                                      color: AppColorStyles.deepPurple,
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      _capitalizeFirst(widget.pet.species.name),
+                                      style: AppTextStyles.bodySmall.copyWith(
+                                        color: AppColorStyles.deepPurple,
+                                      ),
+                                    ),
+                                    const Text(' • '),
+                                    Icon(
+                                      widget.pet.gender.toLowerCase() == 'male'
+                                          ? LineIcons.mars
+                                          : widget.pet.gender.toLowerCase() ==
+                                              'female'
+                                          ? LineIcons.venus
+                                          : LineIcons.tag,
+                                      size: 18,
+                                      color:
+                                          widget.pet.gender.toLowerCase() ==
+                                                  'male'
+                                              ? Colors.blue
+                                              : widget.pet.gender
+                                                      .toLowerCase() ==
+                                                  'female'
+                                              ? Colors.pink
+                                              : AppColorStyles.deepPurple,
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      _capitalizeFirst(widget.pet.gender),
+                                      style: AppTextStyles.bodySmall,
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
                           ),
                           IconButton(
-                            onPressed: () {},
-                            icon: Icon(LineIcons.heart),
+                            onPressed: () => handlePetLike(context),
+                            icon: Icon(
+                              isLiked ? LineIcons.heartAlt : LineIcons.heart,
+                              color: isLiked ? AppColorStyles.red : null,
+                            ),
                             iconSize: 28,
                           ),
                         ],
@@ -150,7 +288,7 @@ class _PetProfileLargeState extends State<PetProfileLarge> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             _buildAttributeItem(
                               context,
@@ -219,7 +357,12 @@ class _PetProfileLargeState extends State<PetProfileLarge> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(widget.pet.bio, style: AppTextStyles.bodySmall),
+                      Text(
+                        widget.pet.bio.isNotEmpty
+                            ? widget.pet.bio
+                            : 'No bio available for ${widget.pet.name}',
+                        style: AppTextStyles.bodyBase,
+                      ),
                       const SizedBox(height: 16),
 
                       // Temperament section
@@ -287,10 +430,14 @@ class _PetProfileLargeState extends State<PetProfileLarge> {
       children: [
         CircleAvatar(
           backgroundColor: Theme.of(context).colorScheme.surface,
-          child: Icon(icon, color: Theme.of(context).colorScheme.secondary),
+          child: Icon(
+            icon,
+            color: Theme.of(context).colorScheme.primary,
+            size: 24,
+          ),
         ),
         const SizedBox(height: 6),
-        Text(label, style: AppTextStyles.bodyExtraSmall),
+        Text(label, style: AppTextStyles.bodySmall),
       ],
     );
   }

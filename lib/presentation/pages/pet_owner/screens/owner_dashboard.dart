@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/services/auth.service.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
-import 'package:fyp_pawsenvy/core/theme/theme.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/common/search_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -26,28 +25,35 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
     return ListView(
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: AppSpacing.xl,
-          ).copyWith(top: AppSpacing.huge, bottom: AppSpacing.huge),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Good Evening,',
-                style: AppTextStyles.headingLarge.copyWith(
-                  fontWeight: FontWeight.w300,
-                ),
+              SizedBox(height: 30),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Good Evening,',
+                    style: AppTextStyles.headingLarge.copyWith(
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                  Text(
+                    _auth.currentUser?.displayName ?? 'Guest',
+                    style: AppTextStyles.headingLarge,
+                  ),
+                ],
               ),
-              Text(
-                _auth.currentUser?.displayName ?? 'Guest',
-                style: AppTextStyles.headingLarge,
-              ),
+              SizedBox(height: 30),
+
+              CustomSearchBar(),
+
+              SizedBox(height: 30),
+
+              Text('Upcoming Events', style: AppTextStyles.headingMedium),
             ],
           ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-          child: CustomSearchBar(),
         ),
       ],
     );

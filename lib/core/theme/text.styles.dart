@@ -11,7 +11,7 @@ class AppTextStyles {
     fontFamily: 'Poppins',
   );
   static TextStyle get headingLarge => const TextStyle(
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: FontWeight.w600,
     color: AppColorStyles.black,
     fontFamily: 'Poppins',

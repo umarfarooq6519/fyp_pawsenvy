@@ -68,11 +68,7 @@ class AppDrawer extends StatelessWidget {
                   _buildDrawerItem(
                     icon: Icons.account_circle_outlined,
                     title: 'My Profile Card',
-                    onTap:
-                        () => _navigateToUserProfile(
-                          context,
-                          _auth.currentUser!.uid,
-                        ),
+                    onTap: () => _navigateToUserProfile(context, appUser!),
                   ),
                   _buildDrawerItem(
                     icon: LineIcons.cog,
@@ -93,10 +89,13 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  Future<void> _navigateToUserProfile(BuildContext context, String uID) async {
+  Future<void> _navigateToUserProfile(
+    BuildContext context,
+    AppUser appUser,
+  ) async {
     try {
       if (context.mounted) {
-        context.push(Routes.userProfile, extra: uID);
+        context.push(Routes.userProfile, extra: appUser);
       }
     } catch (e) {
       if (context.mounted) {

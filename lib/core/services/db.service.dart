@@ -24,9 +24,59 @@ class DBService {
 
   // ################### User ###################
 
-  // Real-time stream of the user's document
+  // Real-time stream of a user's document
   Stream<AppUser> getUserStream(String uID) {
     return users.doc(uID).snapshots().map((doc) => AppUser.fromFirestore(doc));
+  }
+
+  // Real-time stream of a pet's document
+  Stream<Pet> getPetStream(String pID) {
+    return pets.doc(pID).snapshots().map((doc) => Pet.fromFirestore(doc));
+  }
+
+  Stream<List<Pet>> getAdoptionPetsStream() {
+    return pets
+        .where('status', isEqualTo: 'adopted')
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => Pet.fromFirestore(doc)).toList(),
+        );
+  }
+
+  Stream<List<Pet>> getLostFoundPetsStream() {
+    return pets
+        .where('status', isEqualTo: 'lost')
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => Pet.fromFirestore(doc)).toList(),
+        );
+  }
+
+  Stream<List<Pet>> getPetsStreamByIDs(List<String> petIds) {
+    if (petIds.isEmpty) return Stream.value([]);
+
+    return pets
+        .where(FieldPath.documentId, whereIn: petIds)
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => Pet.fromFirestore(doc)).toList(),
+        );
+  }
+
+  Future<bool> updatePetFields(
+    BuildContext context,
+    String pID,
+    Map<String, dynamic> fields,
+  ) async {
+    try {
+      await pets.doc(pID).update(fields);
+      return true;
+    } catch (e) {
+      throw Exception('updatePetFields() failed: $e');
+    }
   }
 
   // Update multiple user doc fields
@@ -65,26 +115,6 @@ class DBService {
     }
   }
 
-  Future<bool> isUserProfileComplete(String uID) async {
-    try {
-      final DocumentSnapshot doc;
-      doc = await users.doc(uID).get();
-
-      if (!doc.exists) return false;
-
-      AppUser user = AppUser.fromFirestore(doc);
-
-      // Check if basic required fields are filled
-      return user.name.isNotEmpty &&
-          user.phone.isNotEmpty &&
-          user.bio.isNotEmpty &&
-          user.phone.isNotEmpty;
-    } catch (e) {
-      if (kDebugMode) print("Error checking profile completeness: $e");
-      return false;
-    }
-  }
-
   Future<AppUser?> getUserProfile(String uID) async {
     try {
       DocumentSnapshot doc = await users.doc(uID).get();
@@ -98,115 +128,16 @@ class DBService {
     }
   }
 
-  Future<bool> togglePetLike({
-    required String userId,
-    required String petId,
-  }) async {
-    try {
-      // Reuse existing getUserProfile function
-      AppUser? user = await getUserProfile(userId);
-      if (user == null) {
-        throw Exception('User not found');
-      }
-
-      List<String> updatedLikedPets = List.from(user.likedPets);
-      bool isNowLiked;
-
-      if (user.likedPets.contains(petId)) {
-        // Pet is currently liked, so unlike it
-        updatedLikedPets.remove(petId);
-        isNowLiked = false;
-        if (kDebugMode) {
-          print('Pet $petId removed from likedPets for user $userId');
-        }
-      } else {
-        // Pet is not liked, so like it
-        updatedLikedPets.add(petId);
-        isNowLiked = true;
-        if (kDebugMode) print('Pet $petId added to likedPets for user $userId');
-      }
-
-      await users.doc(userId).update({'likedPets': updatedLikedPets});
-      return isNowLiked;
-    } catch (e) {
-      if (kDebugMode) print('togglePetLike() failed: $e');
-      throw Exception('togglePetLike() failed: $e');
-    }
-  }
-
-  Future<void> addPetToUserLikedPets({
-    required String userId,
-    required String petId,
-  }) async {
-    try {
-      // Reuse existing getUserProfile function
-      AppUser? user = await getUserProfile(userId);
-      if (user == null) {
-        throw Exception('User not found');
-      }
-
-      // Check if pet is already in liked pets
-      if (!user.likedPets.contains(petId)) {
-        List<String> updatedLikedPets = List.from(user.likedPets)..add(petId);
-        await users.doc(userId).update({'likedPets': updatedLikedPets});
-        if (kDebugMode) print('Pet $petId added to likedPets for user $userId');
-      } else {
-        if (kDebugMode) {
-          print('Pet $petId already in likedPets for user $userId');
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) print('addPetToUserLikedPets() failed: $e');
-      throw Exception('addPetToUserLikedPets() failed: $e');
-    }
-  }
-
-  Future<void> removePetFromUserLikedPets({
-    required String userId,
-    required String petId,
-  }) async {
-    try {
-      // Reuse existing getUserProfile function
-      AppUser? user = await getUserProfile(userId);
-      if (user == null) {
-        throw Exception('User not found');
-      }
-
-      if (user.likedPets.contains(petId)) {
-        List<String> updatedLikedPets = List.from(user.likedPets)
-          ..remove(petId);
-        await users.doc(userId).update({'likedPets': updatedLikedPets});
-        if (kDebugMode) {
-          print('Pet $petId removed from likedPets for user $userId');
-        }
-      } else {
-        if (kDebugMode) print('Pet $petId not in likedPets for user $userId');
-      }
-    } catch (e) {
-      if (kDebugMode) print('removePetFromUserLikedPets() failed: $e');
-      throw Exception('removePetFromUserLikedPets() failed: $e');
-    }
-  }
-
-  Future<bool> isPetLikedByUser({
-    required String userId,
-    required String petId,
-  }) async {
-    try {
-      AppUser? user = await getUserProfile(userId);
-      return user?.likedPets.contains(petId) ?? false;
-    } catch (e) {
-      if (kDebugMode) print('isPetLikedByUser() failed: $e');
-      return false;
-    }
-  }
-
   // ################### Pets ###################
 
-  Future<void> addPetToDB(Pet pet) async {
+  Future<void> uploadPetToDB(Pet pet, String uID) async {
     try {
-      final DocumentReference doc;
-      doc = await pets.add(pet.toMap());
+      final DocumentReference doc = await pets.add(pet.toMap());
+
+      // Update that same doc to include its ID
+      await pets.doc(doc.id).update({'pID': doc.id});
+
+      savePetToUserDoc(uID, 'ownedPets', doc.id);
 
       if (kDebugMode) print('Pet added with docId ${doc.id}');
     } catch (e) {
@@ -214,60 +145,56 @@ class DBService {
     }
   }
 
-  Future<List<Pet>> fetchAllPets() async {
+  Future<DocumentReference?> savePetToUserDoc(
+    String uID,
+    String field,
+    String value,
+  ) async {
     try {
-      final querySnapshot = await pets.get();
-      return querySnapshot.docs
-          .map((doc) => Pet.fromMap(doc.data() as Map<String, dynamic>))
-          .toList();
+      final DocumentReference userRef = users.doc(uID);
+      await userRef.update({
+        field: FieldValue.arrayUnion([value]),
+      });
+
+      return userRef;
     } catch (e) {
-      throw Exception('fetchAllPets() failed: $e');
+      throw Exception('Error updating user field: $e');
     }
   }
 
-  Future<List<Pet>> fetchUserOwnedPets(String userId) async {
+  Future<DocumentReference?> removePetFromUserDoc(
+    String uID,
+    String field,
+    String value,
+  ) async {
     try {
-      final querySnapshot =
-          await pets.where('ownerId', isEqualTo: userId).get();
-      return querySnapshot.docs
-          .map((doc) => Pet.fromMap(doc.data() as Map<String, dynamic>))
-          .toList();
+      final DocumentReference userRef = users.doc(uID);
+      await userRef.update({
+        field: FieldValue.arrayRemove([value]),
+      });
+
+      return userRef;
     } catch (e) {
-      throw Exception('fetchUserOwnedPets() failed: $e');
+      throw Exception('Error updating user field: $e');
     }
   }
 
-  Future<Pet?> fetchPetByID(String petId) async {
+  Future<bool> checkIfUserHasPet(
+    String userId,
+    String petId,
+    String field,
+  ) async {
     try {
-      final doc = await pets.doc(petId).get();
-      if (doc.exists) {
-        return Pet.fromMap(doc.data() as Map<String, dynamic>);
+      final userDoc = await users.doc(userId).get();
+      if (userDoc.exists) {
+        final List<dynamic> petIds =
+            (userDoc.data() as Map<String, dynamic>?)![field] ?? [];
+        return petIds.contains(petId);
       }
-      return null;
+      return false;
     } catch (e) {
-      if (kDebugMode) print('fetchPetByID() failed: $e');
-      return null;
-    }
-  }
-
-  Future<List<Pet>> fetchUserLikedPets(String userId) async {
-    try {
-      AppUser? user = await getUserProfile(userId);
-      if (user == null || user.likedPets.isEmpty) {
-        return [];
-      }
-
-      List<Pet> likedPets = [];
-      for (String petId in user.likedPets) {
-        Pet? pet = await fetchPetByID(petId);
-        if (pet != null) {
-          likedPets.add(pet);
-        }
-      }
-      return likedPets;
-    } catch (e) {
-      if (kDebugMode) print('fetchUserLikedPets() failed: $e');
-      return [];
+      debugPrint('Error checking petID: $e');
+      return false;
     }
   }
 
@@ -283,6 +210,7 @@ class DBService {
   }
 
   // ################### Vets ###################
+
   Future<AppUser?> fetchVetByID(String vetId) async {
     try {
       final doc = await users.doc(vetId).get();

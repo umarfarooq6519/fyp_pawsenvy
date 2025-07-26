@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:fyp_pawsenvy/core/services/storage.service.dart';
+import 'package:fyp_pawsenvy/providers/user.provider.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,7 +25,6 @@ class CreatePetProfile extends StatefulWidget {
 class _CreatePetProfileState extends State<CreatePetProfile> {
   late AuthService _auth;
   late DBService _db;
-  late StorageService _storage;
   late User? _user;
 
   // page controllers
@@ -56,7 +57,6 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
     _colorController.dispose();
     _weightController.dispose();
     _pageController.dispose();
-    _auth.dispose();
     super.dispose();
   }
 
@@ -64,7 +64,6 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
   void initState() {
     _auth = Provider.of<AuthService>(context, listen: false);
     _db = Provider.of<DBService>(context, listen: false);
-    _storage = Provider.of<StorageService>(context, listen: false);
     _user = _auth.currentUser;
     super.initState();
   }
@@ -313,7 +312,7 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
     if (_user == null) return;
 
     final Pet newPet = _createPetFromData(_user!.uid);
-    await _db.addPetToDB(newPet);
+    await _db.uploadPetToDB(newPet, _auth.currentUser!.uid);
 
     if (mounted) Navigator.of(context).pop();
   }
@@ -327,7 +326,10 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
   Pet _createPetFromData(String ownerId) {
     final now = Timestamp.now();
 
+    String? pID;
+
     return Pet(
+      pID: pID,
       ownerId: ownerId,
       name: _nameController.text.trim(),
       species: _selectedSpecies!,
@@ -345,11 +347,5 @@ class _CreatePetProfileState extends State<CreatePetProfile> {
       createdAt: now,
       updatedAt: now,
     );
-  }
-
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }

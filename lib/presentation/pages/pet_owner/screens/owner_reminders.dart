@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/reminders/reminder_tile.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../../../../core/theme/color.styles.dart';
 import '../../../../core/theme/text.styles.dart';
 import '../../../../core/utils/datetime.util.dart';
-import '../../../../core/models/reminder.dart';
-import '../../../../core/models/booking.dart';
-import '../../../widgets/reminders/booking_tile.dart';
 
 class OwnerReminders extends StatefulWidget {
   const OwnerReminders({super.key});
@@ -17,8 +13,6 @@ class OwnerReminders extends StatefulWidget {
 
 class _OwnerRemindersState extends State<OwnerReminders> {
   DateTime _selectedDay = DateTime.now();
-
-  final List<dynamic> _reminders = [];
 
   @override
   Widget build(BuildContext context) {
@@ -150,35 +144,6 @@ class _OwnerRemindersState extends State<OwnerReminders> {
         ),
 
         const SizedBox(height: 10), // Reminders List
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: _reminders.length,
-            itemBuilder: (context, index) {
-              final item = _reminders[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child:
-                    item is Reminder
-                        ? Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: AppColorStyles.lightGrey.withOpacity(0.3),
-                              width: 1,
-                            ),
-                          ),
-                          child: ReminderTile(reminder: item),
-                        )
-                        : item is Booking
-                        ? BookingTile(booking: item)
-                        : const SizedBox.shrink(),
-              );
-            },
-          ),
-        ),
       ],
     );
   }
