@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:fyp_pawsenvy/core/models/pet.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/pet/adoption_pets.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/pet/create_pet_profile/create_pet_profile.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/pet/lost_found_pets.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/user/complete_user_profile/complete_user_profile.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/role_selection_page.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/user/user_profile_screen.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/community/adoption_pets.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/pet/create_pet_profile.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/community/lost_found_pets.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/pet/pet_partner_finder.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/settings.dart';
+import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/complete_user_profile/complete_user_profile.dart';
+import 'package:fyp_pawsenvy/presentation/pages/role_selection_page.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/profiles/user/user_profile_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fyp_pawsenvy/presentation/pages/welcome.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/pet_owner.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/search_list.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet_profile_screen.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet/pet_profile_screen.dart';
 import 'package:fyp_pawsenvy/presentation/auth_tree.dart';
 import 'package:fyp_pawsenvy/core/router/routes.dart';
 
@@ -19,6 +20,7 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: Routes.authTree,
     routes: [
+      // ################### Fundamentals ###################
       GoRoute(
         path: Routes.authTree,
         name: 'authTree',
@@ -43,19 +45,26 @@ class AppRouter {
             ),
       ),
       GoRoute(
-        path: Routes.searchList,
-        name: 'searchList',
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
-          return SearchList(
-            onSearch: () {},
-            onFilter: () {},
-            searchController: TextEditingController(),
-            title: extra?['title'] ?? 'Search',
-            components: extra?['components'] ?? [],
-          );
-        },
+        path: Routes.roleSelectionPage,
+        name: 'roleSelectionPage',
+        builder: (context, state) => const RoleSelectionPage(),
       ),
+
+      // ################### Create Profiles ###################
+      GoRoute(
+        path: Routes.createPetProfile,
+        name: 'createPetProfile',
+        builder: (context, state) => const CreatePetProfile(),
+      ),
+      GoRoute(
+        path: Routes.createUserProfile,
+        name: 'createUserProfile',
+        builder:
+            (context, state) =>
+                const CompleteUserProfile(isProfileIncomplete: true),
+      ),
+
+      // ################### Profiles ###################
       GoRoute(
         path: Routes.petProfile,
         name: 'petProfile',
@@ -72,23 +81,8 @@ class AppRouter {
           return UserProfileScreen(user: appUser);
         },
       ),
-      GoRoute(
-        path: Routes.roleSelectionPage,
-        name: 'roleSelectionPage',
-        builder: (context, state) => const RoleSelectionPage(),
-      ),
-      GoRoute(
-        path: Routes.createPetProfile,
-        name: 'createPetProfile',
-        builder: (context, state) => const CreatePetProfile(),
-      ),
-      GoRoute(
-        path: Routes.createUserProfile,
-        name: 'createUserProfile',
-        builder:
-            (context, state) =>
-                const CompleteUserProfile(isProfileIncomplete: true),
-      ),
+
+      // ################### Feature/Services ###################
       GoRoute(
         path: Routes.adoptionPets,
         name: 'adoptionPets',
@@ -98,6 +92,18 @@ class AppRouter {
         path: Routes.lostFoundPets,
         name: 'lostFoundPets',
         builder: (context, state) => const LostFoundPets(),
+      ),
+      GoRoute(
+        path: Routes.petPartnerFinder,
+        name: 'petPartnerFinder',
+        builder: (context, state) => const PetPartnerFinder(),
+      ),
+
+      // ################### Other ###################
+      GoRoute(
+        path: Routes.settings,
+        name: 'settings',
+        builder: (context, state) => const Settings(),
       ),
     ],
   );

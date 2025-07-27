@@ -16,8 +16,6 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppUser? appUser = context.watch<UserProvider>().user;
-    // ignore: no_leading_underscores_for_local_identifiers
-    final AuthService _auth = Provider.of<AuthService>(context, listen: false);
 
     return Drawer(
       backgroundColor: AppColorStyles.white,
@@ -60,11 +58,18 @@ class AppDrawer extends StatelessWidget {
                 ],
               ),
             ),
+
             const SizedBox(height: 20),
-            // Menu items
+
+            // ########### Menu items
             Expanded(
               child: Column(
                 children: [
+                  _buildDrawerItem(
+                    icon: LineIcons.heartbeat,
+                    title: 'Pet Partner Finder',
+                    onTap: () => context.push(Routes.petPartnerFinder),
+                  ),
                   _buildDrawerItem(
                     icon: Icons.account_circle_outlined,
                     title: 'My Profile Card',
@@ -73,7 +78,7 @@ class AppDrawer extends StatelessWidget {
                   _buildDrawerItem(
                     icon: LineIcons.cog,
                     title: 'Settings',
-                    onTap: () {},
+                    onTap: () => context.push(Routes.settings),
                   ),
                 ],
               ),

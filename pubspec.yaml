@@ -51,6 +51,7 @@ flutter:
     - assets/fonts/
     - assets/images/
     - assets/animations/
+    - assets/ai_modules/
 
   fonts:
     - family: Poppins

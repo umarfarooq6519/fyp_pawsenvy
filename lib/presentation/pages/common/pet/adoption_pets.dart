@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/models/pet.dart';
 import 'package:fyp_pawsenvy/core/services/db.service.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
-import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet_profile_extended.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet/pet_profile_extended.dart';
 import 'package:go_router/go_router.dart';
 import 'package:line_icons/line_icons.dart';
 

@@ -25,58 +25,8 @@ class DBService {
   // ################### User ###################
 
   // Real-time stream of a user's document
-  Stream<AppUser> getUserStream(String uID) {
+  Stream<AppUser> getSingleUserStream(String uID) {
     return users.doc(uID).snapshots().map((doc) => AppUser.fromFirestore(doc));
-  }
-
-  // Real-time stream of a pet's document
-  Stream<Pet> getPetStream(String pID) {
-    return pets.doc(pID).snapshots().map((doc) => Pet.fromFirestore(doc));
-  }
-
-  Stream<List<Pet>> getAdoptionPetsStream() {
-    return pets
-        .where('status', isEqualTo: 'adopted')
-        .snapshots()
-        .map(
-          (snapshot) =>
-              snapshot.docs.map((doc) => Pet.fromFirestore(doc)).toList(),
-        );
-  }
-
-  Stream<List<Pet>> getLostFoundPetsStream() {
-    return pets
-        .where('status', isEqualTo: 'lost')
-        .snapshots()
-        .map(
-          (snapshot) =>
-              snapshot.docs.map((doc) => Pet.fromFirestore(doc)).toList(),
-        );
-  }
-
-  Stream<List<Pet>> getPetsStreamByIDs(List<String> petIds) {
-    if (petIds.isEmpty) return Stream.value([]);
-
-    return pets
-        .where(FieldPath.documentId, whereIn: petIds)
-        .snapshots()
-        .map(
-          (snapshot) =>
-              snapshot.docs.map((doc) => Pet.fromFirestore(doc)).toList(),
-        );
-  }
-
-  Future<bool> updatePetFields(
-    BuildContext context,
-    String pID,
-    Map<String, dynamic> fields,
-  ) async {
-    try {
-      await pets.doc(pID).update(fields);
-      return true;
-    } catch (e) {
-      throw Exception('updatePetFields() failed: $e');
-    }
   }
 
   // Update multiple user doc fields
@@ -115,20 +65,83 @@ class DBService {
     }
   }
 
-  Future<AppUser?> getUserProfile(String uID) async {
-    try {
-      DocumentSnapshot doc = await users.doc(uID).get();
-      if (doc.exists) {
-        return AppUser.fromFirestore(doc);
-      }
-      return null;
-    } catch (e) {
-      if (kDebugMode) print("Error fetching user profile: $e");
-      return null;
-    }
+  // ################### Pets ###################
+
+  // Real-time stream of a pet's document
+  Stream<Pet> getSinglePetStream(String pID) {
+    return pets.doc(pID).snapshots().map((doc) => Pet.fromFirestore(doc));
   }
 
-  // ################### Pets ###################
+  // Stream of list of all pets in DB
+  Stream<List<Pet>> getAllPetsStream() {
+    return pets.snapshots().map(
+      (snapshot) => snapshot.docs.map((doc) => Pet.fromFirestore(doc)).toList(),
+    );
+  }
+
+  Stream<List<Pet>> getAdoptionPetsStream() {
+    return pets
+        .where('status', isEqualTo: 'adopted')
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => Pet.fromFirestore(doc)).toList(),
+        );
+  }
+
+  Stream<List<Pet>> getLostFoundPetsStream() {
+    return pets
+        .where('status', isEqualTo: 'lost')
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => Pet.fromFirestore(doc)).toList(),
+        );
+  }
+
+  Stream<List<Pet>> getPetsStreamByIDs(List<String> petIds) {
+    if (petIds.isEmpty) return Stream.value([]);
+
+    return pets
+        .where(FieldPath.documentId, whereIn: petIds)
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => Pet.fromFirestore(doc)).toList(),
+        );
+  }
+
+  Stream<List<Pet>> getPartnerFinderListing({
+    required String species,
+    required String gender,
+  }) {
+    Query query = pets;
+
+    if (species.isNotEmpty) {
+      query = query.where('species', isEqualTo: species);
+    }
+
+    if (gender.isNotEmpty) {
+      query = query.where('gender', isEqualTo: gender);
+    }
+
+    return query.snapshots().map(
+      (snapshot) => snapshot.docs.map((doc) => Pet.fromFirestore(doc)).toList(),
+    );
+  }
+
+  Future<bool> updatePetFields(
+    BuildContext context,
+    String pID,
+    Map<String, dynamic> fields,
+  ) async {
+    try {
+      await pets.doc(pID).update(fields);
+      return true;
+    } catch (e) {
+      throw Exception('updatePetFields() failed: $e');
+    }
+  }
 
   Future<void> uploadPetToDB(Pet pet, String uID) async {
     try {
@@ -200,27 +213,5 @@ class DBService {
 
   // ################### Bookings ###################
 
-  Future<void> addBooking(Booking booking) async {
-    try {
-      final result = await bookings.add(booking.toMap());
-      if (kDebugMode) print('Booking added ${result.id}');
-    } catch (e) {
-      throw Exception('addBooking() failed: $e');
-    }
-  }
-
   // ################### Vets ###################
-
-  Future<AppUser?> fetchVetByID(String vetId) async {
-    try {
-      final doc = await users.doc(vetId).get();
-      if (doc.exists) {
-        return AppUser.fromFirestore(doc);
-      }
-      return null;
-    } catch (e) {
-      if (kDebugMode) print('fetchVetByID() failed: $e');
-      return null;
-    }
-  }
 }

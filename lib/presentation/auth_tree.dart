@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:fyp_pawsenvy/core/services/auth.service.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/role_selection_page.dart';
+import 'package:fyp_pawsenvy/presentation/pages/role_selection_page.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/pet_owner.dart';
 import 'package:fyp_pawsenvy/presentation/pages/veterinary/veterinary.dart';
 import 'package:fyp_pawsenvy/presentation/pages/welcome.dart';
@@ -28,37 +28,30 @@ class AuthTree extends StatelessWidget {
 
             if (user == null) {
               return const Welcome();
-            }
+            } // Initialize UserProvider with user ID
+            final userProvider = context.read<UserProvider>();
+            userProvider.listenToUser(user.uid);
 
-            // pass on the UserProvider to rest of the app (if authenticated)
-            return ChangeNotifierProvider<UserProvider>(
-              create: (_) {
-                final userProvider = UserProvider();
+            return Consumer<UserProvider>(
+              builder: (context, userProvider, _) {
+                final appUser = userProvider.user;
 
-                userProvider.listenToUser(user.uid);
-                return userProvider;
+                if (appUser == null) {
+                  return Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                // check the userRole and display accordingly
+                switch (appUser.userRole) {
+                  case UserRole.owner:
+                    return const PetOwner();
+                  case UserRole.vet:
+                    return const Veterinary();
+                  case UserRole.undefined:
+                    return const RoleSelectionPage();
+                }
               },
-              child: Consumer<UserProvider>(
-                builder: (context, userProvider, _) {
-                  final appUser = userProvider.user;
-
-                  if (appUser == null) {
-                    return Scaffold(
-                      body: Center(child: CircularProgressIndicator()),
-                    );
-                  }
-
-                  // check the userRole and display accordingly
-                  switch (appUser.userRole) {
-                    case UserRole.owner:
-                      return const PetOwner();
-                    case UserRole.vet:
-                      return const Veterinary();
-                    case UserRole.undefined:
-                      return const RoleSelectionPage();
-                  }
-                },
-              ),
             );
           },
         );

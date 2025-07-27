@@ -15,7 +15,7 @@ class UserProvider with ChangeNotifier {
     _subscription?.cancel();
 
     _subscription = _dbService
-        .getUserStream(uid)
+        .getSingleUserStream(uid)
         .listen(
           (appUser) {
             _user = appUser;

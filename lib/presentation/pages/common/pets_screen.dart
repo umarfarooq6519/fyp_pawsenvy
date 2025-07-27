@@ -9,7 +9,7 @@ import 'package:fyp_pawsenvy/providers/user.provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:line_icons/line_icons.dart';
-import '../../widgets/profiles/pet_profile_medium.dart';
+import '../../widgets/profiles/pet/pet_profile_medium.dart';
 
 class PetsScreen extends StatefulWidget {
   const PetsScreen({super.key});
