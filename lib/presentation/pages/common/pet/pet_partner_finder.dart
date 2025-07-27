@@ -9,7 +9,6 @@ import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet/pet_profile_medium.dart';
 import 'package:fyp_pawsenvy/providers/user.provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_stepindicator/flutter_stepindicator.dart';
 

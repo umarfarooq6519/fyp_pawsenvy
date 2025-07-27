@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:flutter/foundation.dart';
-import 'package:fyp_pawsenvy/core/models/booking.dart';
 import 'package:fyp_pawsenvy/core/models/pet.dart';
 import 'package:uuid/uuid.dart';
 

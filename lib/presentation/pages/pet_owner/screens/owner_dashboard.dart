@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:fyp_pawsenvy/core/models/pet.dart';
-import 'package:fyp_pawsenvy/core/services/auth.service.dart';
 import 'package:fyp_pawsenvy/core/services/db.service.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/common/search_bar.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet/pet_profile_small.dart';
+import 'package:fyp_pawsenvy/providers/user.provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
@@ -17,17 +18,12 @@ class OwnerDashboard extends StatefulWidget {
 }
 
 class _OwnerDashboardState extends State<OwnerDashboard> {
-  late AuthService _auth;
-
-  @override
-  void initState() {
-    super.initState();
-    _auth = Provider.of<AuthService>(context, listen: false);
-  }
+  late AppUser? _appUser;
 
   @override
   Widget build(BuildContext context) {
-    final DBService _db = Provider.of<DBService>(context, listen: false);
+    final DBService db = Provider.of<DBService>(context, listen: false);
+    _appUser = context.watch<UserProvider>().user;
 
     return ListView(
       children: [
@@ -43,7 +39,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
                 ),
               ),
               Text(
-                _auth.currentUser?.displayName ?? 'Guest',
+                _appUser?.name ?? 'Guest',
                 style: AppTextStyles.headingLarge,
               ),
             ],
@@ -65,7 +61,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
         SizedBox(height: 10),
 
         StreamBuilder<List<Pet>>(
-          stream: _db.getAllPetsStream(),
+          stream: db.getAllPetsStream(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
