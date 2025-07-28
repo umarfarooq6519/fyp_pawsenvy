@@ -271,7 +271,7 @@ class _PetOwnerState extends State<PetOwner> {
   }
 
   // ############### Preprocess image
-  Uint8List preprocessImage(String imagePath) {
+  Float32List preprocessImage(String imagePath) {
     final imageFile = File(imagePath);
     final image = img.decodeImage(imageFile.readAsBytesSync())!;
 
@@ -291,7 +291,7 @@ class _PetOwnerState extends State<PetOwner> {
       }
     }
 
-    return input.buffer.asUint8List();
+    return input; // <-- Return the Float32List directly
   }
 
   Future<Map<String, dynamic>?> classifyImage(String imagePath) async {
@@ -301,7 +301,8 @@ class _PetOwnerState extends State<PetOwner> {
     }
 
     try {
-      final input = preprocessImage(imagePath);
+      // Input is now the correctly formatted Float32List
+      final Float32List input = preprocessImage(imagePath);
 
       final outputTensor = _interpreter!.getOutputTensor(0);
       final outputShape = outputTensor.shape;
@@ -311,22 +312,21 @@ class _PetOwnerState extends State<PetOwner> {
       debugPrint("Number of classes from model: $numClasses");
       debugPrint("Number of labels loaded: ${_labels!.length}");
 
-      final output = Float32List(numClasses);
+      final output = Float32List(numClasses).reshape([1, numClasses]);
 
-      _interpreter!.run(
-        input.buffer.asFloat32List().reshape([1, 224, 224, 3]),
-        output.reshape([1, numClasses]),
-      );
+      // Pass the input directly to the interpreter
+      _interpreter!.run(input.reshape([1, 224, 224, 3]), output);
 
-      debugPrint("Raw model output: ${output.toList()}");
+      debugPrint("Raw model output: ${output.first}");
 
       // Find the class with highest confidence
       double maxConfidence = -1;
       int maxIndex = -1;
 
-      for (int i = 0; i < output.length; i++) {
-        if (output[i] > maxConfidence) {
-          maxConfidence = output[i];
+      // We search in output.first because output shape is [1, 120]
+      for (int i = 0; i < output.first.length; i++) {
+        if (output.first[i] > maxConfidence) {
+          maxConfidence = output.first[i];
           maxIndex = i;
         }
       }
