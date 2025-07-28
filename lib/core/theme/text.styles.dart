@@ -4,6 +4,12 @@ import 'color.styles.dart';
 /// App text styles
 class AppTextStyles {
   // ########### HEADINGS
+  static TextStyle get headingMain => const TextStyle(
+    fontSize: 36,
+    fontWeight: FontWeight.w600,
+    color: AppColorStyles.black,
+    fontFamily: 'Poppins',
+  );
   static TextStyle get headingExtraLarge => const TextStyle(
     fontSize: 30,
     fontWeight: FontWeight.w600,

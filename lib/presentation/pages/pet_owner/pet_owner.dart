@@ -6,8 +6,7 @@ import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/complete_user_profile/complete_user_profile.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/pets_screen.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_reminders.dart';
-import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_dashboard.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/community/community.dart';
+import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/community.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/common/expandable_fab.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/common/app_drawer.dart';
 import 'package:fyp_pawsenvy/providers/user.provider.dart';
@@ -37,7 +36,6 @@ class _PetOwnerState extends State<PetOwner> {
 
   final List<Widget> _screens = [
     OwnerDashboard(),
-    Community(),
     OwnerReminders(),
     PetsScreen(),
   ];
@@ -106,7 +104,7 @@ class _PetOwnerState extends State<PetOwner> {
         appBar: _appBar(context, user),
         body: _screens[_selectedScreen],
         floatingActionButton:
-            _selectedScreen == 2
+            _selectedScreen == 1
                 ? ExpandableFab(
                   distance: 60,
                   children: [
@@ -159,9 +157,8 @@ class _PetOwnerState extends State<PetOwner> {
       textStyle: AppTextStyles.bodyExtraSmall,
       tabActiveBorder: Border.all(color: AppColorStyles.grey, width: 1),
       tabs: [
-        const GButton(icon: LineIcons.home, text: 'Home'),
-        const GButton(icon: LineIcons.users, text: 'Community'),
-        const GButton(icon: LineIcons.calendar, text: 'Reminders'),
+        const GButton(icon: LineIcons.users, text: 'Dashboard'),
+        const GButton(icon: LineIcons.calendar, text: 'Calendar'),
         GButton(
           icon: Icons.person_outline,
           text: 'Your Pets',
