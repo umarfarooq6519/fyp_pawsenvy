@@ -1,17 +1,37 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/models/pet.dart';
+import 'package:fyp_pawsenvy/core/router/routes.dart';
+import 'package:fyp_pawsenvy/core/services/db.service.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/models/app_user.dart';
+import 'package:provider/provider.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/profiles/pet/pet_profile_small.dart';
+import 'package:go_router/go_router.dart';
 
-class UserProfileScreen extends StatelessWidget {
+class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key, required this.user});
   final AppUser user;
 
   @override
+  State<UserProfileScreen> createState() => _UserProfileScreenState();
+}
+
+class _UserProfileScreenState extends State<UserProfileScreen> {
+  late Stream<List<Pet>> ownedPets;
+  late Stream<List<Pet>> likedPets;
+  late DBService _db;
+
+  @override
   Widget build(BuildContext context) {
+    _db = Provider.of<DBService>(context, listen: false);
+
+    ownedPets = _db.getPetsStreamByIDs(widget.user.ownedPets);
+    likedPets = _db.getPetsStreamByIDs(widget.user.likedPets);
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
@@ -38,8 +58,8 @@ class UserProfileScreen extends StatelessWidget {
                           radius: 70,
                           backgroundColor: Colors.white,
                           backgroundImage:
-                              user.avatar.isNotEmpty
-                                  ? NetworkImage(user.avatar)
+                              widget.user.avatar.isNotEmpty
+                                  ? NetworkImage(widget.user.avatar)
                                   : const AssetImage(
                                         'assets/images/person1.png',
                                       )
@@ -79,147 +99,266 @@ class UserProfileScreen extends StatelessWidget {
               // Details section
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  user.name.isNotEmpty
-                                      ? user.name
-                                      : 'No name given :(',
-                                  style: AppTextStyles.headingMedium,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          user.userRole == UserRole.vet
-                                              ? LineIcons.stethoscope
-                                              : LineIcons.paw,
-                                          size: 18,
-                                          color: AppColorStyles.black,
-                                        ),
-                                        const SizedBox(width: 2),
-                                        Text(
-                                          user.userRole == UserRole.vet
-                                              ? 'Veterinary'
-                                              : 'Pet Owner',
-                                          style: AppTextStyles.bodySmall
-                                              .copyWith(
-                                                color: AppColorStyles.black,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(' - '),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          LineIcons.mapMarker,
-                                          size: 18,
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.onSurfaceVariant,
-                                        ),
-                                        FutureBuilder<String>(
-                                          future: _getLocationNameFromGeoPoint(
-                                            user.location,
-                                          ),
-                                          builder: (context, snapshot) {
-                                            if (snapshot.connectionState ==
-                                                ConnectionState.waiting) {
-                                              return Text(
-                                                'Fetching location...',
-                                                style: AppTextStyles.bodySmall,
-                                              );
-                                            } else if (snapshot.hasError) {
-                                              return Text(
-                                                'Error fetching location',
-                                                style: AppTextStyles.bodySmall,
-                                              );
-                                            } else {
-                                              return Text(
-                                                snapshot.data ??
-                                                    'Unknown Location',
-                                                style: AppTextStyles.bodySmall,
-                                              );
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      // Attributes
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color:
-                              Theme.of(
-                                context,
-                              ).colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildAttributeItem(
-                              context,
-                              LineIcons.paw,
-                              '${user.ownedPets.length} Pets',
-                            ),
-                            _buildAttributeItem(
-                              context,
-                              LineIcons.heart,
-                              '${user.likedPets.length} Liked',
-                            ),
-                            _buildAttributeItem(
-                              context,
-                              LineIcons.calendar,
-                              '${DateTime.now().year - user.dob.year} years',
-                            ),
-                            if (user.userRole == UserRole.vet &&
-                                user.vetProfile != null)
-                              _buildAttributeItem(
-                                context,
-                                LineIcons.stethoscope,
-                                'Verified',
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.user.name.isNotEmpty
+                                        ? widget.user.name
+                                        : 'No name given :(',
+                                    style: AppTextStyles.headingMedium,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            widget.user.userRole == UserRole.vet
+                                                ? LineIcons.stethoscope
+                                                : LineIcons.paw,
+                                            size: 18,
+                                            color: AppColorStyles.black,
+                                          ),
+                                          const SizedBox(width: 2),
+                                          Text(
+                                            widget.user.userRole == UserRole.vet
+                                                ? 'Veterinary'
+                                                : 'Pet Owner',
+                                            style: AppTextStyles.bodySmall
+                                                .copyWith(
+                                                  color: AppColorStyles.black,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                      Text(' - '),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            LineIcons.mapMarker,
+                                            size: 18,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurfaceVariant,
+                                          ),
+                                          FutureBuilder<String>(
+                                            future:
+                                                _getLocationNameFromGeoPoint(
+                                                  widget.user.location,
+                                                ),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                return Text(
+                                                  'Fetching location...',
+                                                  style:
+                                                      AppTextStyles.bodySmall,
+                                                );
+                                              } else if (snapshot.hasError) {
+                                                return Text(
+                                                  'Error fetching location',
+                                                  style:
+                                                      AppTextStyles.bodySmall,
+                                                );
+                                              } else {
+                                                return Text(
+                                                  snapshot.data ??
+                                                      'Unknown Location',
+                                                  style:
+                                                      AppTextStyles.bodySmall,
+                                                );
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
+                            ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      Text('About', style: AppTextStyles.headingSmall),
-                      const SizedBox(height: 8),
-                      Text(
-                        user.bio.isNotEmpty ? user.bio : 'No bio available',
-                        style: AppTextStyles.bodyBase,
+
+                      const SizedBox(height: 20),
+
+                      // ###################### Attributes
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color:
+                                Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _buildAttributeItem(
+                                context,
+                                LineIcons.paw,
+                                '${widget.user.ownedPets.length} Pets',
+                              ),
+                              _buildAttributeItem(
+                                context,
+                                LineIcons.heart,
+                                '${widget.user.likedPets.length} Liked',
+                              ),
+                              _buildAttributeItem(
+                                context,
+                                LineIcons.calendar,
+                                '${DateTime.now().year - widget.user.dob.year} years',
+                              ),
+                              if (widget.user.userRole == UserRole.vet &&
+                                  widget.user.vetProfile != null)
+                                _buildAttributeItem(
+                                  context,
+                                  LineIcons.stethoscope,
+                                  'Verified',
+                                ),
+                            ],
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: 100),
+
+                      const SizedBox(height: 24),
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('About', style: AppTextStyles.headingMedium),
+                            const SizedBox(height: 4),
+
+                            Text(
+                              widget.user.bio.isNotEmpty
+                                  ? widget.user.bio
+                                  : 'No bio available',
+                              style: AppTextStyles.bodyBase,
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Owned Pets Section
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          'Owned Pets',
+                          style: AppTextStyles.headingMedium,
+                        ),
+                      ),
+                      StreamBuilder<List<Pet>>(
+                        stream: ownedPets,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          if (snapshot.hasError ||
+                              !snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return const Text('No pets found');
+                          }
+                          return SizedBox(
+                            height: 220,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                final pet = snapshot.data![index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    // Navigate to PetProfileScreen using GoRouter
+                                    // Pass the pet object as an extra argument
+                                    GoRouter.of(
+                                      context,
+                                    ).push(Routes.petProfile, extra: pet);
+                                  },
+                                  child: PetProfileSmall(pet: pet),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+
+                      SizedBox(height: 6),
+
+                      // Owned Pets Section
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          'Liked Pets',
+                          style: AppTextStyles.headingMedium,
+                        ),
+                      ),
+                      StreamBuilder<List<Pet>>(
+                        stream: likedPets,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          if (snapshot.hasError ||
+                              !snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return Center(child: const Text('No pets found'));
+                          }
+                          return SizedBox(
+                            height: 220,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                final pet = snapshot.data![index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    // Navigate to PetProfileScreen using GoRouter
+                                    // Pass the pet object as an extra argument
+                                    GoRouter.of(
+                                      context,
+                                    ).push(Routes.petProfile, extra: pet);
+                                  },
+                                  child: PetProfileSmall(pet: pet),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(height: 60),
                     ],
                   ),
                 ),
               ),
             ],
-          ), // Sticky contact button
+          ),
+
           Positioned(
             left: 20,
             right: 20,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:fyp_pawsenvy/core/services/auth.service.dart';
 import 'package:fyp_pawsenvy/core/services/db.service.dart';
 import 'package:fyp_pawsenvy/core/utils/text.util.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/profiles/user/user_profile_extended.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
@@ -20,8 +22,10 @@ class PetProfileScreen extends StatefulWidget {
 class _PetProfileScreenState extends State<PetProfileScreen> {
   late DBService _db;
   late AuthService _auth;
+  late Future<AppUser?> petOwner;
 
   bool isLiked = false;
+  String status = PetStatus.normal.name;
 
   Future<void> handlePetLike(BuildContext context) async {
     if (isLiked) {
@@ -80,95 +84,91 @@ class _PetProfileScreenState extends State<PetProfileScreen> {
   @override
   Widget build(BuildContext context) {
     debugPrint(_auth.currentUser!.uid);
+    petOwner = _db.getSingleUser(widget.pet.ownerId);
 
-    return Material(
-      child: Stack(
-        children: [
-          // Main content with scroll
-          Column(
-            children: [
-              Container(
-                width: double.infinity,
-                height: 240,
-                decoration: BoxDecoration(
-                  gradient: AppColorStyles.profileGradient,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(32),
-                    bottomRight: Radius.circular(32),
-                  ),
-                ),
-                child: SafeArea(
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.center,
-                        child: CircleAvatar(
-                          radius: 80,
-                          backgroundColor: Colors.white,
-                          backgroundImage:
-                              widget.pet.avatar.isNotEmpty
-                                  ? NetworkImage(widget.pet.avatar)
-                                  : AssetImage(
-                                        widget.pet.species == PetSpecies.dog
-                                            ? 'assets/images/dog.png'
-                                            : widget.pet.species ==
-                                                PetSpecies.cat
-                                            ? 'assets/images/cat.png'
-                                            : 'assets/images/placeholder.png',
-                                      )
-                                      as ImageProvider,
-                        ),
-                      ),
-                      // Top bar
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                              icon: Icon(
-                                LineIcons.arrowLeft,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                              onPressed: () => Navigator.of(context).pop(),
-                            ),
-                            if (_auth.currentUser!.uid == widget.pet.ownerId)
-                              IconButton(
-                                icon: Icon(
-                                  LineIcons.verticalEllipsis,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
-                                ),
-                                onPressed:
-                                    () => _showBottomSheet(
-                                      context,
-                                      widget.pet,
-                                      _db,
-                                    ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              height: 240,
+              decoration: BoxDecoration(
+                gradient: AppColorStyles.profileGradient,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(32),
+                  bottomRight: Radius.circular(32),
                 ),
               ),
-              // ############# Details (scrollable)
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Name, species, gender
-                      Row(
+              child: SafeArea(
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: CircleAvatar(
+                        radius: 80,
+                        backgroundColor: Colors.white,
+                        backgroundImage:
+                            widget.pet.avatar.isNotEmpty
+                                ? NetworkImage(widget.pet.avatar)
+                                : AssetImage(
+                                      widget.pet.species == PetSpecies.dog
+                                          ? 'assets/images/dog.png'
+                                          : widget.pet.species == PetSpecies.cat
+                                          ? 'assets/images/cat.png'
+                                          : 'assets/images/placeholder.png',
+                                    )
+                                    as ImageProvider,
+                      ),
+                    ),
+                    // Top bar
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          IconButton(
+                            icon: Icon(
+                              LineIcons.arrowLeft,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                          if (_auth.currentUser!.uid == widget.pet.ownerId)
+                            IconButton(
+                              icon: Icon(
+                                LineIcons.verticalEllipsis,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                              onPressed:
+                                  () => _showBottomSheet(
+                                    context,
+                                    widget.pet,
+                                    _db,
+                                  ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // ############# Details (scrollable)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Name, species, gender
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
                                 Text(
                                   widget.pet.name.isNotEmpty
@@ -176,203 +176,252 @@ class _PetProfileScreenState extends State<PetProfileScreen> {
                                       : 'No name given :(',
                                   style: AppTextStyles.headingMedium,
                                 ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      widget.pet.species == PetSpecies.dog
-                                          ? LineIcons.dog
-                                          : LineIcons.cat,
-                                      size: 18,
-                                      color: AppColorStyles.deepPurple,
-                                    ),
-                                    const SizedBox(width: 2),
-                                    Text(
-                                      capitalizeFirst(widget.pet.species.name),
-                                      style: AppTextStyles.bodySmall.copyWith(
-                                        color: AppColorStyles.deepPurple,
-                                      ),
-                                    ),
-                                    const Text(' • '),
-                                    Icon(
-                                      widget.pet.gender.toLowerCase() == 'male'
-                                          ? LineIcons.mars
-                                          : widget.pet.gender.toLowerCase() ==
-                                              'female'
-                                          ? LineIcons.venus
-                                          : LineIcons.tag,
-                                      size: 18,
+
+                                SizedBox(width: 10),
+
+                                if (widget.pet.status != PetStatus.normal)
+                                  Container(
+                                    decoration: BoxDecoration(
                                       color:
-                                          widget.pet.gender.toLowerCase() ==
-                                                  'male'
-                                              ? Colors.blue
-                                              : widget.pet.gender
-                                                      .toLowerCase() ==
-                                                  'female'
-                                              ? Colors.pink
-                                              : AppColorStyles.deepPurple,
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.primaryContainer,
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
-                                    const SizedBox(width: 2),
-                                    Text(
-                                      capitalizeFirst(widget.pet.gender),
-                                      style: AppTextStyles.bodySmall,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 2,
                                     ),
-                                  ],
-                                ),
+                                    child: Text(
+                                      capitalizeFirst(widget.pet.status.name),
+                                      style: AppTextStyles.bodyExtraSmall
+                                          .copyWith(
+                                            color:
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryContainer,
+                                          ),
+                                    ),
+                                  ),
                               ],
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () => handlePetLike(context),
-                            icon: Icon(
-                              isLiked ? LineIcons.heartAlt : LineIcons.heart,
-                              color: isLiked ? AppColorStyles.red : null,
-                            ),
-                            iconSize: 28,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      // Attributes section: weight, color, age, breed
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color:
-                              Theme.of(
-                                context,
-                              ).colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _buildAttributeItem(
-                              context,
-                              LineIcons.weight,
-                              '${widget.pet.weight}kg',
-                            ),
-                            _buildAttributeItem(
-                              context,
-                              LineIcons.palette,
-                              capitalizeFirst(widget.pet.color),
-                            ),
-                            _buildAttributeItem(
-                              context,
-                              LineIcons.calendar,
-                              '${widget.pet.age} yrs',
-                            ),
-                            _buildAttributeItem(
-                              context,
-                              LineIcons.dna,
-                              capitalizeFirst(widget.pet.breed),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Icon(
+                                  widget.pet.species == PetSpecies.dog
+                                      ? LineIcons.dog
+                                      : LineIcons.cat,
+                                  size: 18,
+                                  color: AppColorStyles.deepPurple,
+                                ),
+                                const SizedBox(width: 2),
+                                Text(
+                                  capitalizeFirst(widget.pet.species.name),
+                                  style: AppTextStyles.bodySmall.copyWith(
+                                    color: AppColorStyles.deepPurple,
+                                  ),
+                                ),
+                                const Text(' • '),
+                                Icon(
+                                  widget.pet.gender.toLowerCase() == 'male'
+                                      ? LineIcons.mars
+                                      : widget.pet.gender.toLowerCase() ==
+                                          'female'
+                                      ? LineIcons.venus
+                                      : LineIcons.tag,
+                                  size: 18,
+                                  color:
+                                      widget.pet.gender.toLowerCase() == 'male'
+                                          ? Colors.blue
+                                          : widget.pet.gender.toLowerCase() ==
+                                              'female'
+                                          ? Colors.pink
+                                          : AppColorStyles.deepPurple,
+                                ),
+                                const SizedBox(width: 2),
+                                Text(
+                                  capitalizeFirst(widget.pet.gender),
+                                  style: AppTextStyles.bodySmall,
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
-                      if (widget.pet.temperament.isNotEmpty) ...[
-                        const SizedBox(height: 18),
-                        // Temperament
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 4,
-                          children:
-                              widget.pet.temperament
-                                  .map(
-                                    (temp) => Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 8,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            Theme.of(
-                                              context,
-                                            ).colorScheme.primaryContainer,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        capitalizeFirst(temp.name),
-                                        style: AppTextStyles.bodyExtraSmall
-                                            .copyWith(
-                                              color:
-                                                  Theme.of(context)
-                                                      .colorScheme
-                                                      .onPrimaryContainer,
-                                            ),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
+                      IconButton(
+                        onPressed: () => handlePetLike(context),
+                        icon: Icon(
+                          isLiked ? LineIcons.heartAlt : LineIcons.heart,
+                          color: isLiked ? AppColorStyles.red : null,
                         ),
-                        const SizedBox(height: 16),
-                      ],
-                      Text(
-                        'About ${widget.pet.name}',
-                        style: AppTextStyles.headingSmall.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        iconSize: 28,
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        widget.pet.bio.isNotEmpty
-                            ? widget.pet.bio
-                            : 'No bio available for ${widget.pet.name}',
-                        style: AppTextStyles.bodyBase,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Temperament section
-                      const SizedBox(height: 80), // Space for button
                     ],
                   ),
-                ),
-              ),
-            ],
-          ), // Sticky Adopt button
-          Positioned(
-            left: 20,
-            right: 20,
-            bottom: 20,
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColorStyles.purple,
-                // gradient: AppColorStyles.profileGradient,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColorStyles.lightPurple),
-                boxShadow: [
-                  BoxShadow(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.secondary.withOpacity(0.3),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
+                  const SizedBox(height: 16),
+                  // Attributes section: weight, color, age, breed
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color:
+                          Theme.of(context).colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildAttributeItem(
+                          context,
+                          LineIcons.weight,
+                          '${widget.pet.weight}kg',
+                        ),
+                        _buildAttributeItem(
+                          context,
+                          LineIcons.palette,
+                          capitalizeFirst(widget.pet.color),
+                        ),
+                        _buildAttributeItem(
+                          context,
+                          LineIcons.calendar,
+                          '${widget.pet.age} yrs',
+                        ),
+                        _buildAttributeItem(
+                          context,
+                          LineIcons.dna,
+                          capitalizeFirst(widget.pet.breed),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (widget.pet.temperament.isNotEmpty) ...[
+                    const SizedBox(height: 18),
+                    // Temperament
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children:
+                          widget.pet.temperament
+                              .map(
+                                (temp) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(
+                                          context,
+                                        ).colorScheme.primaryContainer,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    capitalizeFirst(temp.name),
+                                    style: AppTextStyles.bodyExtraSmall
+                                        .copyWith(
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.onPrimaryContainer,
+                                        ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  Text(
+                    'About ${widget.pet.name}',
+                    style: AppTextStyles.headingSmall.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    widget.pet.bio.isNotEmpty
+                        ? widget.pet.bio
+                        : 'No bio available for ${widget.pet.name}',
+                    style: AppTextStyles.bodyBase,
+                  ),
+                  const SizedBox(height: 16),
+                  // Temperament section
+                  const SizedBox(height: 0),
+                  FutureBuilder<AppUser?>(
+                    future: petOwner,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError ||
+                          !snapshot.hasData ||
+                          snapshot.data == null) {
+                        return const SizedBox.shrink();
+                      }
+                      return UserProfileExtended(user: snapshot.data!);
+                    },
                   ),
                 ],
               ),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  foregroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  elevation: 0,
-                  shadowColor: Colors.transparent,
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: FutureBuilder<bool>(
+        future: _db.checkIfUserHasPet(
+          _auth.currentUser!.uid,
+          widget.pet.pID!,
+          'ownedPets',
+        ),
+        builder: (context, snapshot) {
+          // Don't show the button while loading or if user owns the pet
+          if (snapshot.connectionState == ConnectionState.waiting ||
+              snapshot.hasError ||
+              (snapshot.hasData && snapshot.data == true)) {
+            return const SizedBox.shrink();
+          }
+
+          // Show the adopt button if user doesn't own the pet
+          return Container(
+            margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppColorStyles.purple,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColorStyles.lightPurple),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.secondary.withOpacity(0.3),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
                 ),
-                onPressed: () {},
-                child: Text(
-                  'Adopt this pet',
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColorStyles.white,
-                    fontWeight: FontWeight.w500,
-                  ),
+              ],
+            ),
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                elevation: 0,
+                shadowColor: Colors.transparent,
+              ),
+              onPressed: () {},
+              icon: Icon(LineIcons.phone, color: AppColorStyles.white),
+              label: Text(
+                'Contact the Owner',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColorStyles.white,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

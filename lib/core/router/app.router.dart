@@ -4,9 +4,10 @@ import 'package:fyp_pawsenvy/core/models/pet.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/community/adoption_pets.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/pet/create_pet_profile.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/community/lost_found_pets.dart';
-import 'package:fyp_pawsenvy/presentation/pages/common/pet/pet_partner_finder.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/community/pet_partner_finder.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/settings.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/complete_user_profile/complete_user_profile.dart';
+import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_reminders.dart';
 import 'package:fyp_pawsenvy/presentation/pages/role_selection_page.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/profiles/user/user_profile_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -50,7 +51,7 @@ class AppRouter {
         builder: (context, state) => const RoleSelectionPage(),
       ),
 
-      // ################### Create Profiles ###################
+      // ################### Create  ###################
       GoRoute(
         path: Routes.createPetProfile,
         name: 'createPetProfile',
@@ -62,6 +63,11 @@ class AppRouter {
         builder:
             (context, state) =>
                 const CompleteUserProfile(isProfileIncomplete: true),
+      ),
+      GoRoute(
+        path: Routes.addReminder,
+        name: 'createReminder',
+        builder: (context, state) => const AddReminderScreen(),
       ),
 
       // ################### Profiles ###################

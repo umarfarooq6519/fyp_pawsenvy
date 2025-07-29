@@ -143,8 +143,8 @@ class _PetPartnerFinderState extends State<PetPartnerFinder> {
           child: Column(
             children: [
               Text(
-                'Choose Your Pet to Begin\nPartner Search',
-                style: AppTextStyles.headingMedium,
+                'Choose Your Pet',
+                style: AppTextStyles.headingLarge,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -167,7 +167,7 @@ class _PetPartnerFinderState extends State<PetPartnerFinder> {
                 SizedBox(
                   height: 420,
                   child: Swiper(
-                    loop: pets.length < 2 ? false : true,
+                    loop: false,
                     itemBuilder: (BuildContext context, int index) {
                       final Pet pet = pets[index];
                       return GestureDetector(
@@ -238,7 +238,7 @@ class _PetPartnerFinderState extends State<PetPartnerFinder> {
                 SizedBox(
                   height: 420,
                   child: Swiper(
-                    loop: pets.length < 2 ? false : true,
+                    loop: false,
                     itemBuilder: (BuildContext context, int index) {
                       final Pet pet = pets[index];
                       return GestureDetector(

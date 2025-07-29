@@ -66,11 +66,6 @@ class AppDrawer extends StatelessWidget {
               child: Column(
                 children: [
                   _buildDrawerItem(
-                    icon: LineIcons.heartbeat,
-                    title: 'Pet Partner Finder',
-                    onTap: () => context.push(Routes.petPartnerFinder),
-                  ),
-                  _buildDrawerItem(
                     icon: Icons.account_circle_outlined,
                     title: 'My Profile Card',
                     onTap: () => _navigateToUserProfile(context, appUser!),

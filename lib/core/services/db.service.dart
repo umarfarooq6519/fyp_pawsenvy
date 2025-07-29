@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fyp_pawsenvy/core/models/pet.dart';
+import 'package:fyp_pawsenvy/core/models/reminder.dart';
 import 'package:uuid/uuid.dart';
 
 class DBService {
@@ -26,6 +27,14 @@ class DBService {
   // Real-time stream of a user's document
   Stream<AppUser> getSingleUserStream(String uID) {
     return users.doc(uID).snapshots().map((doc) => AppUser.fromFirestore(doc));
+  }
+
+  Future<AppUser?> getSingleUser(String uID) async {
+    final doc = await users.doc(uID).get();
+    if (doc.exists) {
+      return AppUser.fromFirestore(doc);
+    }
+    return null;
   }
 
   // Update multiple user doc fields
@@ -210,7 +219,61 @@ class DBService {
     }
   }
 
-  // ################### Bookings ###################
+  // ################### Reminders ###################
+
+  // Save a reminder to DB
+  Future<void> createReminder({
+    required String uid,
+    required String title,
+    required String description,
+    required DateTime dueDate,
+    ReminderStatus status = ReminderStatus.pending,
+  }) async {
+    final id = uuid.v4();
+    final reminder = Reminder(
+      id: id,
+      uID: uid,
+      title: title,
+      description: description,
+      due: Timestamp.fromDate(dueDate),
+      status: status,
+      createdAt: Timestamp.now(),
+    );
+
+    await reminders.doc(id).set(reminder.toMap());
+  }
+
+  // Get stream of user reminders for date
+  Stream<List<Reminder>> getRemindersForDate({
+    required String uid,
+    required DateTime date,
+  }) {
+    final dayStart = DateTime(date.year, date.month, date.day);
+    final dayEnd = dayStart.add(const Duration(days: 1));
+
+    return reminders
+        .where('uID', isEqualTo: uid)
+        .where('due', isGreaterThanOrEqualTo: Timestamp.fromDate(dayStart))
+        .where('due', isLessThan: Timestamp.fromDate(dayEnd))
+        .orderBy('due')
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map(Reminder.fromFirestore).toList());
+  }
+
+  // Update status of a reminder
+  Future<void> updateReminderStatus({
+    required String reminderId,
+    required ReminderStatus newStatus,
+  }) async {
+    await reminders.doc(reminderId).update({
+      'status': reminderStatusToString(newStatus),
+    });
+  }
+
+  // Delete a reminder
+  Future<void> deleteReminder(String reminderId) async {
+    await reminders.doc(reminderId).delete();
+  }
 
   // ################### Vets ###################
 }

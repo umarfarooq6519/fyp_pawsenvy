@@ -14,6 +14,7 @@ class Routes {
   // create
   static const String createPetProfile = '/create-pet-profile';
   static const String createUserProfile = '/create-user-profile';
+  static const String addReminder = '/add-reminder';
 
   // profiles
   static const String petProfile = '/pet-profile';

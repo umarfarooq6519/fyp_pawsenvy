@@ -1,53 +1,58 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum ReminderStatus { pending, completed, missed }
 
 class Reminder {
+  final String id;
+  final String uID;
   final String title;
-  final Timestamp time;
-  final IconData icon;
+  final String description;
+  final Timestamp due;
   final ReminderStatus status;
-  final String notes;
   final Timestamp createdAt;
-  final Timestamp updatedAt;
 
   Reminder({
+    required this.id,
+    required this.uID,
     required this.title,
-    required this.time,
-    required this.icon,
+    required this.due,
     required this.status,
-    required this.notes,
+    required this.description,
     required this.createdAt,
-    required this.updatedAt,
   });
 
-  factory Reminder.fromMap(Map<String, dynamic> data) {
+  factory Reminder.fromFirestore(DocumentSnapshot reminder) {
+    final data = reminder.data() as Map<String, dynamic>?;
+
+    if (data == null) {
+      throw Exception('Document data is null');
+    }
+
     return Reminder(
+      id: reminder.id,
+      uID: data['uID'] ?? '',
       title: data['title'] ?? '',
-      time: data['time'] ?? Timestamp.now(),
-      icon: IconData(data['icon'] ?? 0, fontFamily: 'MaterialIcons'),
-      status: _reminderStatusFromString(data['status'] ?? 'pending'),
-      notes: data['notes'] ?? '',
+      due: data['due'] ?? Timestamp.now(),
+      status: reminderStatusFromString(data['status'] ?? 'pending'),
+      description: data['description'] ?? '',
       createdAt: data['createdAt'] ?? Timestamp.now(),
-      updatedAt: data['updatedAt'] ?? Timestamp.now(),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
+      'uID': uID,
       'title': title,
-      'time': time,
-      'icon': icon.codePoint,
-      'status': _reminderStatusToString(status),
-      'notes': notes,
+      'due': due,
+      'status': reminderStatusToString(status),
+      'description': description,
       'createdAt': createdAt,
-      'updatedAt': updatedAt,
     };
   }
 }
 
-String _reminderStatusToString(ReminderStatus status) {
+String reminderStatusToString(ReminderStatus status) {
   switch (status) {
     case ReminderStatus.pending:
       return 'pending';
@@ -58,7 +63,7 @@ String _reminderStatusToString(ReminderStatus status) {
   }
 }
 
-ReminderStatus _reminderStatusFromString(String status) {
+ReminderStatus reminderStatusFromString(String status) {
   switch (status) {
     case 'pending':
       return ReminderStatus.pending;
@@ -75,13 +80,12 @@ ReminderStatus _reminderStatusFromString(String status) {
 /*
 
   {
+    "uID": "user123",
     "title": "Walk the dog",
-    "time": Timestamp, // Firestore Timestamp
-    "icon": 0xe567, // codePoint for IconData
+    "description": "Bring water for the walk",
+    "due": Timestamp, // Firestore Timestamp
     "status": "pending" | "completed" | "missed",
-    "notes": "Bring water for the walk",
-    "createdAt": Timestamp,
-    "updatedAt": Timestamp
+    "createdAt": Timestamp
   }
   
 */

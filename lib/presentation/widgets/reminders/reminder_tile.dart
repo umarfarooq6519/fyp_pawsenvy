@@ -11,38 +11,6 @@ class ReminderTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          width: 24,
-          height: 24,
-          margin: const EdgeInsets.only(right: 16),
-          child: Icon(reminder.icon, color: AppColorStyles.purple, size: 20),
-        ),
-        Expanded(
-          child: Text(
-            reminder.title,
-            style: AppTextStyles.bodySmall.copyWith(
-              fontWeight: FontWeight.w400,
-              decoration:
-                  reminder.status == ReminderStatus.completed
-                      ? TextDecoration.lineThrough
-                      : null,
-              color:
-                  reminder.status == ReminderStatus.completed
-                      ? AppColorStyles.lightGrey
-                      : AppColorStyles.black,
-            ),
-          ),
-        ),
-        Text(
-          DateTimeUtils.formatTime12Hour(reminder.time.toDate()),
-          style: AppTextStyles.bodyExtraSmall.copyWith(
-            color: AppColorStyles.lightGrey,
-          ),
-        ),
-      ],
-    );
+    return Text('Reminder tile')
   }
 }

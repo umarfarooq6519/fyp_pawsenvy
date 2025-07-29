@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:fyp_pawsenvy/core/models/pet.dart';
+import 'package:fyp_pawsenvy/core/router/routes.dart';
 import 'package:fyp_pawsenvy/core/services/db.service.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
@@ -115,14 +116,14 @@ class _PetsScreenState extends State<PetsScreen> {
                 SizedBox(
                   height: 420,
                   child: Swiper(
-                    loop: pets.length < 2 ? false : true,
+                    loop: false,
                     itemBuilder: (BuildContext context, int index) {
                       final Pet pet = pets[index];
                       return GestureDetector(
                         onTap:
                             () => GoRouter.of(
                               context,
-                            ).push('/pet-profile', extra: pet),
+                            ).push(Routes.petProfile, extra: pet),
                         child: PetProfileMedium(pet: pet),
                       );
                     },
