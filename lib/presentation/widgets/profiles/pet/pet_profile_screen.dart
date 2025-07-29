@@ -9,6 +9,7 @@ import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/models/pet.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
 class PetProfileScreen extends StatefulWidget {
@@ -410,7 +411,15 @@ class _PetProfileScreenState extends State<PetProfileScreen> {
                 elevation: 0,
                 shadowColor: Colors.transparent,
               ),
-              onPressed: () {},
+              onPressed: () async {
+                final Uri url = Uri(scheme: 'tel', path: '+923001234567');
+
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                } else {
+                  throw 'Could not launch dialer';
+                }
+              },
               icon: Icon(LineIcons.phone, color: AppColorStyles.white),
               label: Text(
                 'Contact the Owner',

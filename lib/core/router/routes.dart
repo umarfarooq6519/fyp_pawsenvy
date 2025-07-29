@@ -10,6 +10,7 @@ class Routes {
   static const String adoptionPets = '/adoption';
   static const String lostFoundPets = '/lost-found';
   static const String petPartnerFinder = '/pet-partner-finder';
+  static const String vetListing = '/vet-listing';
 
   // create
   static const String createPetProfile = '/create-pet-profile';

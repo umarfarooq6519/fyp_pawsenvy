@@ -209,7 +209,7 @@ class _PetOwnerState extends State<PetOwner> {
           child: Row(
             children: [
               IconButton(
-                onPressed: () => predictBreed(),
+                onPressed: () => showImageSourceSelector(),
                 icon: const Icon(LineIcons.camera, size: 26),
               ),
               IconButton(
@@ -227,6 +227,10 @@ class _PetOwnerState extends State<PetOwner> {
   final picker = ImagePicker();
   Future<XFile?> pickImageFromGallery() async {
     return await picker.pickImage(source: ImageSource.gallery);
+  }
+
+  Future<XFile?> pickImageFromCamera() async {
+    return await picker.pickImage(source: ImageSource.camera);
   }
 
   // ############### Predict breed
@@ -264,12 +268,31 @@ class _PetOwnerState extends State<PetOwner> {
 
       // Update state and display in UI
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              "Breed: $breed, Confidence: ${(confidence * 100).toStringAsFixed(1)}%",
-            ),
-          ),
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                'Breed Prediction',
+                style: AppTextStyles.headingMedium,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Breed: $breed'),
+                  const SizedBox(height: 8),
+                  Text('Confidence: ${(confidence * 100).toStringAsFixed(1)}%'),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
         );
       }
     } else {
@@ -279,5 +302,109 @@ class _PetOwnerState extends State<PetOwner> {
         );
       }
     }
+  }
+
+  void predictBreedFromCamera() async {
+    // Check if model is loaded, if not try to load it
+    if (!BreedAIUtil.isInitialized) {
+      debugPrint("Model not loaded, attempting to load...");
+      final success = await BreedAIUtil.initialize();
+
+      // If still not loaded, show error
+      if (!success) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Failed to load AI model. Please try again."),
+            ),
+          );
+        }
+        return;
+      }
+    }
+
+    final image = await pickImageFromCamera();
+    if (image == null) {
+      debugPrint("Camera capture failed");
+      return;
+    }
+
+    final result = await BreedAIUtil.classifyImage(image.path);
+    if (result != null) {
+      final breed = result['label'];
+      final confidence = result['confidence'];
+
+      debugPrint("Breed: $breed, Confidence: $confidence");
+
+      // Update state and display in UI
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                'Breed Prediction',
+                style: AppTextStyles.headingMedium,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Breed: $breed'),
+                  const SizedBox(height: 8),
+                  Text('Confidence: ${(confidence * 100).toStringAsFixed(1)}%'),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to classify image")),
+        );
+      }
+    }
+  }
+
+  // Added a method to show a bottom sheet for selecting image source
+  void showImageSourceSelector() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(LineIcons.camera),
+                title: const Text('Use Camera'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  predictBreedFromCamera();
+                },
+              ),
+              ListTile(
+                leading: const Icon(LineIcons.photoVideo),
+                title: const Text('Choose from Gallery'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  predictBreed();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

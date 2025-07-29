@@ -94,7 +94,9 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
                   'assets/images/veterinarian.png',
                   'Veterinarians',
                   'Book trusted vet services fast',
-                  () {},
+                  () {
+                    context.push(Routes.vetListing);
+                  },
                 ),
               ],
             ),

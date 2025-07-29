@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:fyp_pawsenvy/core/models/pet.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/community/adoption_pets.dart';
+import 'package:fyp_pawsenvy/presentation/pages/common/community/vet_listing.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/pet/create_pet_profile.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/community/lost_found_pets.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/community/pet_partner_finder.dart';
@@ -103,6 +104,11 @@ class AppRouter {
         path: Routes.petPartnerFinder,
         name: 'petPartnerFinder',
         builder: (context, state) => const PetPartnerFinder(),
+      ),
+      GoRoute(
+        path: Routes.vetListing,
+        name: 'vetListing',
+        builder: (context, state) => const VetListing(),
       ),
 
       // ################### Other ###################
