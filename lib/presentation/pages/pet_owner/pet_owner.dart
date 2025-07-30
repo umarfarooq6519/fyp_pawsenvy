@@ -5,6 +5,7 @@ import 'package:fyp_pawsenvy/core/router/routes.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/utils/breed_ai.util.dart';
+import 'package:fyp_pawsenvy/core/utils/disease_ai.util.dart'; // NEW: Import the disease utility
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/complete_user_profile/complete_user_profile.dart';
 import 'package:fyp_pawsenvy/presentation/pages/common/pets_screen.dart';
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_reminders.dart';
@@ -17,6 +18,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/chatbot/floating_chat_btn.dart';
 
 class PetOwner extends StatefulWidget {
   const PetOwner({super.key});
@@ -29,9 +31,9 @@ class _PetOwnerState extends State<PetOwner> {
   int _selectedScreen = 0;
 
   final List<Widget> _screens = [
-    OwnerDashboard(),
-    OwnerReminders(),
-    PetsScreen(),
+    const OwnerDashboard(),
+    const OwnerReminders(),
+    const PetsScreen(),
   ];
 
   bool _isProfileComplete(AppUser user) {
@@ -52,11 +54,13 @@ class _PetOwnerState extends State<PetOwner> {
   void initState() {
     super.initState();
     BreedAIUtil.initialize();
+    DiseaseAIUtil.initialize();
   }
 
   @override
   void dispose() {
     BreedAIUtil.dispose();
+    DiseaseAIUtil.dispose();
     super.dispose();
   }
 
@@ -111,7 +115,9 @@ class _PetOwnerState extends State<PetOwner> {
                     ),
                     ActionButton(
                       onPressed: () {
-                        context.push(Routes.addReminder);
+                        if (context.mounted) {
+                          context.push(Routes.addReminder);
+                        }
                       },
                       icon: const Icon(LineIcons.bell),
                       label: 'Add Reminder',
@@ -120,6 +126,8 @@ class _PetOwnerState extends State<PetOwner> {
                     ),
                   ],
                 )
+                : _selectedScreen == 0
+                ? const FloatingChatButton()
                 : null,
         bottomNavigationBar: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -209,7 +217,8 @@ class _PetOwnerState extends State<PetOwner> {
           child: Row(
             children: [
               IconButton(
-                onPressed: () => showImageSourceSelector(),
+                // MODIFIED: Call the new selector method
+                onPressed: () => showAIModelSelector(),
                 icon: const Icon(LineIcons.camera, size: 26),
               ),
               IconButton(
@@ -374,8 +383,186 @@ class _PetOwnerState extends State<PetOwner> {
     }
   }
 
-  // Added a method to show a bottom sheet for selecting image source
-  void showImageSourceSelector() {
+  // ############### NEW: Predict Disease
+  void predictDisease() async {
+    if (!DiseaseAIUtil.isInitialized) {
+      debugPrint("Disease model not loaded, attempting to load...");
+      final success = await DiseaseAIUtil.initialize();
+      if (!success) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                "Failed to load disease AI model. Please try again.",
+              ),
+            ),
+          );
+        }
+        return;
+      }
+    }
+
+    final image = await pickImageFromGallery();
+    if (image == null) {
+      debugPrint("Pick image for disease detection failed");
+      return;
+    }
+
+    final result = await DiseaseAIUtil.classifyImage(image.path);
+    if (result != null) {
+      final disease = result['label'];
+      final confidence = result['confidence'];
+      debugPrint("Disease: $disease, Confidence: $confidence");
+
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                'Skin Disease Detection',
+                style: AppTextStyles.headingMedium,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Prediction: $disease'),
+                  const SizedBox(height: 8),
+                  Text('Confidence: ${(confidence * 100).toStringAsFixed(1)}%'),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to detect disease from image")),
+        );
+      }
+    }
+  }
+
+  void predictDiseaseFromCamera() async {
+    if (!DiseaseAIUtil.isInitialized) {
+      debugPrint("Disease model not loaded, attempting to load...");
+      final success = await DiseaseAIUtil.initialize();
+      if (!success) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                "Failed to load disease AI model. Please try again.",
+              ),
+            ),
+          );
+        }
+        return;
+      }
+    }
+
+    final image = await pickImageFromCamera();
+    if (image == null) {
+      debugPrint("Camera capture for disease detection failed");
+      return;
+    }
+
+    final result = await DiseaseAIUtil.classifyImage(image.path);
+    if (result != null) {
+      final disease = result['label'];
+      final confidence = result['confidence'];
+      debugPrint("Disease: $disease, Confidence: $confidence");
+
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                'Skin Disease Detection',
+                style: AppTextStyles.headingMedium,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Prediction: $disease'),
+                  const SizedBox(height: 8),
+                  Text('Confidence: ${(confidence * 100).toStringAsFixed(1)}%'),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to detect disease from image")),
+        );
+      }
+    }
+  }
+
+  // MODIFIED: Renamed and expanded this method
+  void showAIModelSelector() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(LineIcons.dog),
+                title: const Text('Predict Dog Breed'),
+                onTap: () {
+                  Navigator.of(context).pop(); // Close the first sheet
+                  showImageSourceSelector(
+                    onCamera: predictBreedFromCamera,
+                    onGallery: predictBreed,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(LineIcons.firstAid),
+                title: const Text('Detect Skin Disease'),
+                onTap: () {
+                  Navigator.of(context).pop(); // Close the first sheet
+                  showImageSourceSelector(
+                    onCamera: predictDiseaseFromCamera,
+                    onGallery: predictDisease,
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // MODIFIED: Refactored this to be reusable for both models
+  void showImageSourceSelector({
+    required VoidCallback onCamera,
+    required VoidCallback onGallery,
+  }) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -390,7 +577,7 @@ class _PetOwnerState extends State<PetOwner> {
                 title: const Text('Use Camera'),
                 onTap: () {
                   Navigator.of(context).pop();
-                  predictBreedFromCamera();
+                  onCamera();
                 },
               ),
               ListTile(
@@ -398,7 +585,7 @@ class _PetOwnerState extends State<PetOwner> {
                 title: const Text('Choose from Gallery'),
                 onTap: () {
                   Navigator.of(context).pop();
-                  predictBreed();
+                  onGallery();
                 },
               ),
             ],
@@ -408,3 +595,15 @@ class _PetOwnerState extends State<PetOwner> {
     );
   }
 }
+
+// ### Summary of Changes
+
+// 1.  **New File (disease_ai.util.dart): This file now contains all the logic specific to your disease detection model, keeping it separate and clean.
+// 2.  **pet_owner.dart Modifications**:
+//     *   Imported the new DiseaseAIUtil.
+//     *   Initialized and disposed of the disease model in initState and dispose.
+//     *   Added two new methods, predictDisease() and predictDiseaseFromCamera(), which mirror your existing breed prediction functions but use the new utility.
+//     *   Renamed showImageSourceSelector to showAIModelSelector to better reflect its new purpose.
+//     *   The showAIModelSelector now presents the user with a choice between "Predict Dog Breed" and "Detect Skin Disease."
+//     *   The original image source selector (Camera/Gallery) was refactored into a reusable method that can be called by either the breed or disease prediction flow.
+//     *   The onPressed callback for the camera icon in the AppBar now correctly calls showAIModelSelector.

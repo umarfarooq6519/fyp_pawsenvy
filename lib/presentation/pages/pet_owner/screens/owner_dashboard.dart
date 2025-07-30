@@ -92,7 +92,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
 
                 _communityCard(
                   'assets/images/veterinarian.png',
-                  'Veterinarians',
+                  'Veterinarian',
                   'Book trusted vet services fast',
                   () {
                     context.push(Routes.vetListing);
@@ -100,6 +100,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
                 ),
               ],
             ),
+            SizedBox(height: 20),
           ],
         ),
       ],
@@ -116,7 +117,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          height: 160,
+          height: 180,
           width: double.infinity,
           padding: EdgeInsets.all(14),
           decoration: BoxDecoration(
@@ -135,7 +136,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image(image: AssetImage(imagePath), width: 42, height: 42),
+              Image(image: AssetImage(imagePath), width: 36, height: 36),
               SizedBox(height: 10),
               Text(label, style: AppTextStyles.headingSmall),
               SizedBox(height: 2),

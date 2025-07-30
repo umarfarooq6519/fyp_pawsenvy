@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:fyp_pawsenvy/providers/chat.provider.dart';
 import 'package:fyp_pawsenvy/providers/user.provider.dart';
 import 'package:provider/provider.dart';
 import 'package:fyp_pawsenvy/firebase_options.dart';
@@ -25,10 +26,11 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider(create: (context) => DBService()),
         Provider(create: (context) => StorageService()),
         ChangeNotifierProvider(create: (context) => AuthService()),
-        Provider(create: (context) => DBService()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => ChatProvider()),
       ],
       child: MaterialApp.router(
         routerConfig: AppRouter.router,
