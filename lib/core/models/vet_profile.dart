@@ -75,18 +75,76 @@ class VetProfile {
 }
 
 class OperatingHours {
-  final String? open;
-  final String? close;
+  // Store time as minutes since midnight for efficient calculations
+  final int? openMinutes; // e.g., 540 for 09:00 (9*60)
+  final int? closeMinutes; // e.g., 1020 for 17:00 (17*60)
 
-  OperatingHours({this.open, this.close});
+  OperatingHours({this.openMinutes, this.closeMinutes});
+
+  // Backward compatibility: convert from old string format
+  OperatingHours.fromStrings({String? open, String? close})
+    : openMinutes = open != null ? _timeStringToMinutes(open) : null,
+      closeMinutes = close != null ? _timeStringToMinutes(close) : null;
+
+  // Convert to display format
+  String? get open =>
+      openMinutes != null ? _minutesToTimeString(openMinutes!) : null;
+  String? get close =>
+      closeMinutes != null ? _minutesToTimeString(closeMinutes!) : null;
 
   factory OperatingHours.fromMap(Map<String, dynamic> data) {
-    return OperatingHours(open: data['open'], close: data['close']);
+    // Handle both old string format and new minutes format
+    if (data['openMinutes'] != null && data['closeMinutes'] != null) {
+      // New format: minutes since midnight
+      return OperatingHours(
+        openMinutes: data['openMinutes'],
+        closeMinutes: data['closeMinutes'],
+      );
+    } else {
+      // Old format: string time - convert to minutes
+      return OperatingHours.fromStrings(
+        open: data['open'],
+        close: data['close'],
+      );
+    }
   }
 
   Map<String, dynamic> toMap() {
-    return {'open': open, 'close': close};
+    return {
+      'openMinutes': openMinutes,
+      'closeMinutes': closeMinutes,
+      // Keep old format for backward compatibility during migration
+      'open': open,
+      'close': close,
+    };
   }
+
+  // Helper methods for time conversion
+  static int _timeStringToMinutes(String time) {
+    final parts = time.split(':');
+    return int.parse(parts[0]) * 60 + int.parse(parts[1]);
+  }
+
+  static String _minutesToTimeString(int minutes) {
+    final hours = minutes ~/ 60;
+    final mins = minutes % 60;
+    return "${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}";
+  }
+
+  // Check if time slot is within operating hours
+  bool isWithinHours(int timeMinutes) {
+    if (openMinutes == null || closeMinutes == null) return false;
+    return timeMinutes >= openMinutes! && timeMinutes <= closeMinutes!;
+  }
+
+  // Get operating duration in minutes
+  int? get durationMinutes {
+    if (openMinutes == null || closeMinutes == null) return null;
+    return closeMinutes! - openMinutes!;
+  }
+
+  // Check if the business is closed
+  bool get isClosed => openMinutes == null || closeMinutes == null;
 }
 
 Weekday? _weekdayFromString(String value) {
@@ -177,13 +235,18 @@ Specialization? _specializationFromString(String value) {
     "services": ["petSitting", "petWalking", ...] // as strings
     "experience": 5,
     "operatingHours": {
-      "mon": { "open": "09:00", "close": "17:00" },
-      "tue": { "open": "09:00", "close": "17:00" },
-      "wed": { "open": "09:00", "close": "17:00" },
-      "thu": { "open": "09:00", "close": "17:00" },
-      "fri": { "open": "09:00", "close": "17:00" },
-      "sat": { "open": "10:00", "close": "14:00" },
-      "sun": { "open": null, "close": null }
+      "mon": { 
+        "openMinutes": 540,  // 09:00 as minutes since midnight
+        "closeMinutes": 1020, // 17:00 as minutes since midnight
+        "open": "09:00",     // for backward compatibility
+        "close": "17:00"     // for backward compatibility
+      },
+      "tue": { "openMinutes": 540, "closeMinutes": 1020, "open": "09:00", "close": "17:00" },
+      "wed": { "openMinutes": 540, "closeMinutes": 1020, "open": "09:00", "close": "17:00" },
+      "thu": { "openMinutes": 540, "closeMinutes": 1020, "open": "09:00", "close": "17:00" },
+      "fri": { "openMinutes": 540, "closeMinutes": 1020, "open": "09:00", "close": "17:00" },
+      "sat": { "openMinutes": 600, "closeMinutes": 840, "open": "10:00", "close": "14:00" },
+      "sun": { "openMinutes": null, "closeMinutes": null, "open": null, "close": null }
     },
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/router/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:fyp_pawsenvy/core/services/db.service.dart';
@@ -78,7 +79,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                             await handleSelection(
                               context,
                               UserRole.owner,
-                              '/pet-owner',
+                              Routes.petOwner,
                             );
                             setState(() => isLoading = false);
                           },
@@ -105,7 +106,15 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        onPressed: () {},
+                        onPressed: () async {
+                          setState(() => isLoading = true);
+                          await handleSelection(
+                            context,
+                            UserRole.vet,
+                            Routes.veterinary,
+                          );
+                          setState(() => isLoading = false);
+                        },
                         child: Text(
                           'Veterinarian',
                           style: AppTextStyles.bodyBase,
@@ -131,7 +140,8 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                     vertical: 12,
                     horizontal: 18,
                   ),
-                ),                onPressed: () async {
+                ),
+                onPressed: () async {
                   final auth = Provider.of<AuthService>(context, listen: false);
                   await auth.signOut();
                 },
@@ -154,6 +164,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
       ),
     );
   }
+
   Future<void> handleSelection(
     BuildContext context,
     UserRole role,

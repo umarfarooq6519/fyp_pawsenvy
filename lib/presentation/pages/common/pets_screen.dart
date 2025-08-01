@@ -43,6 +43,7 @@ class _PetsScreenState extends State<PetsScreen> {
     petIDs = isOwned ? _appUser?.ownedPets ?? [] : _appUser?.likedPets ?? [];
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -137,6 +138,7 @@ class _PetsScreenState extends State<PetsScreen> {
             );
           },
         ),
+        Text(''),
       ],
     );
   }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_pawsenvy/core/models/pet.dart';
 import 'package:fyp_pawsenvy/core/models/reminder.dart';
 import 'package:fyp_pawsenvy/core/services/auth.service.dart';
 import 'package:fyp_pawsenvy/core/services/db.service.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/common/snackbar.dart';
 import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
@@ -302,9 +302,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                       dueDate: _dueDate,
                     );
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Reminder saved!')),
-                      );
+                      showSnackbar(context, 'Reminder saved!');
                       Navigator.pop(context);
                     }
                   }

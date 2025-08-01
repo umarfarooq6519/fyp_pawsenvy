@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
+import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/providers/chat.provider.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'message_bubble.dart';
 import 'message_input.dart';
@@ -74,23 +77,16 @@ class _ChatPopupState extends State<ChatPopup> {
         child: Column(
           children: [
             // Header
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
-              ),
+            Padding(
+              padding: const EdgeInsets.all(8),
               child: Row(
                 children: [
-                  Icon(Icons.smart_toy, color: theme.colorScheme.onPrimary),
-                  const SizedBox(width: 12),
+                  Icon(LineIcons.robot, size: 24),
+                  SizedBox(width: 8),
                   Text(
-                    'Gemini Chatbot',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: theme.colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold,
+                    'Pet Assistant',
+                    style: AppTextStyles.headingMedium.copyWith(
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   const Spacer(),
@@ -102,7 +98,7 @@ class _ChatPopupState extends State<ChatPopup> {
                       return IconButton(
                         icon: Icon(
                           Icons.delete_outline,
-                          color: theme.colorScheme.onPrimary,
+                          color: AppColorStyles.black,
                         ),
                         onPressed: () {
                           showDialog(
@@ -134,7 +130,7 @@ class _ChatPopupState extends State<ChatPopup> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(Icons.close, color: theme.colorScheme.onPrimary),
+                    icon: Icon(Icons.close, color: AppColorStyles.black),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
@@ -192,34 +188,14 @@ class _ChatPopupState extends State<ChatPopup> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.smart_toy,
-              size: 80,
-              color: theme.colorScheme.primary.withOpacity(0.6),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Welcome to Gemini Chatbot',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              hasApiKey
-                  ? 'Start a conversation by typing a message below.'
-                  : 'Please configure your Gemini API key in the service.',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+        child: Text(
+          hasApiKey
+              ? 'Start a conversation by typing a message below.'
+              : 'Please configure your Gemini API key in the service.',
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: theme.colorScheme.onSurface.withOpacity(0.7),
+          ),
+          textAlign: TextAlign.center,
         ),
       ),
     );

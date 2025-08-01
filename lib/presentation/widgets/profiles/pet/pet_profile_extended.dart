@@ -3,6 +3,9 @@ import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/theme.dart';
 import 'package:fyp_pawsenvy/core/models/pet.dart';
+import 'package:fyp_pawsenvy/core/utils/text.util.dart';
+import 'package:provider/provider.dart';
+import 'package:fyp_pawsenvy/providers/user.provider.dart';
 
 class PetProfileExtended extends StatelessWidget {
   final Pet pet;
@@ -11,20 +14,22 @@ class PetProfileExtended extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String name = pet.name;
-    final species = pet.species;
-    final String gender = pet.gender;
-    final String breed = pet.breed;
+    final userProvider = Provider.of<UserProvider>(context);
+    final isOwned = userProvider.user?.ownedPets.contains(pet.pID) ?? false;
+
+    final BoxShadow shadow = BoxShadow(
+      color: AppColorStyles.lightPurple,
+      blurRadius: isOwned ? 7 : 3,
+    );
 
     return Container(
       width: 200,
       decoration: BoxDecoration(
         border: Border.all(color: AppColorStyles.lightPurple),
-        gradient: AppColorStyles.profileGradient,
+        gradient: isOwned ? AppColorStyles.profileGradient : null,
+        color: isOwned ? null : AppColorStyles.white,
         borderRadius: BorderRadius.circular(AppBorderRadius.xLarge),
-        boxShadow: [
-          BoxShadow(color: AppColorStyles.lightPurple, blurRadius: 7),
-        ],
+        boxShadow: [shadow],
       ),
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Padding(
@@ -37,7 +42,7 @@ class PetProfileExtended extends StatelessWidget {
                 CircleAvatar(
                   radius: 32,
                   backgroundImage: AssetImage(
-                    species == PetSpecies.dog
+                    pet.species == PetSpecies.dog
                         ? 'assets/images/dog.png'
                         : 'assets/images/cat.png',
                   ),
@@ -49,14 +54,14 @@ class PetProfileExtended extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name,
+                      capitalizeFirst(pet.name),
                       style: AppTextStyles.bodyBase.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     SizedBox(height: 2),
                     Text(
-                      gender,
+                      capitalizeFirst(pet.gender),
                       style: AppTextStyles.bodyExtraSmall.copyWith(
                         color: AppColorStyles.lightGrey,
                       ),
@@ -67,8 +72,11 @@ class PetProfileExtended extends StatelessWidget {
               ],
             ),
             Chip(
-              label: Text(breed),
-              backgroundColor: AppColorStyles.lightPurple,
+              label: Text(
+                capitalizeFirst(pet.breed),
+                style: AppTextStyles.bodyExtraSmall,
+              ),
+              backgroundColor: AppColorStyles.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: BorderSide(width: 0),

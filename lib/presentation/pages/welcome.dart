@@ -3,6 +3,7 @@ import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/theme.dart';
 import 'package:fyp_pawsenvy/core/services/auth.service.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/common/snackbar.dart';
 import 'package:provider/provider.dart';
 
 class Welcome extends StatefulWidget {
@@ -120,15 +121,11 @@ class _WelcomeState extends State<Welcome> {
         try {
           final result = await _auth.signInWithGoogle();
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${result!.user!.displayName} signed in')),
-            );
+            showSnackbar(context, '${result!.user!.displayName} signed in');
           }
         } catch (e) {
           if (context.mounted) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('Could not sign in')));
+            showSnackbar(context, 'Could not sign in');
           }
         }
       },

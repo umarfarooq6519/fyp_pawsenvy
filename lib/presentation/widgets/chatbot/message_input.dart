@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
+import 'package:line_icons/line_icons.dart';
 
 class MessageInput extends StatefulWidget {
   final Function(String) onSendMessage;
@@ -94,7 +96,7 @@ class _MessageInputState extends State<MessageInput> {
                 color:
                     widget.isLoading || !widget.isEnabled
                         ? theme.colorScheme.outline.withValues(alpha: 0.3)
-                        : theme.colorScheme.primary,
+                        : AppColorStyles.purple,
                 shape: BoxShape.circle,
               ),
               child: IconButton(
@@ -113,7 +115,7 @@ class _MessageInputState extends State<MessageInput> {
                           ),
                         )
                         : Icon(
-                          Icons.send,
+                          LineIcons.paperPlane,
                           color:
                               widget.isEnabled
                                   ? theme.colorScheme.onPrimary

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/models/pet.dart';
 import 'package:fyp_pawsenvy/core/router/routes.dart';
 import 'package:fyp_pawsenvy/core/services/db.service.dart';
+import 'package:fyp_pawsenvy/core/utils/text.util.dart';
+import 'package:fyp_pawsenvy/core/models/vet_profile.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
@@ -110,10 +112,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
+                                children: [                                  Text(
                                     widget.user.name.isNotEmpty
-                                        ? widget.user.name
+                                        ? capitalizeFirst(widget.user.name)
                                         : 'No name given :(',
                                     style: AppTextStyles.headingMedium,
                                   ),
@@ -129,8 +130,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                             size: 18,
                                             color: AppColorStyles.black,
                                           ),
-                                          const SizedBox(width: 2),
-                                          Text(
+                                          const SizedBox(width: 2),                                          Text(
                                             widget.user.userRole == UserRole.vet
                                                 ? 'Veterinary'
                                                 : 'Pet Owner',
@@ -244,11 +244,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('About', style: AppTextStyles.headingMedium),
-                            const SizedBox(height: 4),
-
-                            Text(
+                            const SizedBox(height: 4),                            Text(
                               widget.user.bio.isNotEmpty
-                                  ? widget.user.bio
+                                  ? capitalizeFirst(widget.user.bio)
                                   : 'No bio available',
                               style: AppTextStyles.bodyBase,
                             ),
@@ -258,7 +256,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
                       const SizedBox(height: 24),
 
-                      // Owned Pets Section
+                      // Veterinary Profile Section (only for vets)
+                      if (widget.user.userRole == UserRole.vet && widget.user.vetProfile != null)
+                        _buildVetProfileSection(),
+
+                      const SizedBox(height: 24),                      // Owned Pets Section
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
@@ -304,9 +306,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         },
                       ),
 
-                      SizedBox(height: 6),
-
-                      // Owned Pets Section
+                      SizedBox(height: 6),                      // Liked Pets Section
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
@@ -420,7 +420,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       return "Error fetching location: $e";
     }
   }
-
   Widget _buildAttributeItem(
     BuildContext context,
     IconData icon,
@@ -440,5 +439,278 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         Text(label, style: AppTextStyles.bodySmall),
       ],
     );
+  }
+
+  Widget _buildVetProfileSection() {
+    final vetProfile = widget.user.vetProfile!;
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Veterinary Information', style: AppTextStyles.headingMedium),
+          const SizedBox(height: 16),
+          
+          // Clinic Information Card
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColorStyles.lightGrey.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Clinic Name
+                Row(
+                  children: [
+                    Icon(
+                      LineIcons.hospital,
+                      size: 20,
+                      color: AppColorStyles.purple,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        capitalizeFirst(vetProfile.clinicName),
+                        style: AppTextStyles.bodyBase.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                
+                // License Number
+                Row(
+                  children: [
+                    Icon(
+                      LineIcons.certificate,
+                      size: 20,
+                      color: AppColorStyles.purple,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'License Number',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColorStyles.grey,
+                            ),
+                          ),
+                          Text(
+                            vetProfile.licenseNumber,
+                            style: AppTextStyles.bodyBase,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                
+                // Experience
+                Row(
+                  children: [
+                    Icon(
+                      LineIcons.clock,
+                      size: 20,
+                      color: AppColorStyles.purple,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${vetProfile.experience} years of experience',
+                      style: AppTextStyles.bodyBase,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Specializations
+          if (vetProfile.specializations.isNotEmpty) ...[
+            Text('Specializations', style: AppTextStyles.headingSmall),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: vetProfile.specializations.map((specialization) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColorStyles.purple.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppColorStyles.purple.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    capitalizeFirst(specialization.name),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColorStyles.purple,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 16),
+          ],
+          
+          // Services
+          if (vetProfile.services.isNotEmpty) ...[
+            Text('Services Offered', style: AppTextStyles.headingSmall),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: vetProfile.services.map((service) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColorStyles.pastelGreen.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppColorStyles.pastelGreen,
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _getServiceIcon(service),
+                        size: 16,
+                        color: Colors.green.shade700,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        _formatServiceName(service.name),
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: Colors.green.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 16),
+          ],
+          
+          // Operating Hours
+          if (vetProfile.operatingHours.isNotEmpty) ...[
+            Text('Operating Hours', style: AppTextStyles.headingSmall),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: _buildOperatingHoursList(vetProfile.operatingHours),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+  
+  List<Widget> _buildOperatingHoursList(Map<Weekday, OperatingHours> operatingHours) {
+    final List<Widget> hoursList = [];
+    
+    for (final entry in operatingHours.entries) {
+      final weekday = entry.key;
+      final hours = entry.value;
+      
+      hoursList.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                _getDayName(weekday),
+                style: AppTextStyles.bodyBase.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                hours.isClosed 
+                    ? 'Closed'
+                    : '${hours.open!} - ${hours.close!}',
+                style: AppTextStyles.bodyBase.copyWith(
+                  color: hours.isClosed ? AppColorStyles.grey : AppColorStyles.black,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    
+    return hoursList;
+  }
+  
+  String _getDayName(Weekday weekday) {
+    switch (weekday) {
+      case Weekday.mon:
+        return 'Monday';
+      case Weekday.tue:
+        return 'Tuesday';
+      case Weekday.wed:
+        return 'Wednesday';
+      case Weekday.thu:
+        return 'Thursday';
+      case Weekday.fri:
+        return 'Friday';
+      case Weekday.sat:
+        return 'Saturday';
+      case Weekday.sun:
+        return 'Sunday';
+    }
+  }
+  
+  IconData _getServiceIcon(Service service) {
+    switch (service) {
+      case Service.petSitting:
+        return LineIcons.home;
+      case Service.petWalking:
+        return LineIcons.walking;
+      case Service.petGrooming:
+        return LineIcons.cut;
+      case Service.behaviourTraining:
+        return LineIcons.graduationCap;
+    }
+  }
+  
+  String _formatServiceName(String serviceName) {
+    switch (serviceName) {
+      case 'petSitting':
+        return 'Pet Sitting';
+      case 'petWalking':
+        return 'Pet Walking';
+      case 'petGrooming':
+        return 'Pet Grooming';
+      case 'behaviourTraining':
+        return 'Behaviour Training';
+      default:
+        return capitalizeFirst(serviceName);
+    }
   }
 }

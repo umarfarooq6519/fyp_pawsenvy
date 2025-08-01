@@ -1,11 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/models/app_user.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/theme.dart';
 import 'package:fyp_pawsenvy/core/utils/text.util.dart';
-import 'package:geocoding/geocoding.dart';
 
 class VetProfileExtended extends StatefulWidget {
   final AppUser vet;

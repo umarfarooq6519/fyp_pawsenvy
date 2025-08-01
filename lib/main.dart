@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fyp_pawsenvy/providers/chat.provider.dart';
 import 'package:fyp_pawsenvy/providers/user.provider.dart';
+import 'package:fyp_pawsenvy/providers/booking.provider.dart';
 import 'package:provider/provider.dart';
 import 'package:fyp_pawsenvy/firebase_options.dart';
 import 'package:fyp_pawsenvy/core/services/storage.service.dart';
@@ -31,6 +32,7 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AuthService()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => ChatProvider()),
+        ChangeNotifierProvider(create: (context) => BookingProvider()),
       ],
       child: MaterialApp.router(
         routerConfig: AppRouter.router,

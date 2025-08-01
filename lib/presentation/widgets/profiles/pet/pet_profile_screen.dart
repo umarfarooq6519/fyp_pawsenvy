@@ -9,7 +9,6 @@ import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/models/pet.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
 class PetProfileScreen extends StatefulWidget {
@@ -94,7 +93,7 @@ class _PetProfileScreenState extends State<PetProfileScreen> {
           children: [
             Container(
               width: double.infinity,
-              height: 240,
+              height: MediaQuery.of(context).size.height * 0.37,
               decoration: BoxDecoration(
                 gradient: AppColorStyles.profileGradient,
                 borderRadius: const BorderRadius.only(
@@ -173,7 +172,7 @@ class _PetProfileScreenState extends State<PetProfileScreen> {
                               children: [
                                 Text(
                                   widget.pet.name.isNotEmpty
-                                      ? widget.pet.name
+                                      ? capitalizeFirst(widget.pet.name)
                                       : 'No name given :(',
                                   style: AppTextStyles.headingMedium,
                                 ),
@@ -260,7 +259,7 @@ class _PetProfileScreenState extends State<PetProfileScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 30),
                   // Attributes section: weight, color, age, breed
                   Container(
                     padding: const EdgeInsets.all(20),
@@ -296,7 +295,7 @@ class _PetProfileScreenState extends State<PetProfileScreen> {
                     ),
                   ),
                   if (widget.pet.temperament.isNotEmpty) ...[
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 30),
                     // Temperament
                     Wrap(
                       spacing: 8,
@@ -330,7 +329,7 @@ class _PetProfileScreenState extends State<PetProfileScreen> {
                               )
                               .toList(),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 30),
                   ],
                   Text(
                     'About ${widget.pet.name}',
@@ -338,10 +337,10 @@ class _PetProfileScreenState extends State<PetProfileScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 3),
                   Text(
                     widget.pet.bio.isNotEmpty
-                        ? widget.pet.bio
+                        ? capitalizeFirst(widget.pet.bio)
                         : 'No bio available for ${widget.pet.name}',
                     style: AppTextStyles.bodyBase,
                   ),
@@ -367,70 +366,6 @@ class _PetProfileScreenState extends State<PetProfileScreen> {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: FutureBuilder<bool>(
-        future: _db.checkIfUserHasPet(
-          _auth.currentUser!.uid,
-          widget.pet.pID!,
-          'ownedPets',
-        ),
-        builder: (context, snapshot) {
-          // Don't show the button while loading or if user owns the pet
-          if (snapshot.connectionState == ConnectionState.waiting ||
-              snapshot.hasError ||
-              (snapshot.hasData && snapshot.data == true)) {
-            return const SizedBox.shrink();
-          }
-
-          // Show the adopt button if user doesn't own the pet
-          return Container(
-            margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: AppColorStyles.purple,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColorStyles.lightPurple),
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.secondary.withOpacity(0.3),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                elevation: 0,
-                shadowColor: Colors.transparent,
-              ),
-              onPressed: () async {
-                final Uri url = Uri(scheme: 'tel', path: '+923001234567');
-
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url, mode: LaunchMode.externalApplication);
-                } else {
-                  throw 'Could not launch dialer';
-                }
-              },
-              icon: Icon(LineIcons.phone, color: AppColorStyles.white),
-              label: Text(
-                'Contact the Owner',
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColorStyles.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          );
-        },
       ),
     );
   }

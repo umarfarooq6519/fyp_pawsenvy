@@ -12,6 +12,7 @@ import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_reminder
 import 'package:fyp_pawsenvy/presentation/pages/pet_owner/screens/owner_dashboard.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/common/expandable_fab.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/common/app_drawer.dart';
+import 'package:fyp_pawsenvy/presentation/widgets/common/snackbar.dart';
 import 'package:fyp_pawsenvy/providers/user.provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -53,14 +54,14 @@ class _PetOwnerState extends State<PetOwner> {
   @override
   void initState() {
     super.initState();
-    BreedAIUtil.initialize();
-    DiseaseAIUtil.initialize();
+    // BreedAIUtil.initialize();
+    // DiseaseAIUtil.initialize();
   }
 
   @override
   void dispose() {
-    BreedAIUtil.dispose();
-    DiseaseAIUtil.dispose();
+    // BreedAIUtil.dispose();
+    // DiseaseAIUtil.dispose();
     super.dispose();
   }
 
@@ -252,11 +253,7 @@ class _PetOwnerState extends State<PetOwner> {
       // If still not loaded, show error
       if (!success) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Failed to load AI model. Please try again."),
-            ),
-          );
+          showSnackbar(context, "Failed to load AI model. Please try again.");
         }
         return;
       }
@@ -306,9 +303,7 @@ class _PetOwnerState extends State<PetOwner> {
       }
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to classify image")),
-        );
+        showSnackbar(context, "Failed to classify image");
       }
     }
   }
@@ -317,16 +312,11 @@ class _PetOwnerState extends State<PetOwner> {
     // Check if model is loaded, if not try to load it
     if (!BreedAIUtil.isInitialized) {
       debugPrint("Model not loaded, attempting to load...");
-      final success = await BreedAIUtil.initialize();
-
-      // If still not loaded, show error
+      final success =
+          await BreedAIUtil.initialize(); // If still not loaded, show error
       if (!success) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Failed to load AI model. Please try again."),
-            ),
-          );
+          showSnackbar(context, "Failed to load AI model. Please try again.");
         }
         return;
       }
@@ -376,9 +366,7 @@ class _PetOwnerState extends State<PetOwner> {
       }
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to classify image")),
-        );
+        showSnackbar(context, "Failed to classify image");
       }
     }
   }
@@ -390,12 +378,9 @@ class _PetOwnerState extends State<PetOwner> {
       final success = await DiseaseAIUtil.initialize();
       if (!success) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                "Failed to load disease AI model. Please try again.",
-              ),
-            ),
+          showSnackbar(
+            context,
+            "Failed to load disease AI model. Please try again.",
           );
         }
         return;

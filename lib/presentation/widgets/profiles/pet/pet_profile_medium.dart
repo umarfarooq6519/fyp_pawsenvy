@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_pawsenvy/core/models/pet.dart';
+import 'package:fyp_pawsenvy/core/utils/text.util.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/text.styles.dart';
 import 'package:fyp_pawsenvy/core/theme/theme.dart';
+import 'package:provider/provider.dart';
+import 'package:fyp_pawsenvy/providers/user.provider.dart';
 
 class PetProfileMedium extends StatelessWidget {
   final Pet pet;
@@ -14,19 +17,28 @@ class PetProfileMedium extends StatelessWidget {
   Widget build(BuildContext context) {
     final String name = pet.name;
     final String species = pet.species.name;
-    final String about = pet.bio;
+    final String bio = pet.bio;
     final String gender = pet.gender;
     final String breed = pet.breed;
+    final PetStatus status = pet.status;
+
+    final userProvider = Provider.of<UserProvider>(context);
+    final bool isOwnedByUser =
+        userProvider.user?.ownedPets.contains(pet.pID) ?? false;
+
+    final BoxShadow shadow = BoxShadow(
+      color: AppColorStyles.lightPurple,
+      blurRadius: isOwnedByUser ? 7 : 3,
+    );
 
     return Container(
       width: 260,
       decoration: BoxDecoration(
         border: Border.all(color: AppColorStyles.lightPurple),
-        gradient: AppColorStyles.profileGradient,
+        gradient: isOwnedByUser ? AppColorStyles.profileGradient : null,
+        color: isOwnedByUser ? null : AppColorStyles.white,
         borderRadius: BorderRadius.circular(AppBorderRadius.xLarge),
-        boxShadow: [
-          BoxShadow(color: AppColorStyles.lightPurple, blurRadius: 7),
-        ],
+        boxShadow: [shadow],
       ),
       margin: EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
@@ -59,23 +71,27 @@ class PetProfileMedium extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(name, style: AppTextStyles.headingMedium),
-                        Row(
-                          children: [
-                            Icon(
-                              species == 'dog' ? LineIcons.dog : LineIcons.cat,
-                              color: AppColorStyles.deepPurple,
-                            ),
-                            SizedBox(width: 2),
-                            Text(
-                              species,
-                              style: AppTextStyles.bodyBase.copyWith(
-                                color: AppColorStyles.deepPurple,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          capitalizeFirst(species),
+                          style: AppTextStyles.bodyBase.copyWith(
+                            color: AppColorStyles.deepPurple,
+                          ),
                         ),
                       ],
                     ),
+                    if (status.name != 'normal')
+                      Chip(
+                        padding: EdgeInsets.all(0),
+                        label: Text(
+                          capitalizeFirst(status.name),
+                          style: AppTextStyles.bodyExtraSmall,
+                        ),
+                        backgroundColor: AppColorStyles.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
                   ],
                 ),
                 Padding(
@@ -98,7 +114,10 @@ class PetProfileMedium extends StatelessWidget {
                         size: 18,
                       ),
                       SizedBox(width: 4),
-                      Text(gender, style: AppTextStyles.bodySmall),
+                      Text(
+                        capitalizeFirst(gender),
+                        style: AppTextStyles.bodySmall,
+                      ),
                       SizedBox(width: 10),
                       Icon(
                         LineIcons.paw,
@@ -111,7 +130,7 @@ class PetProfileMedium extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  about,
+                  capitalizeFirst(bio),
                   style: AppTextStyles.bodySmall,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,

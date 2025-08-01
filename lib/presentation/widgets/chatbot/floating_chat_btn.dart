@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_pawsenvy/core/theme/color.styles.dart';
 import 'package:fyp_pawsenvy/presentation/widgets/chatbot/chat_popup.dart';
 import 'package:fyp_pawsenvy/providers/chat.provider.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 
 class FloatingChatButton extends StatelessWidget {
@@ -18,19 +20,17 @@ class FloatingChatButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Consumer<ChatProvider>(
       builder: (context, chatProvider, child) {
-        final hasUnreadMessages = chatProvider.messages.isNotEmpty;
+        final bool hasUnreadMessages = chatProvider.messages.isNotEmpty;
 
         return FloatingActionButton(
           onPressed: () => _openChatPopup(context),
-          backgroundColor: theme.colorScheme.primary,
-          foregroundColor: theme.colorScheme.onPrimary,
+          backgroundColor: AppColorStyles.purple,
+          foregroundColor: AppColorStyles.white,
           child: Stack(
             children: [
-              const Icon(Icons.chat, size: 28),
+              const Icon(LineIcons.robot, size: 28),
               if (hasUnreadMessages)
                 Positioned(
                   right: 0,
