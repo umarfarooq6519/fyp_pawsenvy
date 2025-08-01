@@ -45,16 +45,20 @@ class PetProfileSmall extends StatelessWidget {
                     height: 90,
                     child: Center(
                       child: CircleAvatar(
-                        radius: 32,
+                        radius: 36,
                         backgroundImage: AssetImage(
-                          species == PetSpecies.dog
+                          pet.avatar.isNotEmpty
+                              ? pet.avatar
+                              : pet.species == PetSpecies.dog
                               ? 'assets/images/dog.png'
-                              : 'assets/images/cat.png',
+                              : pet.species == PetSpecies.cat
+                              ? 'assets/images/cat.png'
+                              : 'assets/images/placeholder.png',
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 22,

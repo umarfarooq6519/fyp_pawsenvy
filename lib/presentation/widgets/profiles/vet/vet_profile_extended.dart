@@ -48,7 +48,11 @@ class _VetProfileExtendedState extends State<VetProfileExtended> {
               children: [
                 CircleAvatar(
                   radius: 32,
-                  backgroundImage: AssetImage('assets/images/person1.png'),
+                  backgroundImage:
+                      widget.vet.avatar.isNotEmpty
+                          ? NetworkImage(widget.vet.avatar)
+                          : AssetImage('assets/images/person1.png')
+                              as ImageProvider,
                 ),
 
                 SizedBox(width: 10),

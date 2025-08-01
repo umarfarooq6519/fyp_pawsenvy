@@ -55,9 +55,13 @@ class PetProfileMedium extends StatelessWidget {
                   child: CircleAvatar(
                     radius: 80,
                     backgroundImage: AssetImage(
-                      species == 'dog'
+                      pet.avatar.isNotEmpty
+                          ? pet.avatar
+                          : pet.species == PetSpecies.dog
                           ? 'assets/images/dog.png'
-                          : 'assets/images/cat.png',
+                          : pet.species == PetSpecies.cat
+                          ? 'assets/images/cat.png'
+                          : 'assets/images/placeholder.png',
                     ),
                     backgroundColor: AppColorStyles.lightPurple,
                   ),
@@ -70,7 +74,10 @@ class PetProfileMedium extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(name, style: AppTextStyles.headingMedium),
+                        Text(
+                          capitalizeFirst(name),
+                          style: AppTextStyles.headingMedium,
+                        ),
                         Text(
                           capitalizeFirst(species),
                           style: AppTextStyles.bodyBase.copyWith(

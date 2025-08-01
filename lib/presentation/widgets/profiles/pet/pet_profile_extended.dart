@@ -42,9 +42,13 @@ class PetProfileExtended extends StatelessWidget {
                 CircleAvatar(
                   radius: 32,
                   backgroundImage: AssetImage(
-                    pet.species == PetSpecies.dog
+                    pet.avatar.isNotEmpty
+                        ? pet.avatar
+                        : pet.species == PetSpecies.dog
                         ? 'assets/images/dog.png'
-                        : 'assets/images/cat.png',
+                        : pet.species == PetSpecies.cat
+                        ? 'assets/images/cat.png'
+                        : 'assets/images/placeholder.png',
                   ),
                 ),
 

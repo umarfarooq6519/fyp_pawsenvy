@@ -33,43 +33,47 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
     ownedPets = _db.getPetsStreamByIDs(widget.user.ownedPets);
     likedPets = _db.getPetsStreamByIDs(widget.user.likedPets);
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
-          Column(
-            children: [
-              // Avatar section
-              Container(
-                width: double.infinity,
-                height: 240,
-                decoration: BoxDecoration(
-                  gradient: AppColorStyles.profileGradient,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(32),
-                    bottomRight: Radius.circular(32),
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                // Avatar section
+                Container(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.37,
+                  decoration: BoxDecoration(
+                    gradient: AppColorStyles.profileGradient,
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(32),
+                      bottomRight: Radius.circular(32),
+                    ),
                   ),
-                ),
-                child: SafeArea(
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.center,
-                        child: CircleAvatar(
-                          radius: 70,
-                          backgroundColor: Colors.white,
-                          backgroundImage:
-                              widget.user.avatar.isNotEmpty
-                                  ? NetworkImage(widget.user.avatar)
-                                  : const AssetImage(
-                                        'assets/images/person1.png',
-                                      )
-                                      as ImageProvider,
+                  child: SafeArea(
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.center,
+                          child: CircleAvatar(
+                            radius: 86,
+                            backgroundColor: Colors.white,
+                            backgroundImage:
+                                widget.user.avatar.isNotEmpty
+                                    ? NetworkImage(
+                                      _getHighQualityAvatarUrl(
+                                        widget.user.avatar,
+                                      ),
+                                    )
+                                    : const AssetImage(
+                                          'assets/images/person1.png',
+                                        )
+                                        as ImageProvider,
+                          ),
                         ),
-                      ),
-                      SafeArea(
-                        child: Padding(
+                        // Top bar
+                        Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -93,15 +97,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              // Details section
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
+                // Details section
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 0,
+                    vertical: 20,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -112,7 +117,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [                                  Text(
+                                children: [
+                                  Text(
                                     widget.user.name.isNotEmpty
                                         ? capitalizeFirst(widget.user.name)
                                         : 'No name given :(',
@@ -130,7 +136,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                             size: 18,
                                             color: AppColorStyles.black,
                                           ),
-                                          const SizedBox(width: 2),                                          Text(
+                                          const SizedBox(width: 2),
+                                          Text(
                                             widget.user.userRole == UserRole.vet
                                                 ? 'Veterinary'
                                                 : 'Pet Owner',
@@ -244,7 +251,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('About', style: AppTextStyles.headingMedium),
-                            const SizedBox(height: 4),                            Text(
+                            const SizedBox(height: 4),
+                            Text(
                               widget.user.bio.isNotEmpty
                                   ? capitalizeFirst(widget.user.bio)
                                   : 'No bio available',
@@ -257,10 +265,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       const SizedBox(height: 24),
 
                       // Veterinary Profile Section (only for vets)
-                      if (widget.user.userRole == UserRole.vet && widget.user.vetProfile != null)
+                      if (widget.user.userRole == UserRole.vet &&
+                          widget.user.vetProfile != null)
                         _buildVetProfileSection(),
 
-                      const SizedBox(height: 24),                      // Owned Pets Section
+                      const SizedBox(height: 24), // Owned Pets Section
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
@@ -280,7 +289,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           if (snapshot.hasError ||
                               !snapshot.hasData ||
                               snapshot.data!.isEmpty) {
-                            return const Text('No pets found');
+                            return Center(
+                              child: const Text('No pets found 😔'),
+                            );
                           }
                           return SizedBox(
                             height: 220,
@@ -306,7 +317,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         },
                       ),
 
-                      SizedBox(height: 6),                      // Liked Pets Section
+                      SizedBox(height: 6), // Liked Pets Section
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
@@ -326,7 +337,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           if (snapshot.hasError ||
                               !snapshot.hasData ||
                               snapshot.data!.isEmpty) {
-                            return Center(child: const Text('No pets found'));
+                            return Center(
+                              child: const Text('No pets found 😔'),
+                            );
                           }
                           return SizedBox(
                             height: 220,
@@ -355,8 +368,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
           Positioned(
@@ -420,6 +433,27 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       return "Error fetching location: $e";
     }
   }
+
+  String _getHighQualityAvatarUrl(String originalUrl) {
+    // Check if it's a Google profile image URL
+    if (originalUrl.contains('googleusercontent.com')) {
+      // Replace size parameter in the URL
+      // Google URLs typically end with =s96-c, =s64-c, etc.
+      final regex = RegExp(r'=s\d+-c$');
+
+      if (regex.hasMatch(originalUrl)) {
+        // Replace existing size parameter with high quality one
+        return originalUrl.replaceAll(regex, '=s200-c');
+      } else {
+        // If no size parameter exists, add one
+        return '$originalUrl=s200-c';
+      }
+    }
+
+    // For non-Google URLs, return original
+    return originalUrl;
+  }
+
   Widget _buildAttributeItem(
     BuildContext context,
     IconData icon,
@@ -443,7 +477,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   Widget _buildVetProfileSection() {
     final vetProfile = widget.user.vetProfile!;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -451,7 +485,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         children: [
           Text('Veterinary Information', style: AppTextStyles.headingMedium),
           const SizedBox(height: 16),
-          
+
           // Clinic Information Card
           Container(
             padding: const EdgeInsets.all(16),
@@ -486,7 +520,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                
+
                 // License Number
                 Row(
                   children: [
@@ -516,7 +550,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                
+
                 // Experience
                 Row(
                   children: [
@@ -535,9 +569,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Specializations
           if (vetProfile.specializations.isNotEmpty) ...[
             Text('Specializations', style: AppTextStyles.headingSmall),
@@ -545,30 +579,34 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: vetProfile.specializations.map((specialization) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColorStyles.purple.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: AppColorStyles.purple.withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    capitalizeFirst(specialization.name),
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColorStyles.purple,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                );
-              }).toList(),
+              children:
+                  vetProfile.specializations.map((specialization) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColorStyles.purple.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppColorStyles.purple.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        capitalizeFirst(specialization.name),
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColorStyles.purple,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    );
+                  }).toList(),
             ),
             const SizedBox(height: 16),
           ],
-          
+
           // Services
           if (vetProfile.services.isNotEmpty) ...[
             Text('Services Offered', style: AppTextStyles.headingSmall),
@@ -576,41 +614,45 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: vetProfile.services.map((service) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColorStyles.pastelGreen.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: AppColorStyles.pastelGreen,
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _getServiceIcon(service),
-                        size: 16,
-                        color: Colors.green.shade700,
+              children:
+                  vetProfile.services.map((service) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        _formatServiceName(service.name),
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: Colors.green.shade700,
-                          fontWeight: FontWeight.w500,
+                      decoration: BoxDecoration(
+                        color: AppColorStyles.pastelGreen.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppColorStyles.pastelGreen,
+                          width: 1,
                         ),
                       ),
-                    ],
-                  ),
-                );
-              }).toList(),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getServiceIcon(service),
+                            size: 16,
+                            color: Colors.green.shade700,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            _formatServiceName(service.name),
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: Colors.green.shade700,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
             ),
             const SizedBox(height: 16),
           ],
-          
+
           // Operating Hours
           if (vetProfile.operatingHours.isNotEmpty) ...[
             Text('Operating Hours', style: AppTextStyles.headingSmall),
@@ -630,14 +672,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       ),
     );
   }
-  
-  List<Widget> _buildOperatingHoursList(Map<Weekday, OperatingHours> operatingHours) {
+
+  List<Widget> _buildOperatingHoursList(
+    Map<Weekday, OperatingHours> operatingHours,
+  ) {
     final List<Widget> hoursList = [];
-    
+
     for (final entry in operatingHours.entries) {
       final weekday = entry.key;
       final hours = entry.value;
-      
+
       hoursList.add(
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
@@ -651,11 +695,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 ),
               ),
               Text(
-                hours.isClosed 
-                    ? 'Closed'
-                    : '${hours.open!} - ${hours.close!}',
+                hours.isClosed ? 'Closed' : '${hours.open!} - ${hours.close!}',
                 style: AppTextStyles.bodyBase.copyWith(
-                  color: hours.isClosed ? AppColorStyles.grey : AppColorStyles.black,
+                  color:
+                      hours.isClosed
+                          ? AppColorStyles.grey
+                          : AppColorStyles.black,
                 ),
               ),
             ],
@@ -663,10 +708,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         ),
       );
     }
-    
+
     return hoursList;
   }
-  
+
   String _getDayName(Weekday weekday) {
     switch (weekday) {
       case Weekday.mon:
@@ -685,7 +730,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         return 'Sunday';
     }
   }
-  
+
   IconData _getServiceIcon(Service service) {
     switch (service) {
       case Service.petSitting:
@@ -698,7 +743,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         return LineIcons.graduationCap;
     }
   }
-  
+
   String _formatServiceName(String serviceName) {
     switch (serviceName) {
       case 'petSitting':

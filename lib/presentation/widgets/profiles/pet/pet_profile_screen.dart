@@ -107,19 +107,21 @@ class _PetProfileScreenState extends State<PetProfileScreen> {
                     Align(
                       alignment: Alignment.center,
                       child: CircleAvatar(
-                        radius: 80,
-                        backgroundColor: Colors.white,
-                        backgroundImage:
+                        radius: 86,
+                        backgroundColor: AppColorStyles.grey,
+                        child: CircleAvatar(
+                          radius: 85,
+                          backgroundColor: AppColorStyles.white,
+                          backgroundImage: AssetImage(
                             widget.pet.avatar.isNotEmpty
-                                ? NetworkImage(widget.pet.avatar)
-                                : AssetImage(
-                                      widget.pet.species == PetSpecies.dog
-                                          ? 'assets/images/dog.png'
-                                          : widget.pet.species == PetSpecies.cat
-                                          ? 'assets/images/cat.png'
-                                          : 'assets/images/placeholder.png',
-                                    )
-                                    as ImageProvider,
+                                ? widget.pet.avatar
+                                : widget.pet.species == PetSpecies.dog
+                                ? 'assets/images/dog.png'
+                                : widget.pet.species == PetSpecies.cat
+                                ? 'assets/images/cat.png'
+                                : 'assets/images/placeholder.png',
+                          ),
+                        ),
                       ),
                     ),
                     // Top bar
